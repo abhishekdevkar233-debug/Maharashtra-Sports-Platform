@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import indiaEmblem from "@/assets/india-emblem.png.asset.json";
-import mhSeal from "@/assets/mh-seal.png.asset.json";
+import indiaEmblem from "@/assets/india-emblem.png";
+import mhSeal from "@/assets/mh-seal.png";
 
 export function DashHeader({ title, subtitle, updated, right }: { title: string; subtitle?: string; updated?: string; right?: ReactNode }) {
   return (
     <div className="bg-white border-b border-gray-200">
       <div className="container-page py-5 flex flex-wrap items-center gap-4">
-        <img src={indiaEmblem.url} alt="" className="h-12 w-12 object-contain" />
+        <img src={indiaEmblem} alt="" className="h-12 w-12 object-contain" />
         <div className="flex-1 min-w-[240px]">
           <h1 className="text-lg md:text-xl font-bold text-gray-900 leading-tight">{title}</h1>
           {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
@@ -16,7 +16,7 @@ export function DashHeader({ title, subtitle, updated, right }: { title: string;
         </div>
         <div className="flex items-center gap-3">
           {right}
-          <img src={mhSeal.url} alt="" className="h-12 w-auto object-contain" />
+          <img src={mhSeal} alt="" className="h-12 w-auto object-contain" />
         </div>
       </div>
       <div className="container-page pb-3">

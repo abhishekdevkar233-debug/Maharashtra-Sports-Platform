@@ -10,12 +10,12 @@ export const Route = createFileRoute("/media-center/news")({
 const CATEGORIES = ["All", "Department", "Athletes", "Tournaments", "Schemes", "Infrastructure"];
 
 const ARTICLES = [
-  { id: "asian-games-medals", cat: "Athletes", date: "22 Jun 2026", title: "Maharashtra wins 12 medals at National Junior Athletics 2025", excerpt: "State athletes top the medal table with strong performances across track and field events in Hyderabad." },
+  { id: "asian-games-medals", cat: "Athletes", date: "22 Jun 2026", title: "Maharashtra wins 12 medals at National Junior Athletics 2026", excerpt: "State athletes top the medal table with strong performances across track and field events in Hyderabad." },
   { id: "infra-grant-launch", cat: "Schemes", date: "18 Jun 2026", title: "₹250 Cr Sports Infrastructure Grant launched for 36 districts", excerpt: "CM announces a five-year programme to upgrade district sports complexes and athlete hostels." },
   { id: "balewadi-aquatic", cat: "Infrastructure", date: "10 Jun 2026", title: "Balewadi Aquatic Centre inaugurated in Pune", excerpt: "FINA-spec 50m pool with diving platform now open for elite athlete training camps." },
   { id: "khelo-india-prep", cat: "Tournaments", date: "05 Jun 2026", title: "State squad announced for Khelo India Youth Games 2026", excerpt: "428 athletes selected across 27 disciplines — Maharashtra contingent largest in the country." },
   { id: "coach-cert-program", cat: "Department", date: "29 May 2026", title: "New NIS-affiliated coach certification rolled out", excerpt: "Department partners with SAI to certify 1,200 coaches across districts over the next 18 months." },
-  { id: "shiv-chhatrapati", cat: "Athletes", date: "20 May 2026", title: "Shiv Chhatrapati Award nominations open for 2025-26", excerpt: "Applications invited across 46 sports disciplines from athletes, coaches and lifetime achievers." },
+  { id: "shiv-chhatrapati", cat: "Athletes", date: "20 May 2026", title: "Shiv Chhatrapati Award nominations open for 2026-27", excerpt: "Applications invited across 46 sports disciplines from athletes, coaches and lifetime achievers." },
 ];
 
 function NewsPage() {

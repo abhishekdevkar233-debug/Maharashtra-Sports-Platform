@@ -10,7 +10,7 @@ export const Route = createFileRoute("/media-center/video-gallery")({
 const CATS = ["All", "Highlights", "Interviews", "Documentaries", "Training", "Ceremonies"];
 
 const VIDEOS = [
-  { id: "shiv-chhatrapati-highlights", title: "Shiv Chhatrapati Awards 2025-26 — Highlights Reel", cat: "Ceremonies", dur: "4:32", views: "12.4K", date: "14 Jun 2026" },
+  { id: "shiv-chhatrapati-highlights", title: "Shiv Chhatrapati Awards 2026-27 — Highlights Reel", cat: "Ceremonies", dur: "4:32", views: "12.4K", date: "14 Jun 2026" },
   { id: "priya-patil-interview", title: "Road to Asian Games — Priya Patil in conversation", cat: "Interviews", dur: "11:08", views: "8.2K", date: "10 Jun 2026" },
   { id: "balewadi-tour", title: "Inside the new Balewadi Aquatic Centre", cat: "Documentaries", dur: "6:14", views: "5.7K", date: "08 Jun 2026" },
   { id: "national-jr-day3", title: "National Junior Athletics — Day 3 Highlights", cat: "Highlights", dur: "8:45", views: "21.9K", date: "24 May 2026" },

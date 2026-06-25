@@ -31,6 +31,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AwardSchemesRouteImport } from './routes/award-schemes'
 import { Route as AboutUsRouteImport } from './routes/about-us'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as RegisterYouthClubRouteImport } from './routes/register.youth-club'
 import { Route as RegisterSportsComplexRouteImport } from './routes/register.sports-complex'
 import { Route as RegisterLocalSelfGovernmentRouteImport } from './routes/register.local-self-government'
@@ -167,6 +168,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const RegisterYouthClubRoute = RegisterYouthClubRouteImport.update({
   id: '/youth-club',
@@ -350,6 +356,7 @@ export interface FileRoutesByFullPath {
   '/register/local-self-government': typeof RegisterLocalSelfGovernmentRoute
   '/register/sports-complex': typeof RegisterSportsComplexRoute
   '/register/youth-club': typeof RegisterYouthClubRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/media-center/news/$id': typeof MediaCenterNewsIdRoute
   '/media-center/photo-gallery/$id': typeof MediaCenterPhotoGalleryIdRoute
   '/media-center/press-releases/$id': typeof MediaCenterPressReleasesIdRoute
@@ -360,7 +367,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about-us': typeof AboutUsRoute
   '/award-schemes': typeof AwardSchemesRoute
-  '/dashboard': typeof DashboardRouteWithChildren
   '/elite-athletes': typeof EliteAthletesRouteWithChildren
   '/event-calendar': typeof EventCalendarRoute
   '/infrastructure-map': typeof InfrastructureMapRoute
@@ -400,6 +406,7 @@ export interface FileRoutesByTo {
   '/register/local-self-government': typeof RegisterLocalSelfGovernmentRoute
   '/register/sports-complex': typeof RegisterSportsComplexRoute
   '/register/youth-club': typeof RegisterYouthClubRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/media-center/news/$id': typeof MediaCenterNewsIdRoute
   '/media-center/photo-gallery/$id': typeof MediaCenterPhotoGalleryIdRoute
   '/media-center/press-releases/$id': typeof MediaCenterPressReleasesIdRoute
@@ -451,6 +458,7 @@ export interface FileRoutesById {
   '/register/local-self-government': typeof RegisterLocalSelfGovernmentRoute
   '/register/sports-complex': typeof RegisterSportsComplexRoute
   '/register/youth-club': typeof RegisterYouthClubRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/media-center/news/$id': typeof MediaCenterNewsIdRoute
   '/media-center/photo-gallery/$id': typeof MediaCenterPhotoGalleryIdRoute
   '/media-center/press-releases/$id': typeof MediaCenterPressReleasesIdRoute
@@ -503,6 +511,7 @@ export interface FileRouteTypes {
     | '/register/local-self-government'
     | '/register/sports-complex'
     | '/register/youth-club'
+    | '/dashboard/'
     | '/media-center/news/$id'
     | '/media-center/photo-gallery/$id'
     | '/media-center/press-releases/$id'
@@ -513,7 +522,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about-us'
     | '/award-schemes'
-    | '/dashboard'
     | '/elite-athletes'
     | '/event-calendar'
     | '/infrastructure-map'
@@ -553,6 +561,7 @@ export interface FileRouteTypes {
     | '/register/local-self-government'
     | '/register/sports-complex'
     | '/register/youth-club'
+    | '/dashboard'
     | '/media-center/news/$id'
     | '/media-center/photo-gallery/$id'
     | '/media-center/press-releases/$id'
@@ -603,6 +612,7 @@ export interface FileRouteTypes {
     | '/register/local-self-government'
     | '/register/sports-complex'
     | '/register/youth-club'
+    | '/dashboard/'
     | '/media-center/news/$id'
     | '/media-center/photo-gallery/$id'
     | '/media-center/press-releases/$id'
@@ -795,6 +805,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/register/youth-club': {
       id: '/register/youth-club'
       path: '/youth-club'
@@ -985,6 +1002,7 @@ interface DashboardRouteChildren {
   DashboardFundUtilizationRoute: typeof DashboardFundUtilizationRoute
   DashboardGrievanceRoute: typeof DashboardGrievanceRoute
   DashboardScholarshipRoute: typeof DashboardScholarshipRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -992,6 +1010,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardFundUtilizationRoute: DashboardFundUtilizationRoute,
   DashboardGrievanceRoute: DashboardGrievanceRoute,
   DashboardScholarshipRoute: DashboardScholarshipRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
@@ -1161,3 +1180,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

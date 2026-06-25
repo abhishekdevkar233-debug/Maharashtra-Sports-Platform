@@ -35,11 +35,11 @@ const TREND = [
   { m: "Oct", Submitted: 19, Resolved: 16, Closed: 18 },
 ];
 const RECENT: Array<{ id: string; sub: string; st: string; tone: string; date: string }> = [
-  { id: "GRV/2025/10/375", sub: "Sports Scholarship Delay", st: "Assigned", tone: "#7c3aed", date: "31 Oct" },
-  { id: "GRV/2025/10/374", sub: "Facility Maintenance Issue", st: "Escalated", tone: "#dc2626", date: "31 Oct" },
-  { id: "GRV/2025/10/373", sub: "Coach Payment Pending", st: "Reassigned", tone: "#363092", date: "30 Oct" },
-  { id: "GRV/2025/10/372", sub: "Sports Kit Not Received", st: "Auto Closed", tone: "#6B7280", date: "30 Oct" },
-  { id: "GRV/2025/10/371", sub: "Training Ground Issue", st: "Closed", tone: "#0d9488", date: "29 Oct" },
+  { id: "GRV/2026/10/375", sub: "Sports Scholarship Delay", st: "Assigned", tone: "#7c3aed", date: "31 Oct" },
+  { id: "GRV/2026/10/374", sub: "Facility Maintenance Issue", st: "Escalated", tone: "#dc2626", date: "31 Oct" },
+  { id: "GRV/2026/10/373", sub: "Coach Payment Pending", st: "Reassigned", tone: "#363092", date: "30 Oct" },
+  { id: "GRV/2026/10/372", sub: "Sports Kit Not Received", st: "Auto Closed", tone: "#6B7280", date: "30 Oct" },
+  { id: "GRV/2026/10/371", sub: "Training Ground Issue", st: "Closed", tone: "#0d9488", date: "29 Oct" },
 ];
 
 function Page() {
@@ -47,9 +47,9 @@ function Page() {
     <div className="bg-gray-50 min-h-screen">
       <DashHeader
         title="Grievance Redressal Intelligence Dashboard"
-        subtitle="Sports & Youth Services · FY 2024-25"
-        updated="31 Oct 2025, 09:00 AM"
-        right={<select className="h-9 px-3 rounded-lg border border-gray-300 text-xs bg-white"><option>26 Oct 2016 – 31 Oct 2025</option></select>}
+        subtitle="Sports & Youth Services · FY 2026-27"
+        updated="31 Oct 2026, 09:00 AM"
+        right={<select className="h-9 px-3 rounded-lg border border-gray-300 text-xs bg-white"><option>26 Oct 2016 – 31 Oct 2026</option></select>}
       />
       <div className="container-page py-6 space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">

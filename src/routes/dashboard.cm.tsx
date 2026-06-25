@@ -4,12 +4,12 @@ import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, 
 import { MapPin, ArrowRight, TrendingUp, Wallet, Building2, Trophy } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/cm")({
-  head: () => ({ meta: [{ title: "CM Sports Development Dashboard — FY 2024-25" }] }),
+  head: () => ({ meta: [{ title: "CM Sports Development Dashboard — FY 2026-27" }] }),
   component: Page,
 });
 
 const KPIS = [
-  { label: "Total Approved Amount", value: "₹163.45 Cr", sub: "Sanctioned FY 2024-25", icon: Wallet, color: "#363092" },
+  { label: "Total Approved Amount", value: "₹163.45 Cr", sub: "Sanctioned FY 2026-27", icon: Wallet, color: "#363092" },
   { label: "Individual Benefit Schemes", value: "₹251.19 Cr", sub: "Total beneficiaries reached", icon: Trophy, color: "#FF6B35" },
   { label: "Infrastructure Investment", value: "₹209.67 Cr", sub: "Active across 36 districts", icon: Building2, color: "#0d9488" },
   { label: "Sports Development Budget", value: "₹175.25 Cr", sub: "Programs & grants", icon: TrendingUp, color: "#7c3aed" },
@@ -79,9 +79,9 @@ function Page() {
       <div className="relative">
         <DashHeader
           title="CM Sports Development Dashboard"
-          subtitle="Financial Year 2024-25 · Government of Maharashtra"
-          updated="21 May 2024, 11:30 AM"
-          right={<span className="hidden md:inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-[11px] font-bold text-emerald-700"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />Live · FY 2024-25</span>}
+          subtitle="Financial Year 2026-27 · Government of Maharashtra"
+          updated="21 May 2026, 11:30 AM"
+          right={<span className="hidden md:inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-[11px] font-bold text-emerald-700"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />Live · FY 2026-27</span>}
         />
 
         <div className="container-page py-6 space-y-6">
@@ -117,7 +117,7 @@ function Page() {
                       <div className="flex-1 min-w-[220px]">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-semibold text-gray-900 text-sm leading-snug">{s.name}</span>
-                          <span className="text-[9px] font-bold uppercase tracking-wider bg-[#FF6B35]/10 text-[#FF6B35] px-2 py-0.5 rounded-full border border-[#FF6B35]/30">FY 2024-25</span>
+                          <span className="text-[9px] font-bold uppercase tracking-wider bg-[#FF6B35]/10 text-[#FF6B35] px-2 py-0.5 rounded-full border border-[#FF6B35]/30">FY 2026-27</span>
                         </div>
                         <div className="text-[11px] text-gray-500 font-mono mt-1">Scheme Code: {s.code}</div>
                       </div>

@@ -13,9 +13,9 @@ export const Route = createFileRoute("/media-center")({
 });
 
 const trending = [
-  { tag: "News", title: "Maharashtra wins 12 medals at National Junior Athletics 2025", date: "22 Jun 2026" },
+  { tag: "News", title: "Maharashtra wins 12 medals at National Junior Athletics 2026", date: "22 Jun 2026" },
   { tag: "Press Release", title: "Launch of ₹250 Cr Sports Infrastructure Grant for Districts", date: "18 Jun 2026" },
-  { tag: "Video", title: "Shiv Chhatrapati Awards 2025-26 — Highlights Reel", date: "14 Jun 2026" },
+  { tag: "Video", title: "Shiv Chhatrapati Awards 2026-27 — Highlights Reel", date: "14 Jun 2026" },
   { tag: "Photo", title: "Inauguration of Balewadi Aquatic Centre, Pune", date: "10 Jun 2026" },
 ];
 

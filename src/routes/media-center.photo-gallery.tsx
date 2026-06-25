@@ -10,7 +10,7 @@ export const Route = createFileRoute("/media-center/photo-gallery")({
 const TAGS = ["All Events", "Ceremonies", "Training", "Tournaments", "Inaugurations", "Athletes"];
 
 const ALBUMS = [
-  { id: "shiv-chhatrapati-2025", title: "Shiv Chhatrapati Awards 2025-26", date: "14 Jun 2026", count: 64, h: 260 },
+  { id: "shiv-chhatrapati-2025", title: "Shiv Chhatrapati Awards 2026-27", date: "14 Jun 2026", count: 64, h: 260 },
   { id: "balewadi-inauguration", title: "Balewadi Aquatic Centre Inauguration", date: "10 Jun 2026", count: 42, h: 200 },
   { id: "khelo-india-camp", title: "Khelo India Training Camp — Pune", date: "02 Jun 2026", count: 88, h: 220 },
   { id: "national-junior-athletics", title: "National Junior Athletics — Hyderabad", date: "22 May 2026", count: 120, h: 240 },

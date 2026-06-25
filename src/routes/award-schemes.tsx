@@ -37,8 +37,8 @@ function Page() {
         <SectionTitle title="Notable Achievements" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {[
-            { i: Medal, t: "186 medals", d: "Khelo India Youth Games 2024" },
-            { i: Star, t: "42 awardees", d: "Shiv Chhatrapati 2024 cycle" },
+            { i: Medal, t: "186 medals", d: "Khelo India Youth Games 2026" },
+            { i: Star, t: "42 awardees", d: "Shiv Chhatrapati 2026 cycle" },
             { i: Trophy, t: "8 Olympians", d: "Currently representing India" },
           ].map(({ i: I, t, d }) => (
             <div key={t} className="bg-white border border-gray-200 rounded-2xl p-6 text-center">

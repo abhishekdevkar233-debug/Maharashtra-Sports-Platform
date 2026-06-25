@@ -11,7 +11,7 @@ export const Route = createFileRoute("/notices/announcements")({
 type A = { icon: typeof FileText; title: string; date: string; cat: "Scheme" | "Policy" | "Circular" | "Notice"; badge: "Important" | "New" | "Open"; tone: "red" | "green" | "indigo"; priority?: boolean; hasFile?: boolean };
 
 const LIST: A[] = [
-  { icon: Megaphone, title: "Shiv Chhatrapati State Sports Award 2025–26 — Applications Open", date: "22 Jun 2026", cat: "Scheme", badge: "Open", tone: "green", priority: true, hasFile: true },
+  { icon: Megaphone, title: "Shiv Chhatrapati State Sports Award 2026–27 — Applications Open", date: "22 Jun 2026", cat: "Scheme", badge: "Open", tone: "green", priority: true, hasFile: true },
   { icon: FileText, title: "Revised Guidelines for District Sports Complex Operations", date: "18 Jun 2026", cat: "Policy", badge: "Important", tone: "red", priority: true, hasFile: true },
   { icon: ScrollText, title: "Circular: Athlete Stipend Disbursement Schedule — Q1 FY 2026-27", date: "10 Jun 2026", cat: "Circular", badge: "New", tone: "indigo", hasFile: true },
   { icon: BellRing, title: "Notice: National Games 2027 Volunteer Registration Drive", date: "05 Jun 2026", cat: "Notice", badge: "Open", tone: "green", hasFile: false },

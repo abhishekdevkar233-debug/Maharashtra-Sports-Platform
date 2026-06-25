@@ -40,7 +40,7 @@ function Page() {
           <div className="flex flex-wrap gap-2 items-center">
             <select className="h-9 px-3 rounded-lg border border-gray-300 text-xs bg-white"><option>Game: All</option></select>
             <div className="flex items-center gap-1 text-xs">
-              {["Blank", "2022-23", "2023-24", "2024-25"].map(y => (
+              {["Blank", "2024-25", "2025-26", "2026-27"].map(y => (
                 <label key={y} className="flex items-center gap-1 px-2 py-1 rounded-md border border-gray-300 cursor-pointer hover:border-[#363092]">
                   <input type="checkbox" defaultChecked={y !== "Blank"} className="h-3 w-3" /> {y}
                 </label>
@@ -139,7 +139,7 @@ function Page() {
           <p className="mt-2 text-xs text-gray-600 leading-relaxed">All amounts are in ₹ unless otherwise specified.</p>
         </aside>
       </div>
-      <DashFooter note="Data covers FY 2022-23 through FY 2024-25." />
+      <DashFooter note="Data covers FY 2024-25 through FY 2026-27." />
     </div>
   );
 }

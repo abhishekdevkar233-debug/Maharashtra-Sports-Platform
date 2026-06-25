@@ -1,6 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero, SectionWrap, SectionTitle, ImgBox } from "@/components/layout/PageShell";
-import { MapPin, Users, Trophy } from "lucide-react";
+import { PageHero, SectionWrap, SectionTitle } from "@/components/layout/PageShell";
+import { MapPin, Users } from "lucide-react";
+import { VenuesDashboard } from "@/components/infrastructure/VenuesDashboard";
+import vShivChhatrapati from "@/assets/venues/shiv-chhatrapati.jpg";
+import vDyPatil from "@/assets/venues/dy-patil.jpg";
+import vWankhede from "@/assets/venues/wankhede.jpg";
+import vVidarbha from "@/assets/venues/vidarbha.jpg";
+import vMahalaxmi from "@/assets/venues/mahalaxmi.avif";
+import vPuneFootball from "@/assets/venues/pune-football.jpg";
 
 export const Route = createFileRoute("/stadiums-arenas")({
   head: () => ({ meta: [{ title: "Stadiums & Arenas" }] }),
@@ -8,12 +15,12 @@ export const Route = createFileRoute("/stadiums-arenas")({
 });
 
 const VENUES = [
-  { n: "Shree Shiv Chhatrapati Sports Complex", l: "Balewadi, Pune", c: "55,000", f: ["Athletics","Football","Indoor halls"] },
-  { n: "DY Patil Stadium", l: "Navi Mumbai", c: "55,000", f: ["Cricket","Football"] },
-  { n: "Wankhede Stadium", l: "Mumbai", c: "33,000", f: ["Cricket"] },
-  { n: "Vidarbha Cricket Stadium", l: "Nagpur", c: "45,000", f: ["Cricket"] },
-  { n: "Mahalaxmi Race Course Arena", l: "Mumbai", c: "20,000", f: ["Equestrian","Athletics"] },
-  { n: "Pune Football Arena", l: "Pune", c: "12,000", f: ["Football"] },
+  { n: "Shree Shiv Chhatrapati Sports Complex", l: "Balewadi, Pune", c: "55,000", f: ["Athletics","Football","Indoor halls"], img: vShivChhatrapati },
+  { n: "DY Patil Stadium", l: "Navi Mumbai", c: "55,000", f: ["Cricket","Football"], img: vDyPatil },
+  { n: "Wankhede Stadium", l: "Mumbai", c: "33,000", f: ["Cricket"], img: vWankhede },
+  { n: "Vidarbha Cricket Stadium", l: "Nagpur", c: "45,000", f: ["Cricket"], img: vVidarbha },
+  { n: "Mahalaxmi Race Course Arena", l: "Mumbai", c: "20,000", f: ["Equestrian","Athletics"], img: vMahalaxmi },
+  { n: "Pune Football Arena", l: "Pune", c: "12,000", f: ["Football"], img: vPuneFootball },
 ];
 
 function Page() {
@@ -33,7 +40,7 @@ function Page() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {VENUES.map(v => (
             <div key={v.n} className="rounded-2xl border border-gray-200 overflow-hidden bg-white">
-              <ImgBox h={180} label="Venue Photo" />
+              <img src={v.img} alt={v.n} className="w-full object-cover bg-gray-200" style={{ height: 180 }} />
               <div className="p-5">
                 <h3 className="font-bold text-gray-900">{v.n}</h3>
                 <div className="mt-2 text-sm text-gray-500 flex items-center gap-1"><MapPin className="h-4 w-4" /> {v.l}</div>
@@ -48,15 +55,8 @@ function Page() {
       </SectionWrap>
 
       <SectionWrap alt>
-        <SectionTitle title="State-wide Overview" subtitle="An at-a-glance look at sports venues across Maharashtra." />
-        <div className="grid md:grid-cols-[2fr,1fr] gap-6">
-          <ImgBox h={360} label="Maharashtra Venues Map" />
-          <div className="rounded-2xl border border-gray-200 bg-white p-6">
-            <Trophy className="h-7 w-7 text-[#363092]" />
-            <h3 className="mt-3 font-bold">Hosting the 39th National Games 2027</h3>
-            <p className="mt-2 text-sm text-gray-600">Major venues across Pune, Mumbai, Nagpur and Nashik are being upgraded to deliver a world-class National Games experience.</p>
-          </div>
-        </div>
+        <SectionTitle title="State-wide Overview" subtitle="An interactive look at sports infrastructure across Maharashtra's districts." />
+        <VenuesDashboard />
       </SectionWrap>
     </>
   );

@@ -14,8 +14,8 @@ const LIST: T[] = [
   { ref: "DSYS/2026/CW/0142", title: "Construction of Synthetic Athletics Track — Nashik Sports Complex", cat: "Construction", status: "Open", value: "₹ 18.50 Cr", emd: "₹ 18.50 L", deadline: "Closes 08 Jul 2026", published: "10 Jun 2026" },
   { ref: "DSYS/2026/EQ/0089", title: "Supply of Indoor Gymnasium Equipment — 12 District Centres", cat: "Equipment", status: "Open", value: "₹ 6.75 Cr", emd: "₹ 6.75 L", deadline: "Closes 30 Jun 2026", published: "01 Jun 2026" },
   { ref: "DSYS/2026/SV/0067", title: "Sports Hostel Catering & Housekeeping Services — Pune Region", cat: "Services", status: "Open", value: "₹ 2.40 Cr / yr", emd: "₹ 2.40 L", deadline: "Closes 25 Jun 2026", published: "28 May 2026" },
-  { ref: "DSYS/2025/CW/0211", title: "Renovation of Mahalaxmi Hockey Stadium — Phase II", cat: "Construction", status: "Awarded", value: "₹ 12.30 Cr", emd: "—", deadline: "Awarded 04 May 2026", published: "22 Feb 2026" },
-  { ref: "DSYS/2025/EQ/0188", title: "Procurement of Timing & Scoring Systems — National Games 2027", cat: "Equipment", status: "Closed", value: "₹ 9.10 Cr", emd: "—", deadline: "Closed 18 Apr 2026", published: "15 Feb 2026" },
+  { ref: "DSYS/2026/CW/0211", title: "Renovation of Mahalaxmi Hockey Stadium — Phase II", cat: "Construction", status: "Awarded", value: "₹ 12.30 Cr", emd: "—", deadline: "Awarded 04 May 2026", published: "22 Feb 2026" },
+  { ref: "DSYS/2026/EQ/0188", title: "Procurement of Timing & Scoring Systems — National Games 2027", cat: "Equipment", status: "Closed", value: "₹ 9.10 Cr", emd: "—", deadline: "Closed 18 Apr 2026", published: "15 Feb 2026" },
 ];
 
 function Page() {

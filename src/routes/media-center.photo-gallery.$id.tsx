@@ -17,7 +17,7 @@ function AlbumDetails() {
     <>
       <MediaHero
         eyebrow="Photo Album"
-        title="Shiv Chhatrapati Awards 2025-26"
+        title="Shiv Chhatrapati Awards 2026-27"
         subtitle="Maharashtra's highest sports honour, presented to 46 athletes and coaches at the Raj Bhavan ceremony."
         crumbs={[
           { label: "Home", to: "/" },

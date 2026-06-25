@@ -13,7 +13,7 @@ function NewsDetails() {
     <>
       <MediaHero
         eyebrow="News Article"
-        title="Maharashtra wins 12 medals at National Junior Athletics 2025"
+        title="Maharashtra wins 12 medals at National Junior Athletics 2026"
         crumbs={[
           { label: "Home", to: "/" },
           { label: "Media Center", to: "/media-center" },
@@ -35,7 +35,7 @@ function NewsDetails() {
 
             <div className="prose prose-lg mt-8 max-w-none text-gray-700 leading-relaxed space-y-5">
               <p className="text-xl font-medium text-gray-900">
-                Maharashtra topped the medal table at the 2025 National Junior Athletics Championship held in
+                Maharashtra topped the medal table at the 2026 National Junior Athletics Championship held in
                 Hyderabad, claiming 12 medals — four gold, five silver and three bronze — across track and field.
               </p>
               <p>
@@ -74,7 +74,7 @@ function NewsDetails() {
               <ul className="space-y-4">
                 {[
                   { id: "khelo-india-prep", title: "State squad announced for Khelo India Youth Games 2026" },
-                  { id: "shiv-chhatrapati", title: "Shiv Chhatrapati Award nominations open for 2025-26" },
+                  { id: "shiv-chhatrapati", title: "Shiv Chhatrapati Award nominations open for 2026-27" },
                   { id: "coach-cert-program", title: "New NIS-affiliated coach certification rolled out" },
                 ].map(r => (
                   <li key={r.id} className="flex gap-3 pb-4 border-b border-gray-100 last:border-0">

@@ -1,11 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, SectionWrap, SectionTitle } from "@/components/layout/PageShell";
 import { Mail, Phone } from "lucide-react";
-import fadnavis from "@/assets/leaders/fadnavis.png.asset.json";
-import shinde from "@/assets/leaders/shinde.png.asset.json";
-import pawar from "@/assets/leaders/pawar.png.asset.json";
-import deol from "@/assets/leaders/deol.png.asset.json";
-import single from "@/assets/leaders/single.png.asset.json";
+import single from "@/assets/leaders/single.png";
 
 export const Route = createFileRoute("/leadership-team")({
   head: () => ({ meta: [{ title: "Leadership Team" }] }),
@@ -13,12 +9,32 @@ export const Route = createFileRoute("/leadership-team")({
 });
 
 const TEAM = [
-  { name: "Shri. Devendra Fadnavis", role: "Hon. Chief Minister", img: fadnavis.url },
-  { name: "Shri. Eknath Shinde", role: "Hon. Deputy Chief Minister", img: shinde.url },
-  { name: "Smt. Sunetra Ajit Pawar", role: "Hon. Minister", img: pawar.url },
-  { name: "Shri. Ranjit Singh Deol IAS", role: "Principal Secretary", img: deol.url },
-  { name: "Shri. Deepak Single IAS", role: "Director", img: single.url },
+  { name: "Dr. Arjun Deshmukh", role: "Director General of Sports" },
+  { name: "Smt. Meera Kulkarni", role: "Joint Director — Sports Development" },
+  { name: "Shri. Rohan Patil", role: "Deputy Director — Infrastructure" },
+  { name: "Dr. Neha Joshi", role: "Director — Athlete Welfare" },
+  { name: "Shri. Vikram Sawant", role: "Chief Sports Officer" },
+  { name: "Capt. Sanjay Rao", role: "Head Coach — Olympic Programs" },
+  { name: "Dr. Priya Nair", role: "Lead — Sports Science & Nutrition" },
+  { name: "Shri. Aditya Gokhale", role: "Director — Coaching & Training" },
+  { name: "Smt. Kavita Shinde", role: "Deputy Director — Scholarships & Grants" },
+  { name: "Shri. Mahesh Jadhav", role: "Regional Sports Officer — Pune Division" },
+  { name: "Dr. Snehal More", role: "Director — Events & Competitions" },
+  { name: "Shri. Nitin Bhosale", role: "Head — Sports Medicine & Rehabilitation" },
 ];
+
+const AVATAR_COLORS = ["#363092", "#FF6B35", "#0d9488", "#7c3aed", "#dc2626", "#0891b2"];
+
+function initials(name: string) {
+  return name
+    .replace(/(Dr|Shri|Smt|Capt|Mr|Ms)\.?\s*/gi, "")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(w => w[0])
+    .join("")
+    .toUpperCase();
+}
 
 const SHADOW = "0 8px 24px -10px rgba(54,48,146,0.35), 0 2px 6px rgba(17,24,39,0.08)";
 
@@ -28,7 +44,7 @@ function Page() {
       <PageHero eyebrow="Our People" title="Leadership Team" subtitle="Meet the leaders driving sports and youth development across Maharashtra." />
       <SectionWrap>
         <div className="max-w-3xl mx-auto rounded-2xl border border-gray-200 p-6 md:p-8 bg-white grid md:grid-cols-[160px,1fr] gap-6 items-center">
-          <img src={single.url} alt="Shri. Deepak Single IAS" className="h-32 w-32 rounded-full object-cover mx-auto ring-4 ring-white" style={{ boxShadow: SHADOW }} />
+          <img src={single} alt="Shri. Deepak Single IAS" className="h-32 w-32 rounded-full object-cover mx-auto ring-4 ring-white" style={{ boxShadow: SHADOW }} />
           <div>
             <div className="text-xs uppercase tracking-wider text-[#FF6B35] font-bold">Director</div>
             <h2 className="text-2xl font-bold mt-1">Shri. Deepak Single IAS</h2>
@@ -42,17 +58,23 @@ function Page() {
       </SectionWrap>
       <SectionWrap alt>
         <SectionTitle title="Senior Leadership" />
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5">
-          {TEAM.map(p => (
-            <div key={p.name} className="bg-white border border-gray-200 rounded-2xl p-5 text-center hover:border-[#363092]/30 transition">
-              <img src={p.img} alt={p.name} className="mx-auto h-28 w-28 rounded-full object-cover ring-4 ring-white" style={{ boxShadow: SHADOW }} />
-              <div className="mt-4 font-bold text-gray-900 text-sm leading-tight">{p.name}</div>
-              <div className="text-xs text-gray-500 mt-1">{p.role}</div>
-              <div className="mt-3 pt-3 border-t border-gray-100 flex justify-center gap-3 text-gray-400">
-                <Mail className="h-4 w-4" /><Phone className="h-4 w-4" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+          {TEAM.map((p, idx) => {
+            const c = AVATAR_COLORS[idx % AVATAR_COLORS.length];
+            return (
+              <div key={p.name} className="bg-white border border-gray-200 rounded-2xl p-5 text-center hover:border-[#363092]/30 transition">
+                <div className="mx-auto h-28 w-28 rounded-full grid place-items-center text-white text-3xl font-bold ring-4 ring-white"
+                  style={{ boxShadow: SHADOW, background: `linear-gradient(135deg, ${c}, ${c}cc)` }}>
+                  {initials(p.name)}
+                </div>
+                <div className="mt-4 font-bold text-gray-900 text-sm leading-tight">{p.name}</div>
+                <div className="text-xs text-gray-500 mt-1 min-h-[2rem]">{p.role}</div>
+                <div className="mt-3 pt-3 border-t border-gray-100 flex justify-center gap-3 text-gray-400">
+                  <Mail className="h-4 w-4" /><Phone className="h-4 w-4" />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </SectionWrap>
     </>

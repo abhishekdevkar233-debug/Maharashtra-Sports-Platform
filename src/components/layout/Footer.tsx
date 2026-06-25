@@ -44,7 +44,7 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="container-page py-4 flex flex-col md:flex-row justify-between gap-2 text-xs text-white/60">
-          <span>© 2024 Government of Maharashtra. All Rights Reserved.</span>
+          <span>© 2026 Government of Maharashtra. All Rights Reserved.</span>
           <div className="flex gap-4">
             <a href="#" className="hover:text-white">Privacy Policy</a>
             <a href="#" className="hover:text-white">Terms of Use</a>

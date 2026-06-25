@@ -2,12 +2,18 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Search, Map as MapIcon, Contrast, ChevronDown, ArrowRight,
+  Info, Network, Users, FileText, Wallet, ScrollText, Share2, Phone,
+  Building2, Building, GraduationCap, Dumbbell, Home, MapPin, Globe,
+  Award, Trophy, Medal, ClipboardList, UserPlus, ListChecks,
+  Calendar, Activity, Archive, Newspaper, Image as ImageIcon, Video,
+  LayoutGrid, BadgeCheck, Palette, Megaphone, History, Briefcase, FileSpreadsheet, FileSearch,
+  type LucideIcon,
 } from "lucide-react";
-import indiaEmblem from "@/assets/india-emblem.png.asset.json";
-import mhSeal from "@/assets/mh-seal.png.asset.json";
-import digitalIndia from "@/assets/digital-india.png.asset.json";
+import indiaEmblem from "@/assets/india-emblem.png";
+import mhSeal from "@/assets/mh-seal.png";
+import digitalIndia from "@/assets/digital-india.png";
 
-type MegaCol = { title: string; items: { label: string; desc?: string; to?: string }[] };
+type MegaCol = { title: string; items: { label: string; desc?: string; to?: string; icon?: LucideIcon }[] };
 type Featured = { tag: string; title: string; cta: string; stat?: string; variant: "indigo" | "orange" | "green" };
 
 const NAV: Array<{
@@ -22,14 +28,14 @@ const NAV: Array<{
     mega: {
       cols: [
         { title: "Department", items: [
-          { label: "About Us", desc: "Vision, mission & values", to: "/about-us" },
-          { label: "Organisation Structure", desc: "Departments & hierarchy", to: "/organisation-structure" },
-          { label: "Leadership Team", desc: "Directors & officials", to: "/leadership-team" },
+          { label: "About Us", desc: "Vision, mission & values", to: "/about-us", icon: Info },
+          { label: "Organisation Structure", desc: "Departments & hierarchy", to: "/organisation-structure", icon: Network },
+          { label: "Leadership Team", desc: "Directors & officials", to: "/leadership-team", icon: Users },
         ]},
         { title: "Policies & Reports", items: [
-          { label: "Annual Reports" }, { label: "Budget & Finance" }, { label: "RTI Information" },
+          { label: "Annual Reports", icon: FileText }, { label: "Budget & Finance", icon: Wallet }, { label: "RTI Information", icon: FileSearch },
         ]},
-        { title: "Quick Links", items: [{ label: "Social Media" }, { label: "Contact Us" }] },
+        { title: "Quick Links", items: [{ label: "Social Media", icon: Share2 }, { label: "Contact Us", icon: Phone }] },
       ],
       featured: { tag: "FEATURED", title: "39th National Games 2027 — Maharashtra", cta: "Learn More", stat: "2,840+ Registered Athletes", variant: "indigo" },
     },
@@ -39,15 +45,15 @@ const NAV: Array<{
     mega: {
       cols: [
         { title: "Facilities", items: [
-          { label: "Stadiums & Arenas", to: "/stadiums-arenas" },
-          { label: "Sports Complexes", to: "/sports-complexes" },
-          { label: "Infrastructure Map", to: "/infrastructure-map" },
+          { label: "Stadiums & Arenas", to: "/stadiums-arenas", icon: Building2 },
+          { label: "Sports Complexes", to: "/sports-complexes", icon: Building },
+          { label: "Infrastructure Map", to: "/infrastructure-map", icon: MapIcon },
         ]},
         { title: "Training", items: [
-          { label: "Sports Academies", to: "/sports-academies" },
-          { label: "Training Centres" }, { label: "Hostels" },
+          { label: "Sports Academies", to: "/sports-academies", icon: GraduationCap },
+          { label: "Training Centres", icon: Dumbbell }, { label: "Hostels", icon: Home },
         ]},
-        { title: "District-wise", items: [{ label: "District Sports Offices" }, { label: "District Websites" }] },
+        { title: "District-wise", items: [{ label: "District Sports Offices", icon: MapPin }, { label: "District Websites", icon: Globe }] },
       ],
       featured: { tag: "FEATURED", title: "Interactive Infrastructure Map — All 36 Districts", cta: "Explore Map", stat: "486 Sports facilities across Maharashtra", variant: "orange" },
     },
@@ -57,18 +63,18 @@ const NAV: Array<{
     mega: {
       cols: [
         { title: "Financial Support", items: [
-          { label: "Scholarships", desc: "Merit-based awards", to: "/scholarships" },
-          { label: "Stipends & Grants", to: "/stipends-grants" },
-          { label: "Award Schemes", to: "/award-schemes" },
+          { label: "Scholarships", desc: "Merit-based awards", to: "/scholarships", icon: GraduationCap },
+          { label: "Stipends & Grants", to: "/stipends-grants", icon: Wallet },
+          { label: "Award Schemes", to: "/award-schemes", icon: Award },
         ]},
         { title: "Training Programs", items: [
-          { label: "Coaching Development" }, { label: "Elite Athlete Programs" },
+          { label: "Coaching Development", icon: ClipboardList }, { label: "Elite Athlete Programs", icon: Medal },
         ]},
         { title: "Apply Online", items: [
-          { label: "Athlete Registration" }, { label: "Scheme Application" }, { label: "Check Status" },
+          { label: "Athlete Registration", icon: UserPlus }, { label: "Scheme Application", icon: FileText }, { label: "Check Status", icon: ListChecks },
         ]},
       ],
-      featured: { tag: "FEATURED", title: "Shiv Chhatrapati Award Applications 2025–26", cta: "Apply Now", stat: "24 Active schemes & programs", variant: "indigo" },
+      featured: { tag: "FEATURED", title: "Shiv Chhatrapati Award Applications 2026–27", cta: "Apply Now", stat: "24 Active schemes & programs", variant: "indigo" },
     },
   },
   { label: "Athletes", to: "/olympians" },
@@ -77,17 +83,17 @@ const NAV: Array<{
     mega: {
       cols: [
         { title: "Events", items: [
-          { label: "Event Calendar", to: "/event-calendar" },
-          { label: "Live Scores", to: "/live-scores" },
-          { label: "Results Archive", to: "/results-archive" },
+          { label: "Event Calendar", to: "/event-calendar", icon: Calendar },
+          { label: "Live Scores", to: "/live-scores", icon: Activity },
+          { label: "Results Archive", to: "/results-archive", icon: Archive },
         ]},
         { title: "National Games 2027", items: [
-          { label: "39th National Games", desc: "Maharashtra 2027", to: "/national-games" },
-          { label: "Venues", to: "/venues" },
+          { label: "39th National Games", desc: "Maharashtra 2027", to: "/national-games", icon: Trophy },
+          { label: "Venues", to: "/venues", icon: MapPin },
         ]},
-        { title: "Registration", items: [{ label: "Player Registration" }, { label: "Team Registration" }] },
+        { title: "Registration", items: [{ label: "Player Registration", icon: UserPlus }, { label: "Team Registration", icon: Users }] },
       ],
-      featured: { tag: "LIVE", title: "Maharashtra State Athletics Championship 2025", cta: "View Scores", variant: "green" },
+      featured: { tag: "LIVE", title: "Maharashtra State Athletics Championship 2026", cta: "View Scores", variant: "green" },
     },
   },
   {
@@ -95,20 +101,20 @@ const NAV: Array<{
     mega: {
       cols: [
         { title: "Read", items: [
-          { label: "News", desc: "Latest department & sports news", to: "/media-center/news" },
-          { label: "Press Releases", desc: "Official communications", to: "/media-center/press-releases" },
+          { label: "News", desc: "Latest department & sports news", to: "/media-center/news", icon: Newspaper },
+          { label: "Press Releases", desc: "Official communications", to: "/media-center/press-releases", icon: FileText },
         ]},
         { title: "Watch & View", items: [
-          { label: "Photo Gallery", desc: "Event & ceremony albums", to: "/media-center/photo-gallery" },
-          { label: "Video Gallery", desc: "Highlights & interviews", to: "/media-center/video-gallery" },
+          { label: "Photo Gallery", desc: "Event & ceremony albums", to: "/media-center/photo-gallery", icon: ImageIcon },
+          { label: "Video Gallery", desc: "Highlights & interviews", to: "/media-center/video-gallery", icon: Video },
         ]},
         { title: "Quick Links", items: [
-          { label: "Media Center Home", to: "/media-center" },
-          { label: "Press Accreditation" },
-          { label: "Brand Assets" },
+          { label: "Media Center Home", to: "/media-center", icon: LayoutGrid },
+          { label: "Press Accreditation", icon: BadgeCheck },
+          { label: "Brand Assets", icon: Palette },
         ]},
       ],
-      featured: { tag: "FEATURED", title: "Shiv Chhatrapati Awards 2025-26 — Highlights Reel", cta: "Watch Now", stat: "12.4K views this week", variant: "indigo" },
+      featured: { tag: "FEATURED", title: "Shiv Chhatrapati Awards 2026-27 — Highlights Reel", cta: "Watch Now", stat: "12.4K views this week", variant: "indigo" },
     },
   },
   {
@@ -116,18 +122,18 @@ const NAV: Array<{
     mega: {
       cols: [
         { title: "Updates", items: [
-          { label: "Announcements", desc: "Latest department notices", to: "/notices/announcements" },
-          { label: "Past Events", desc: "Archive of completed events", to: "/notices/past-events" },
+          { label: "Announcements", desc: "Latest department notices", to: "/notices/announcements", icon: Megaphone },
+          { label: "Past Events", desc: "Archive of completed events", to: "/notices/past-events", icon: History },
         ]},
         { title: "Opportunities", items: [
-          { label: "Recruitments", desc: "Current job openings", to: "/notices/recruitments" },
-          { label: "E-Tenders", desc: "Procurement & contracts", to: "/notices/e-tenders" },
+          { label: "Recruitments", desc: "Current job openings", to: "/notices/recruitments", icon: Briefcase },
+          { label: "E-Tenders", desc: "Procurement & contracts", to: "/notices/e-tenders", icon: FileSpreadsheet },
         ]},
         { title: "Quick Links", items: [
-          { label: "RTI Information" }, { label: "Circulars & Orders" }, { label: "Press Releases" },
+          { label: "RTI Information", icon: FileSearch }, { label: "Circulars & Orders", icon: ScrollText }, { label: "Press Releases", icon: FileText },
         ]},
       ],
-      featured: { tag: "NEW", title: "Sports Officer Recruitment 2025 — Apply by 30 Nov", cta: "View Notice", stat: "120+ Active openings", variant: "orange" },
+      featured: { tag: "NEW", title: "Sports Officer Recruitment 2026 — Apply by 30 Nov", cta: "View Notice", stat: "120+ Active openings", variant: "orange" },
     },
   },
   { label: "Dashboard", to: "/dashboard" },
@@ -183,7 +189,7 @@ export function Header() {
       <div className="bg-white">
         <div className="container-page flex items-center justify-between gap-4 py-3 md:h-[100px]">
           <div className="flex items-center gap-4 shrink-0">
-            <img src={indiaEmblem.url} alt="Government of India" className="h-14 w-14 md:h-16 md:w-16 object-contain" />
+            <img src={indiaEmblem} alt="Government of India" className="h-14 w-14 md:h-16 md:w-16 object-contain" />
             <div className="h-12 w-px bg-gray-200 hidden sm:block" />
           </div>
           <div className="flex-1 text-center min-w-0 px-2">
@@ -198,9 +204,9 @@ export function Header() {
             </div>
           </div>
           <div className="flex items-center gap-3 shrink-0">
-            <img src={mhSeal.url} alt="Maharashtra State Seal" className="h-12 md:h-[60px] w-auto object-contain" />
+            <img src={mhSeal} alt="Maharashtra State Seal" className="h-12 md:h-[60px] w-auto object-contain" />
             <div className="flex flex-col items-center">
-              <img src={digitalIndia.url} alt="Digital India" className="h-8 md:h-10 w-auto object-contain" />
+              <img src={digitalIndia} alt="Digital India" className="h-8 md:h-10 w-auto object-contain" />
               <span className="text-[9px] uppercase tracking-wider text-gray-500 mt-0.5 hidden md:block">Digital India</span>
             </div>
           </div>
@@ -269,9 +275,12 @@ export function Header() {
                   <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400 pb-2 border-b border-gray-200 mb-2">{c.title}</div>
                   <ul className="space-y-1">
                     {c.items.map((it) => {
+                      const ItemIcon = it.icon;
                       const inner = (
                         <span className="flex items-start gap-2 p-2 rounded-md hover:bg-gray-50 group">
-                          <span className="h-7 w-7 rounded-md bg-gray-100 group-hover:bg-[#363092]/10 shrink-0" />
+                          <span className="h-7 w-7 rounded-md bg-gray-100 group-hover:bg-[#363092]/10 shrink-0 grid place-items-center text-[#363092]">
+                            {ItemIcon && <ItemIcon className="h-4 w-4" strokeWidth={1.8} />}
+                          </span>
                           <span className="min-w-0">
                             <span className="block text-sm font-medium text-gray-900">{it.label}</span>
                             {it.desc && <span className="block text-xs text-gray-500">{it.desc}</span>}

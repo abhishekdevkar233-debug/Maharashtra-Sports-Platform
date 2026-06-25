@@ -21,7 +21,7 @@ function VideoDetails() {
     <>
       <MediaHero
         eyebrow="Video Gallery"
-        title="Shiv Chhatrapati Awards 2025-26 — Highlights Reel"
+        title="Shiv Chhatrapati Awards 2026-27 — Highlights Reel"
         crumbs={[
           { label: "Home", to: "/" },
           { label: "Media Center", to: "/media-center" },
@@ -45,7 +45,7 @@ function VideoDetails() {
 
             <div className="mt-6">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug">
-                Shiv Chhatrapati Awards 2025-26 — Highlights Reel
+                Shiv Chhatrapati Awards 2026-27 — Highlights Reel
               </h1>
               <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-gray-500">
                 <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-semibold">Ceremonies</span>
@@ -67,12 +67,12 @@ function VideoDetails() {
               <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-5">
                 <h3 className="font-semibold text-gray-900">About this video</h3>
                 <p className="mt-2 text-gray-600 leading-relaxed">
-                  A four-minute highlight reel from the 2025-26 Shiv Chhatrapati Awards ceremony at Raj
+                  A four-minute highlight reel from the 2026-27 Shiv Chhatrapati Awards ceremony at Raj
                   Bhavan, Mumbai. The Hon'ble Governor presented Maharashtra's highest sports honour to
                   46 athletes, coaches and lifetime achievers across 46 disciplines.
                 </p>
                 <div className="mt-4 grid sm:grid-cols-3 gap-3 text-sm">
-                  <div className="rounded-lg bg-purple-50 p-3"><div className="text-xs text-gray-500">Event</div><div className="font-semibold text-gray-900">Shiv Chhatrapati 2025-26</div></div>
+                  <div className="rounded-lg bg-purple-50 p-3"><div className="text-xs text-gray-500">Event</div><div className="font-semibold text-gray-900">Shiv Chhatrapati 2026-27</div></div>
                   <div className="rounded-lg bg-purple-50 p-3"><div className="text-xs text-gray-500">Producer</div><div className="font-semibold text-gray-900">DSYS Media Cell</div></div>
                   <div className="rounded-lg bg-purple-50 p-3"><div className="text-xs text-gray-500">Language</div><div className="font-semibold text-gray-900">मराठी / English</div></div>
                 </div>

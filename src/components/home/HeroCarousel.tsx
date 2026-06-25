@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import b1 from "@/assets/banner-01.png.asset.json";
-import b2 from "@/assets/banner-02.png.asset.json";
-import b3 from "@/assets/banner-03.png.asset.json";
+import b1 from "@/assets/banner-01.png";
+import b2 from "@/assets/banner-02.png";
+import b3 from "@/assets/banner-03.png";
 
 const SLIDES = [
-  { img: b1.url, eyebrow: "Excellence in Governance", title: "Empowering Maharashtra", accent: "Through Sports Excellence", subtitle: "Building champions through world-class infrastructure, training and dedicated leadership across all 36 districts.", focal: "center" },
-  { img: b2.url, eyebrow: "World-class Infrastructure", title: "Stadiums Built for", accent: "Champions of Tomorrow", subtitle: "486 sports facilities across Maharashtra — stadiums, training centres and academies powering the next generation.", focal: "center" },
-  { img: b3.url, eyebrow: "Training the Future", title: "Where Discipline Meets", accent: "Olympic Ambition", subtitle: "Elite training programs and grassroots development preparing Maharashtra's athletes for national and global stage.", focal: "center 30%" },
+  { img: b1, eyebrow: "Excellence in Governance", title: "Empowering Maharashtra", accent: "Through Sports Excellence", subtitle: "Building champions through world-class infrastructure, training and dedicated leadership across all 36 districts.", focal: "center" },
+  { img: b2, eyebrow: "World-class Infrastructure", title: "Stadiums Built for", accent: "Champions of Tomorrow", subtitle: "486 sports facilities across Maharashtra — stadiums, training centres and academies powering the next generation.", focal: "center" },
+  { img: b3, eyebrow: "Training the Future", title: "Where Discipline Meets", accent: "Olympic Ambition", subtitle: "Elite training programs and grassroots development preparing Maharashtra's athletes for national and global stage.", focal: "center 30%" },
 ];
 
 export function HeroCarousel() {
