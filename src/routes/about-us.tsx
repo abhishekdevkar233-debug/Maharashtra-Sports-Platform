@@ -1,0 +1,72 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { PageHero, SectionWrap, SectionTitle, ImgBox } from "@/components/layout/PageShell";
+import { Target, Eye, Heart, Trophy, Users, GraduationCap, Building2, Award } from "lucide-react";
+
+export const Route = createFileRoute("/about-us")({
+  head: () => ({ meta: [{ title: "About Us — Sports & Youth Services" }, { name: "description", content: "About the Sports & Youth Services Department of Maharashtra." }] }),
+  component: AboutUs,
+});
+
+function AboutUs() {
+  return (
+    <>
+      <PageHero eyebrow="About Department" title="Building the future of sports in Maharashtra" subtitle="The Sports & Youth Services Department drives policy, programs and partnerships that empower athletes and youth across all 36 districts of Maharashtra." />
+      <SectionWrap>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <ImgBox h={360} label="Department Visual" />
+          <div>
+            <SectionTitle title="Who we are" />
+            <p className="text-gray-600 leading-relaxed">Established to nurture sporting excellence and youth welfare, the department coordinates state-level competitions, training infrastructure, financial assistance and grassroots programs. Through transparent governance and modern facilities, we are building a generation of champions.</p>
+            <p className="mt-4 text-gray-600 leading-relaxed">From scholarships and stipends to world-class stadiums and academies, every initiative is designed to give every aspiring athlete a fair, well-supported path to the podium.</p>
+          </div>
+        </div>
+      </SectionWrap>
+
+      <SectionWrap alt>
+        <SectionTitle title="Mission, Vision & Values" subtitle="The principles that guide our work." />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {[
+            { i: Target, t: "Mission", d: "To promote sports and youth development through inclusive programs, modern infrastructure and dedicated support for athletes at every level." },
+            { i: Eye, t: "Vision", d: "A Maharashtra recognised globally as a powerhouse of sporting talent and youth leadership." },
+            { i: Heart, t: "Core Values", d: "Integrity, inclusion, excellence and a relentless commitment to the wellbeing of every athlete." },
+          ].map(({ i: I, t, d }) => (
+            <div key={t} className="bg-white border border-gray-200 rounded-2xl p-6">
+              <div className="h-12 w-12 rounded-xl grid place-items-center bg-[#363092]/10 text-[#363092]"><I className="h-6 w-6" /></div>
+              <h3 className="mt-4 text-lg font-bold text-gray-900">{t}</h3>
+              <p className="mt-2 text-sm text-gray-600 leading-relaxed">{d}</p>
+            </div>
+          ))}
+        </div>
+      </SectionWrap>
+
+      <SectionWrap>
+        <SectionTitle title="What we do" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { i: Trophy, t: "Competitions" },
+            { i: GraduationCap, t: "Athlete Development" },
+            { i: Building2, t: "Infrastructure" },
+            { i: Users, t: "Youth Programs" },
+            { i: Award, t: "Awards & Honours" },
+            { i: Target, t: "Policy & Reforms" },
+            { i: Heart, t: "Welfare Schemes" },
+            { i: Eye, t: "Public Engagement" },
+          ].map(({ i: I, t }) => (
+            <div key={t} className="rounded-xl border border-gray-200 p-5 hover:border-[#363092] transition">
+              <I className="h-7 w-7 text-[#363092]" strokeWidth={1.5} />
+              <div className="mt-3 font-semibold text-gray-900">{t}</div>
+              <div className="mt-1 text-xs text-gray-500">Curated, accessible and athlete-first.</div>
+            </div>
+          ))}
+        </div>
+      </SectionWrap>
+
+      <section className="py-16" style={{ background: "linear-gradient(135deg,#363092,#FF6B35)" }}>
+        <div className="container-page text-white text-center">
+          <h2 className="text-3xl md:text-4xl font-bold">Empowering 2,840+ athletes. Building 486 facilities. One Maharashtra.</h2>
+          <p className="mt-3 text-white/85 max-w-2xl mx-auto">Investing in youth and sports infrastructure today to shape India's tomorrow on the world stage.</p>
+        </div>
+      </section>
+    </>
+  );
+}
