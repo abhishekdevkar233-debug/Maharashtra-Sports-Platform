@@ -1,38 +1,63 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero, SectionWrap, SectionTitle, ImgBox } from "@/components/layout/PageShell";
+import { PageHero, SectionWrap, SectionTitle } from "@/components/layout/PageShell";
+import { VenuesDashboard } from "@/components/infrastructure/VenuesDashboard";
 import { MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/infrastructure-map")({
-  head: () => ({ meta: [{ title: "Infrastructure Map" }] }),
+  head: () => ({ meta: [{ title: "Interactive Infrastructure Map" }] }),
   component: Page,
 });
 
 function Page() {
   return (
     <>
-      <PageHero eyebrow="Infrastructure" title="Interactive Infrastructure Map" subtitle="Explore 486 sports facilities across all 36 districts of Maharashtra." />
+      <PageHero
+        eyebrow="Infrastructure"
+        title="Interactive Infrastructure Map"
+        subtitle="Explore 486 sports facilities across all 36 districts of Maharashtra — filter by facility type, region and more."
+      />
+
+      {/* Stats bar */}
       <SectionWrap>
-        <div className="grid md:grid-cols-[2fr,1fr] gap-6">
-          <div className="relative">
-            <ImgBox h={500} label="Interactive Maharashtra Map" />
-          </div>
-          <div className="space-y-3">
-            {[["Pune","82"],["Mumbai","64"],["Nagpur","41"],["Nashik","38"],["Aurangabad","29"],["Kolhapur","26"]].map(([d,n]) => (
-              <div key={d} className="border border-gray-200 rounded-xl p-4 flex justify-between items-center bg-white hover:border-[#363092]">
-                <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#363092]" /><span className="font-semibold">{d}</span></div>
-                <span className="text-sm text-gray-500">{n} facilities</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </SectionWrap>
-      <SectionWrap alt>
-        <SectionTitle title="Facility Counts" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[["56","Stadiums"],["120","Sports Complexes"],["180","Training Centres"],["130","Indoor Halls"]].map(([v,l]) => (
-            <div key={l} className="bg-white rounded-xl border border-gray-200 p-5 text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+          {[
+            ["690", "Total Venues"],
+            ["63", "Swimming Pools"],
+            ["150", "Indoor Sports Halls"],
+            ["310", "Training Centres"],
+          ].map(([v, l]) => (
+            <div key={l} className="rounded-xl border border-gray-200 p-5 text-center bg-white">
               <div className="text-3xl font-bold text-[#363092]">{v}</div>
-              <div className="text-xs uppercase text-gray-500 mt-1">{l}</div>
+              <div className="text-xs text-gray-500 mt-1 uppercase tracking-wider">{l}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Full interactive map */}
+        <SectionTitle
+          title="State-wide Overview"
+          subtitle="An interactive look at sports infrastructure across Maharashtra's districts."
+        />
+        <VenuesDashboard />
+      </SectionWrap>
+
+      {/* Top districts */}
+      <SectionWrap alt>
+        <SectionTitle title="Top Districts by Facilities" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {[
+            ["Pune", "82"],
+            ["Mumbai", "64"],
+            ["Nagpur", "41"],
+            ["Nashik", "38"],
+            ["Chhatrapati Sambhajinagar", "29"],
+            ["Kolhapur", "26"],
+          ].map(([d, n]) => (
+            <div key={d} className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-[#363092] hover:shadow-sm transition">
+              <div className="flex justify-center mb-2 text-[#FF6B35]"><MapPin className="h-5 w-5" /></div>
+              <div className="font-bold text-gray-900 text-sm leading-tight">{d}</div>
+              <div className="text-2xl font-black text-[#363092] mt-1">{n}</div>
+              <div className="text-xs text-gray-400 mt-0.5">facilities</div>
             </div>
           ))}
         </div>

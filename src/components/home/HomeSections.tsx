@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRight, MapPin, Phone, FileText, Award, Users, Shield, AlertCircle, ChevronLeft, ChevronRight, ChevronDown, Trophy, Briefcase, Building2, Target, FileSpreadsheet, ClipboardList } from "lucide-react";
 
 // Leadership photos
@@ -26,6 +26,7 @@ import newsSportsComplex from "@/assets/news/sports-complex.jpg";
 
 // Directorate section image
 import directorateBuilding from "@/assets/directorate-building.png";
+import sportsCollage from "@/assets/sports-collage.png";
 
 // Photo & Video Gallery images
 import galAsianGames from "@/assets/gallery/asian-games.webp";
@@ -52,7 +53,7 @@ export function LiveUpdates() {
   return (
     <section className="bg-white py-12">
       <div className="container-page">
-        <SectionTitle title="Live Sports Updates" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1" href="#">View All Matches <ArrowRight className="h-3 w-3" /></a>} />
+        <SectionTitle title="Live Sports Updates" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1 hover:text-[#FF6B35] transition-colors" href="/live-scores">View All Matches <ArrowRight className="h-3 w-3" /></a>} />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {cards.map(c => (
             <div key={c.sport} className="border border-gray-200 rounded-lg p-4 bg-white">
@@ -97,9 +98,9 @@ export function Leadership() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
           {team.map(p => (
             <div key={p.name} className="text-center">
-              <img src={p.img} alt={p.name} className="mx-auto h-20 w-20 rounded-full object-cover object-top bg-gray-200" />
-              <div className="mt-3 font-bold text-gray-900 text-sm">{p.name}</div>
-              <div className="text-xs text-gray-500 mt-1">{p.role}</div>
+              <img src={p.img} alt={p.name} className="mx-auto h-32 w-32 rounded-full object-cover object-top bg-gray-200 shadow-md" />
+              <div className="mt-4 font-bold text-gray-900 text-base">{p.name}</div>
+              <div className="text-sm text-gray-500 mt-1">{p.role}</div>
             </div>
           ))}
         </div>
@@ -117,39 +118,34 @@ export function NewsSection() {
   return (
     <section className="bg-white py-12">
       <div className="container-page">
-        <SectionTitle title="News & Announcements" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1" href="#">View All News <ArrowRight className="h-3 w-3" /></a>} />
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-5">
-            <div className="relative rounded-xl overflow-hidden h-full min-h-[320px] bg-gray-800">
-              <img src={newsFeatured} alt="Maharashtra wins 186 medals at Khelo India Youth Games 2026" className="absolute inset-0 h-full w-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 to-black/20" />
-              <div className="relative h-full p-6 flex flex-col justify-end text-white">
-                <span className="self-start px-2 py-0.5 rounded bg-[#FF6B35] text-[10px] font-bold tracking-wider mb-3">FEATURED</span>
-                <h3 className="text-xl md:text-2xl font-bold leading-snug">Maharashtra wins 186 medals at Khelo India Youth Games 2026</h3>
-                <div className="mt-3 text-xs text-white/80">June 4, 2026 · Chennai</div>
-              </div>
+        <SectionTitle title="News & Announcements" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1 hover:text-[#FF6B35] transition-colors" href="/notices/announcements">View All News <ArrowRight className="h-3 w-3" /></a>} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Featured card — left half */}
+          <div className="relative rounded-2xl overflow-hidden min-h-[360px] bg-gray-800">
+            <img src={newsFeatured} alt="Maharashtra wins 186 medals at Khelo India Youth Games 2026" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 to-black/20" />
+            <div className="relative h-full p-7 flex flex-col justify-end text-white">
+              <span className="self-start px-2.5 py-0.5 rounded-md bg-[#FF6B35] text-[10px] font-bold tracking-wider mb-3">FEATURED</span>
+              <h3 className="text-2xl md:text-3xl font-bold leading-snug">Maharashtra wins 186 medals at Khelo India Youth Games 2026</h3>
+              <div className="mt-3 text-sm text-white/70">June 4, 2026 · Chennai</div>
             </div>
           </div>
-          <div className="lg:col-span-4 space-y-3">
+
+          {/* News list — right half */}
+          <div className="flex flex-col justify-between gap-4">
             {items.map(it => (
-              <div key={it.text} className="flex gap-3 p-3 border border-gray-200 rounded-lg hover:border-[#363092] transition">
-                <img src={it.img} alt={it.text} className="h-16 w-16 object-cover bg-gray-200 rounded shrink-0" />
-                <div className="min-w-0">
+              <div key={it.text} className="flex gap-4 p-4 border border-gray-200 rounded-xl hover:border-[#363092] hover:shadow-sm transition flex-1">
+                <img src={it.img} alt={it.text} className="h-20 w-24 object-cover bg-gray-200 rounded-lg shrink-0" />
+                <div className="min-w-0 flex flex-col justify-center">
                   <div className="flex items-center gap-2">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${it.color}`}>{it.tag}</span>
-                    <span className="text-xs text-gray-500">{it.date}</span>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${it.color}`}>{it.tag}</span>
+                    <span className="text-xs text-gray-400">{it.date}</span>
                   </div>
-                  <div className="mt-1 text-sm font-medium text-gray-900 leading-snug">{it.text}</div>
+                  <div className="mt-1.5 text-base font-semibold text-gray-900 leading-snug">{it.text}</div>
+                  <a href="#" className="mt-2 text-xs font-semibold text-[#363092] flex items-center gap-1">Read More <ArrowRight className="h-3 w-3" /></a>
                 </div>
               </div>
             ))}
-          </div>
-          <div className="lg:col-span-3">
-            <div className="border-2 border-orange-400 rounded-lg p-4 bg-orange-50 h-full flex flex-col">
-              <div className="flex items-center gap-2 text-orange-700 font-bold text-sm"><AlertCircle className="h-4 w-4" /> Important Notice</div>
-              <p className="mt-3 text-sm text-gray-700 flex-1">All district sports offices will remain closed on <strong>26 May 2026</strong> on account of Republic Day. Online services will continue to be available.</p>
-              <a href="#" className="mt-3 text-sm font-semibold text-[#363092] flex items-center gap-1">View All Notices <ArrowRight className="h-3 w-3" /></a>
-            </div>
           </div>
         </div>
       </div>
@@ -168,18 +164,20 @@ export function Gallery() {
   return (
     <section className="bg-white py-12">
       <div className="container-page">
-        <SectionTitle title="Photo & Video Gallery" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1" href="#">View All Gallery <ArrowRight className="h-3 w-3" /></a>} />
+        <SectionTitle title="Photo & Video Gallery" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1 hover:text-[#FF6B35] transition-colors" href="/media-center/photo-gallery">View All Gallery <ArrowRight className="h-3 w-3" /></a>} />
         <div className="flex gap-6 border-b border-gray-200 mb-5">
           <button className="pb-2 text-sm font-semibold border-b-[3px] border-[#363092] text-[#363092]">Photos</button>
           <button className="pb-2 text-sm font-medium text-gray-500">Videos</button>
         </div>
         <div className="relative">
-          <div className="flex gap-4 overflow-x-auto scroll-smooth pb-2">
+          <div className="grid grid-cols-5 gap-5">
             {items.map(it => (
-              <div key={it.name} className="shrink-0 w-[200px]">
-                <img src={it.img} alt={it.name} className="h-[160px] w-full object-cover bg-gray-200 rounded-md" />
-                <div className="mt-2 text-sm font-bold text-gray-900 leading-tight">{it.name}</div>
-                <div className="text-xs text-gray-500">{it.loc}</div>
+              <div key={it.name} className="group cursor-pointer">
+                <div className="overflow-hidden rounded-xl">
+                  <img src={it.img} alt={it.name} className="h-[220px] w-full object-cover bg-gray-200 group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <div className="mt-3 text-sm font-bold text-gray-900 leading-tight">{it.name}</div>
+                <div className="text-xs text-[#FF6B35] mt-0.5">{it.loc}</div>
               </div>
             ))}
           </div>
@@ -232,9 +230,11 @@ export function Directorate() {
         <SectionTitle title="Directorate of Sports and Youth Services" />
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
           <div className="lg:col-span-3">
-            <div className="border border-gray-200 rounded-lg p-4">
-              <img src={directorateBuilding} alt="Directorate Building" className="w-full rounded-md object-cover" style={{ height: 180 }} />
-              <p className="mt-3 text-sm text-gray-600">The Directorate is committed to promoting sports, youth welfare and physical education across Maharashtra through policy, programs and partnerships.</p>
+            <div className="group border border-gray-200 rounded-xl p-4 hover:border-[#363092] hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden">
+              <div className="overflow-hidden rounded-md">
+                <img src={sportsCollage} alt="Directorate of Sports" className="w-full object-cover transition-transform duration-500 group-hover:scale-105" style={{ height: 180 }} />
+              </div>
+              <p className="mt-3 text-sm text-gray-600 group-hover:text-gray-900 transition-colors duration-300">The Directorate is committed to promoting sports, youth welfare and physical education across Maharashtra through policy, programs and partnerships.</p>
             </div>
           </div>
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -285,9 +285,77 @@ const DISTRICTS: District[] = [
   { n: "Gadchiroli", x: 356, y: 152, dso: 1, stad: 1, indoor: 2, train: 5, complex: 1 },
 ];
 
-// Approximate stylized outline of Maharashtra.
-const MH_PATH =
-  "M70,62 L120,46 L185,40 L300,52 L360,82 L378,128 L372,168 L348,206 L300,236 L232,272 L178,266 L146,250 L116,214 L92,168 L78,118 Z";
+/* ---- Mini Maharashtra map rendered from GeoJSON ---- */
+type DistrictPath = { name: string; d: string; cx: number; cy: number };
+type MiniGeo = { vw: number; vh: number; districts: DistrictPath[] };
+
+function buildMiniGeo(fc: any): MiniGeo {
+  const VW = 400, PAD = 8;
+  let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
+  const rings = (g: any): number[][][] =>
+    g.type === "Polygon" ? g.coordinates : g.coordinates.flat();
+  for (const f of fc.features)
+    for (const ring of rings(f.geometry))
+      for (const [lo, la] of ring) {
+        if (lo < minLon) minLon = lo; if (lo > maxLon) maxLon = lo;
+        if (la < minLat) minLat = la; if (la > maxLat) maxLat = la;
+      }
+  const ls = Math.cos((((minLat + maxLat) / 2) * Math.PI) / 180);
+  const scale = (VW - PAD * 2) / ((maxLon - minLon) * ls);
+  const VH = (maxLat - minLat) * scale + PAD * 2;
+  const px = (lo: number, la: number) => [
+    (lo * ls - minLon * ls) * scale + PAD,
+    (maxLat - la) * scale + PAD,
+  ];
+  const districts = fc.features.map((f: any) => {
+    let d = "", nx = Infinity, ny = Infinity, xx = -Infinity, xy = -Infinity;
+    for (const ring of rings(f.geometry)) {
+      ring.forEach(([lo, la]: number[], i: number) => {
+        const [x, y] = px(lo, la);
+        if (x < nx) nx = x; if (y < ny) ny = y;
+        if (x > xx) xx = x; if (y > xy) xy = y;
+        d += (i === 0 ? "M" : "L") + x.toFixed(1) + "," + y.toFixed(1);
+      });
+      d += "Z";
+    }
+    return { name: f.properties.district, d, cx: (nx + xx) / 2, cy: (ny + xy) / 2 };
+  });
+  return { vw: VW, vh: VH, districts };
+}
+
+function MiniMaharashtraMap({ selected, onSelect }: { selected: string; onSelect: (n: string) => void }) {
+  const [geo, setGeo] = useState<MiniGeo | null>(null);
+  useEffect(() => {
+    fetch("/maharashtra-districts.geojson").then(r => r.json()).then(fc => setGeo(buildMiniGeo(fc))).catch(() => {});
+  }, []);
+  if (!geo) return <div className="h-full grid place-items-center text-white/40 text-xs">Loading map…</div>;
+  return (
+    <svg viewBox={`0 0 ${geo.vw} ${geo.vh}`} className="w-full h-auto select-none">
+      {geo.districts.map(dg => {
+        const active = dg.name === selected;
+        return (
+          <g key={dg.name} onClick={() => onSelect(dg.name)} className="cursor-pointer">
+            <path
+              d={dg.d}
+              fill={active ? "rgba(255,107,53,0.55)" : "rgba(255,255,255,0.10)"}
+              stroke={active ? "#FF6B35" : "rgba(255,255,255,0.30)"}
+              strokeWidth={active ? 1.5 : 0.6}
+              className="transition-all duration-200 hover:fill-[rgba(255,107,53,0.3)]"
+            >
+              <title>{dg.name}</title>
+            </path>
+            {active && (
+              <>
+                <circle cx={dg.cx} cy={dg.cy} r={6} fill="#FF6B35" opacity={0.35} className="animate-ping" />
+                <circle cx={dg.cx} cy={dg.cy} r={4} fill="#FF6B35" stroke="#fff" strokeWidth={1} />
+              </>
+            )}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
 
 export function DistrictFinder() {
   const [selected, setSelected] = useState<District>(DISTRICTS.find(d => d.n === "Kolhapur")!);
@@ -316,24 +384,15 @@ export function DistrictFinder() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Interactive Maharashtra map */}
-          <div className="relative bg-white/10 rounded-lg p-3">
-            <svg viewBox="0 0 400 300" className="w-full h-auto">
-              <path d={MH_PATH} fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.35)" strokeWidth={2} strokeLinejoin="round" />
-              {DISTRICTS.map(d => {
-                const active = d.n === selected.n;
-                return (
-                  <g key={d.n} onClick={() => setSelected(d)} className="cursor-pointer">
-                    {active && <circle cx={d.x} cy={d.y} r={9} fill="#FF6B35" opacity={0.3} className="animate-ping" />}
-                    <circle cx={d.x} cy={d.y} r={active ? 5.5 : 3.5}
-                      fill={active ? "#FF6B35" : "rgba(255,255,255,0.65)"}
-                      stroke={active ? "#fff" : "transparent"} strokeWidth={1.5}>
-                      <title>{d.n}</title>
-                    </circle>
-                  </g>
-                );
-              })}
-            </svg>
-            <div className="absolute bottom-3 left-3 text-[10px] uppercase tracking-wider text-white/40">Maharashtra · 36 Districts</div>
+          <div className="relative bg-white/10 rounded-xl p-2 overflow-hidden">
+            <MiniMaharashtraMap
+              selected={selected.n}
+              onSelect={(name) => {
+                const d = DISTRICTS.find(d => d.n === name);
+                if (d) setSelected(d);
+              }}
+            />
+            <div className="absolute bottom-2 left-3 text-[10px] uppercase tracking-wider text-white/40">Maharashtra · 36 Districts</div>
           </div>
 
           {/* Selected district stats */}
@@ -372,10 +431,10 @@ export function Downloads() {
         <SectionTitle title="Downloads & Information" />
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
           {items.map(it => (
-            <div key={it.label} className="border border-gray-200 rounded-lg p-4 text-center">
-              <div className={`h-12 w-12 mx-auto rounded-lg grid place-items-center ${it.color}`}><FileText className="h-6 w-6" /></div>
-              <div className="mt-3 text-xs font-bold text-gray-900 min-h-[2.5rem]">{it.label}</div>
-              <a href="#" className="mt-2 text-xs font-semibold text-[#363092] flex justify-center items-center gap-1">View All <ArrowRight className="h-3 w-3" /></a>
+            <div key={it.label} className="border border-gray-200 rounded-xl p-6 text-center hover:shadow-md transition-shadow">
+              <div className={`h-16 w-16 mx-auto rounded-xl grid place-items-center ${it.color}`}><FileText className="h-8 w-8" /></div>
+              <div className="mt-4 text-sm font-bold text-gray-900 min-h-[2.5rem] leading-snug">{it.label}</div>
+              <a href="#" className="mt-3 text-xs font-semibold text-[#363092] flex justify-center items-center gap-1">View All <ArrowRight className="h-3 w-3" /></a>
             </div>
           ))}
         </div>

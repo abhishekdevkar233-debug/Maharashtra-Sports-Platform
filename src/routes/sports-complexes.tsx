@@ -1,6 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero, SectionWrap, SectionTitle, ImgBox } from "@/components/layout/PageShell";
+import { PageHero, SectionWrap, SectionTitle } from "@/components/layout/PageShell";
 import { MapPin, Dumbbell, Waves, Building2 } from "lucide-react";
+import cShivChhatrapati from "@/assets/venues/shiv-chhatrapati.jpg";
+import cMahalaxmi from "@/assets/venues/mahalaxmi.avif";
+import cVidarbha from "@/assets/venues/vidarbha.jpg";
+import cDyPatil from "@/assets/venues/dy-patil.jpg";
+import cWankhede from "@/assets/venues/wankhede.jpg";
+import cPuneFootball from "@/assets/venues/pune-football.jpg";
 
 export const Route = createFileRoute("/sports-complexes")({
   head: () => ({ meta: [{ title: "Sports Complexes" }] }),
@@ -9,12 +15,12 @@ export const Route = createFileRoute("/sports-complexes")({
 
 function Page() {
   const items = [
-    { n: "Balewadi Sports Complex", l: "Pune", sports: ["Athletics","Aquatics","Indoor"] },
-    { n: "Mahalaxmi Sports Hub", l: "Mumbai", sports: ["Tennis","Cricket"] },
-    { n: "Nagpur Divisional Sports Complex", l: "Nagpur", sports: ["Athletics","Hockey"] },
-    { n: "Aurangabad District Sports Complex", l: "Chh. Sambhajinagar", sports: ["Football","Volleyball"] },
-    { n: "Kolhapur Sports Authority Complex", l: "Kolhapur", sports: ["Wrestling","Athletics"] },
-    { n: "Nashik Divisional Complex", l: "Nashik", sports: ["Indoor","Aquatics"] },
+    { n: "Balewadi Sports Complex", l: "Pune", sports: ["Athletics","Aquatics","Indoor"], img: cShivChhatrapati },
+    { n: "Mahalaxmi Sports Hub", l: "Mumbai", sports: ["Tennis","Cricket"], img: cMahalaxmi },
+    { n: "Nagpur Divisional Sports Complex", l: "Nagpur", sports: ["Athletics","Hockey"], img: cVidarbha },
+    { n: "Aurangabad District Sports Complex", l: "Chh. Sambhajinagar", sports: ["Football","Volleyball"], img: cDyPatil },
+    { n: "Kolhapur Sports Authority Complex", l: "Kolhapur", sports: ["Wrestling","Athletics"], img: cWankhede },
+    { n: "Nashik Divisional Complex", l: "Nashik", sports: ["Indoor","Aquatics"], img: cPuneFootball },
   ];
   return (
     <>
@@ -28,7 +34,7 @@ function Page() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map(it => (
             <div key={it.n} className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
-              <ImgBox h={170} label="Complex" />
+              <img src={it.img} alt={it.n} className="w-full object-cover bg-gray-200" style={{ height: 170 }} />
               <div className="p-5">
                 <h3 className="font-bold text-gray-900">{it.n}</h3>
                 <div className="mt-1 text-sm text-gray-500 flex items-center gap-1"><MapPin className="h-4 w-4" />{it.l}</div>

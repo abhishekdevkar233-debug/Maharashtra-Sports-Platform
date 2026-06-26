@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { LiveUpdates, Leadership, NewsSection, Gallery, Services, Directorate, DistrictFinder, Downloads } from "@/components/home/HomeSections";
+import { PartnerCarousel } from "@/components/home/PartnerCarousel";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,6 +25,7 @@ function Home() {
       <Directorate />
       <DistrictFinder />
       <Downloads />
+      <PartnerCarousel />
     </>
   );
 }

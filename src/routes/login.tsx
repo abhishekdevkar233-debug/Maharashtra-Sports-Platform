@@ -1,10 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  Eye, EyeOff, Smartphone, UserRound, Award, Briefcase, Hotel, CalendarDays,
-  ShieldCheck, FileSearch, GraduationCap, HelpCircle, ArrowRight, Lock, Mail,
+  Eye, EyeOff, ArrowRight, Lock, Mail, RefreshCw,
+  ShieldCheck, Users, Trophy, Building2, BookOpen,
+  Database, BarChart3, GraduationCap, User, Bell,
+  Settings, LogOut, ChevronRight, LayoutDashboard, Plus,
 } from "lucide-react";
-import indiaEmblem from "@/assets/india-emblem.png.asset.json";
+import mhSeal from "@/assets/mh-seal.png";
+import digitalIndia from "@/assets/digital-india.png";
+import { GMSPortal } from "@/components/gms/GMSPortal";
+import { HMSPortal } from "@/components/gms/HMSPortal";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [
@@ -14,97 +19,342 @@ export const Route = createFileRoute("/login")({
   component: Page,
 });
 
-const ALT = [
-  { i: Smartphone, t: "Login with OTP" },
-  { i: UserRound, t: "Athlete Login" },
-  { i: Award, t: "Coach Login" },
-  { i: Briefcase, t: "Department Staff" },
-  { i: Hotel, t: "Hostel Management" },
-  { i: CalendarDays, t: "Event Management" },
+const ROLES = [
+  { id: "admin",   label: "Admin",   icon: ShieldCheck, color: "#363092" },
+  { id: "athlete", label: "Athlete", icon: Trophy,       color: "#FF6B35" },
+  { id: "other",   label: "Other",   icon: Users,        color: "#0ea5e9" },
 ];
 
-const QUICK = [
-  { i: ShieldCheck, t: "Register New Account", to: "/register" },
-  { i: FileSearch, t: "Track Application Status", to: "/login" },
-  { i: GraduationCap, t: "View Sports Schemes", to: "/scholarships" },
-  { i: HelpCircle, t: "Help & Support", to: "/login" },
+const OTHER_ROLES = [
+  "District Sports Officer",
+  "State Sports Officer",
+  "Coach / Trainer",
+  "Institute / Academy",
+  "Media Representative",
 ];
 
-function Page() {
-  const [show, setShow] = useState(false);
+const ADMIN_MODULES = [
+  {
+    icon: Trophy,
+    label: "Games Management System",
+    short: "GMS",
+    desc: "Manage tournaments, events, fixtures & results",
+    color: "#363092",
+    bg: "#eeeefa",
+  },
+  {
+    icon: Building2,
+    label: "Hostel Management System",
+    short: "HMS",
+    desc: "Athlete accommodation, allotments & facilities",
+    color: "#7c3aed",
+    bg: "#f3f0ff",
+  },
+  {
+    icon: User,
+    label: "HR & Employee Payroll Management",
+    short: "HR & Pay",
+    desc: "Staff records, payroll, leaves & appraisals",
+    color: "#0891b2",
+    bg: "#e0f7fa",
+  },
+  {
+    icon: GraduationCap,
+    label: "Scholarship, Stipend & Certificate Management",
+    short: "SSCM",
+    desc: "Award scholarships, stipends & merit certificates",
+    color: "#059669",
+    bg: "#e6f7f2",
+  },
+  {
+    icon: Database,
+    label: "Central Repository & Data Management",
+    short: "CRDM",
+    desc: "Unified data store for athletes, clubs & assets",
+    color: "#d97706",
+    bg: "#fef3e2",
+  },
+  {
+    icon: BookOpen,
+    label: "Learning Management System & e-Learning",
+    short: "LMS",
+    desc: "Online courses, certifications & coach training",
+    color: "#dc2626",
+    bg: "#fee2e2",
+  },
+  {
+    icon: BarChart3,
+    label: "AI-Based Monitoring & Analytics Platform",
+    short: "AI MAP",
+    desc: "Real-time dashboards, predictions & insights",
+    color: "#7c3aed",
+    bg: "#f3f0ff",
+  },
+];
+
+/* ── GMS Portal is in @/components/gms/GMSPortal.tsx ──────────── */
+
+
+/* ── Admin Dashboard ─────────────────────────────────────────────── */
+function AdminDashboard({ onLogout }: { onLogout: () => void }) {
+  const [activeModule, setActiveModule] = useState<string | null>(null);
+
+  if (activeModule === "GMS") return <GMSPortal onBack={() => setActiveModule(null)} />;
+  if (activeModule === "HMS") return <HMSPortal onBack={() => setActiveModule(null)} />;
+
   return (
-    <div className="relative" style={{ background: "linear-gradient(135deg,#f8f9ff 0%, #f3f4f6 100%)" }}>
-      <div className="absolute inset-0 opacity-[0.06] pointer-events-none" style={{ backgroundImage: "radial-gradient(#363092 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
-      <div className="container-page py-12 md:py-16 grid grid-cols-1 lg:grid-cols-[1.05fr,1fr] gap-10 relative">
-        {/* Welcome */}
-        <div className="flex flex-col justify-center">
-          <div className="flex items-center gap-4">
-            <img src={indiaEmblem.url} alt="" className="h-16 w-16 object-contain" />
+    <div className="min-h-screen flex flex-col" style={{ background: "#f4f5fb" }}>
+
+      {/* Top navbar */}
+      <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        {/* Gov logos strip */}
+        <div className="flex items-center justify-between px-6 py-2 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <img src={mhSeal} alt="Maharashtra State Seal" className="h-10 w-auto object-contain" />
             <div>
-              <div className="text-sm font-semibold" style={{ color: "#363092" }}>क्रीडा व युवक सेवा विभाग</div>
-              <div className="text-xl font-bold text-gray-900">Sports & Youth Services Department</div>
-              <div className="text-xs uppercase tracking-wider text-gray-500">Government of Maharashtra</div>
+              <div className="text-xs font-bold text-gray-800 leading-tight">Government of Maharashtra</div>
+              <div className="text-[10px] text-gray-500">Directorate of Sports & Youth Services</div>
             </div>
           </div>
-          <h1 className="mt-8 text-3xl md:text-4xl font-bold text-gray-900 leading-tight">Welcome back to the official sports portal of Maharashtra.</h1>
-          <p className="mt-3 text-gray-600 leading-relaxed max-w-lg">Sign in to access schemes, athlete services, registrations, tournaments and departmental tools — all in one secure place.</p>
-          <div className="mt-8 grid grid-cols-2 gap-3 max-w-lg">
-            {QUICK.map(({ i: I, t, to }) => (
-              <Link key={t} to={to} className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-800 hover:border-[#363092] hover:text-[#363092] transition">
-                <I className="h-4 w-4" /> {t}
-              </Link>
-            ))}
+          <img src={digitalIndia} alt="Digital India" className="h-10 w-auto object-contain" />
+        </div>
+
+        {/* Main nav row */}
+        <div className="h-14 flex items-center px-6 gap-4">
+        <div className="flex items-center gap-2.5 mr-auto">
+          <div className="h-8 w-8 rounded-lg grid place-items-center" style={{ background: "#363092" }}>
+            <ShieldCheck className="h-4 w-4 text-white" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-gray-900 leading-none">DSYS Maharashtra</div>
+            <div className="text-[10px] text-gray-400 mt-0.5">Admin Portal</div>
           </div>
         </div>
 
-        {/* Form */}
-        <div className="rounded-2xl bg-white border border-gray-200 shadow-[0_30px_60px_-30px_rgba(54,48,146,0.35)] p-7 md:p-9">
-          <h2 className="text-xl font-bold text-gray-900">Sign in to your account</h2>
-          <p className="text-sm text-gray-500 mt-1">Use your registered email or mobile number.</p>
-
-          <form className="mt-6 space-y-4" onSubmit={(e) => e.preventDefault()}>
-            <div>
-              <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Email or Mobile</label>
-              <div className="mt-1 relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input type="text" placeholder="you@example.com or +91 9XXXXXXXXX" className="w-full h-11 pl-10 pr-3 rounded-lg border border-gray-300 focus:border-[#363092] focus:ring-2 focus:ring-[#363092]/20 outline-none text-sm" />
-              </div>
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Password</label>
-              <div className="mt-1 relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input type={show ? "text" : "password"} placeholder="••••••••" className="w-full h-11 pl-10 pr-10 rounded-lg border border-gray-300 focus:border-[#363092] focus:ring-2 focus:ring-[#363092]/20 outline-none text-sm" />
-                <button type="button" onClick={() => setShow(s => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
-                  {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 text-gray-700"><input type="checkbox" className="rounded border-gray-300" /> Remember me</label>
-              <a href="#" className="text-[#363092] font-medium hover:underline">Forgot password?</a>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="flex-1 h-11 rounded-lg border border-gray-300 grid place-items-center text-sm font-mono tracking-[0.3em] bg-gray-50 text-gray-700 select-none">A7K9X2</div>
-              <input type="text" placeholder="Enter captcha" className="flex-1 h-11 px-3 rounded-lg border border-gray-300 focus:border-[#363092] outline-none text-sm" />
-            </div>
-            <button className="w-full h-11 rounded-lg bg-[#363092] hover:bg-[#2a2470] text-white font-semibold inline-flex items-center justify-center gap-2 transition">
-              Sign In <ArrowRight className="h-4 w-4" />
-            </button>
-          </form>
-
-          <div className="mt-6 flex items-center gap-3 text-xs text-gray-400 uppercase tracking-wider">
-            <div className="flex-1 h-px bg-gray-200" /> or use alternative access <div className="flex-1 h-px bg-gray-200" />
+        <button className="relative h-9 w-9 rounded-xl border border-gray-200 grid place-items-center text-gray-500 hover:border-[#363092] hover:text-[#363092] transition">
+          <Bell className="h-4 w-4" />
+          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
+        </button>
+        <button className="h-9 w-9 rounded-xl border border-gray-200 grid place-items-center text-gray-500 hover:border-[#363092] hover:text-[#363092] transition">
+          <Settings className="h-4 w-4" />
+        </button>
+        <div className="flex items-center gap-2.5 pl-3 border-l border-gray-200">
+          <div className="h-9 w-9 rounded-xl grid place-items-center text-white text-xs font-bold" style={{ background: "#363092" }}>AD</div>
+          <div className="hidden sm:block">
+            <div className="text-sm font-semibold text-gray-900 leading-none">Admin User</div>
+            <div className="text-[10px] text-gray-400 mt-0.5">Super Administrator</div>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            {ALT.map(({ i: I, t }) => (
-              <button key={t} className="flex items-center gap-2 rounded-lg border border-gray-200 hover:border-[#363092] hover:text-[#363092] px-3 py-2.5 text-sm text-gray-700 transition">
-                <I className="h-4 w-4" /> {t}
+          <button onClick={onLogout}
+            className="ml-2 h-8 px-3 rounded-lg border border-gray-200 flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:border-red-300 hover:text-red-500 transition">
+            <LogOut className="h-3.5 w-3.5" /> Logout
+          </button>
+        </div>
+        </div>
+      </header>
+
+      {/* Page content */}
+      <main className="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full">
+
+        {/* Welcome bar */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="h-10 w-10 rounded-xl grid place-items-center" style={{ background: "#363092" }}>
+            <LayoutDashboard className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-black text-gray-900">Welcome back, Admin</h1>
+            <p className="text-sm text-gray-500">Select a module to get started</p>
+          </div>
+        </div>
+
+        {/* Stats strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+          {[
+            { label: "Total Athletes", value: "12,480", color: "#363092" },
+            { label: "Active Events",  value: "34",      color: "#059669" },
+            { label: "Hostels",        value: "18",      color: "#7c3aed" },
+            { label: "Scholarships",   value: "2,310",   color: "#d97706" },
+          ].map(s => (
+            <div key={s.label} className="rounded-2xl bg-white border border-gray-200 px-5 py-4 shadow-sm">
+              <div className="text-2xl font-black" style={{ color: s.color }}>{s.value}</div>
+              <div className="text-xs text-gray-500 mt-1 font-medium">{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Modules grid */}
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Management Modules</h2>
+          <span className="text-xs text-gray-400">{ADMIN_MODULES.length} modules available</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {ADMIN_MODULES.map((m, i) => (
+            <button key={i} onClick={() => setActiveModule(m.short)}
+              className={`text-left rounded-2xl border p-5 shadow-sm transition-all duration-200 group hover:shadow-md hover:-translate-y-0.5 ${activeModule === m.short ? "border-2 shadow-md" : "border-gray-200 bg-white"}`}
+              style={activeModule === m.short ? { borderColor: m.color, background: m.bg } : {}}>
+              <div className="flex items-start justify-between mb-4">
+                <div className="h-11 w-11 rounded-xl grid place-items-center" style={{ background: m.bg }}>
+                  <m.icon className="h-5 w-5" style={{ color: m.color }} />
+                </div>
+                <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-gray-500 transition mt-1" style={activeModule === m.short ? { color: m.color } : {}} />
+              </div>
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: m.color }}>{m.short}</div>
+              <div className="text-sm font-bold text-gray-900 leading-snug mb-1.5">{m.label}</div>
+              <div className="text-xs text-gray-500 leading-relaxed">{m.desc}</div>
+            </button>
+          ))}
+
+          {/* Placeholder 8th card — coming soon */}
+          <div className="rounded-2xl border border-dashed border-gray-300 p-5 flex flex-col items-center justify-center text-center opacity-50 cursor-not-allowed select-none">
+            <div className="h-11 w-11 rounded-xl bg-gray-100 grid place-items-center mb-3">
+              <Settings className="h-5 w-5 text-gray-400" />
+            </div>
+            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">More Modules</div>
+            <div className="text-[11px] text-gray-400 mt-1">Coming soon</div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  );
+}
+
+/* ── Login Page ──────────────────────────────────────────────────── */
+function Page() {
+  const [role, setRole] = useState("admin");
+  const [show, setShow] = useState(false);
+  const [otherRole, setOtherRole] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  const activeRole = ROLES.find(r => r.id === role)!;
+
+  if (loggedIn && role === "admin") {
+    return <AdminDashboard onLogout={() => setLoggedIn(false)} />;
+  }
+
+  return (
+    <div className="min-h-screen flex items-stretch" style={{ background: "linear-gradient(135deg,#f0f0fa 0%,#e8e8f5 100%)" }}>
+      <div className="flex-1 flex items-center justify-center py-12 px-4">
+        <div className="fixed inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: "radial-gradient(#363092 1px,transparent 1px)", backgroundSize: "24px 24px" }} />
+
+        <div className="relative w-full max-w-md">
+
+          {/* Role tabs */}
+          <div className="flex rounded-2xl bg-white border border-gray-200 shadow-sm p-1.5 mb-5 gap-1">
+            {ROLES.map(r => (
+              <button key={r.id} onClick={() => setRole(r.id)}
+                className={`flex-1 flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-semibold transition ${role === r.id ? "text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
+                style={role === r.id ? { background: r.color } : {}}>
+                <r.icon className="h-4 w-4" />
+                {r.label}
               </button>
             ))}
           </div>
-          <p className="mt-6 text-sm text-center text-gray-600">
-            New to the portal? <Link to="/register" className="text-[#363092] font-semibold hover:underline">Create an account</Link>
+
+          {/* Form card */}
+          <div className="rounded-2xl bg-white border border-gray-200 shadow-[0_30px_60px_-20px_rgba(54,48,146,0.18)] overflow-hidden">
+
+            {/* Header strip */}
+            <div className="px-8 py-5 border-b border-gray-100" style={{ background: `${activeRole.color}08` }}>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl grid place-items-center shrink-0" style={{ background: `${activeRole.color}15` }}>
+                  <activeRole.icon className="h-5 w-5" style={{ color: activeRole.color }} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900">
+                    {role === "admin" ? "Admin Sign In" : role === "athlete" ? "Athlete Sign In" : "Portal Sign In"}
+                  </h2>
+                  <p className="text-xs text-gray-400">
+                    {role === "admin" ? "Access all 7 management modules"
+                      : role === "athlete" ? "View your profile, scores & events"
+                      : "Sign in with your official credentials"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8">
+              {role === "other" && (
+                <div className="mb-4">
+                  <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Select Your Role</label>
+                  <div className="mt-1.5 relative">
+                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <select value={otherRole} onChange={e => setOtherRole(e.target.value)}
+                      className="w-full h-11 pl-10 pr-3 rounded-xl border border-gray-200 focus:border-[#363092] focus:ring-2 focus:ring-[#363092]/15 outline-none text-sm bg-white transition appearance-none">
+                      <option value="">Select role…</option>
+                      {OTHER_ROLES.map(r => <option key={r}>{r}</option>)}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              <form className="space-y-4" onSubmit={e => { e.preventDefault(); setLoggedIn(true); }}>
+                <div>
+                  <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                    {role === "admin" ? "Admin ID or Email" : "Email or Mobile"}
+                  </label>
+                  <div className="mt-1 relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <input type="text"
+                      placeholder={role === "admin" ? "admin@dsys.mah.gov.in" : "you@example.com or +91 9XXXXXXXXX"}
+                      className="w-full h-11 pl-10 pr-3 rounded-xl border border-gray-200 focus:border-[#363092] focus:ring-2 focus:ring-[#363092]/15 outline-none text-sm transition" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Password</label>
+                  <div className="mt-1 relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <input type={show ? "text" : "password"} placeholder="••••••••"
+                      className="w-full h-11 pl-10 pr-10 rounded-xl border border-gray-200 focus:border-[#363092] focus:ring-2 focus:ring-[#363092]/15 outline-none text-sm transition" />
+                    <button type="button" onClick={() => setShow(s => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
+                      {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                    <input type="checkbox" className="rounded border-gray-300 accent-[#363092]" /> Remember me
+                  </label>
+                  <a href="#" className="text-xs font-semibold hover:underline" style={{ color: activeRole.color }}>Forgot password?</a>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-11 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center font-mono tracking-[0.3em] text-sm text-gray-700 select-none relative">
+                    A7K9X2
+                    <button type="button" className="absolute right-2.5 text-gray-400 hover:text-[#363092]">
+                      <RefreshCw className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <input type="text" placeholder="Enter captcha"
+                    className="flex-1 h-11 px-3 rounded-xl border border-gray-200 focus:border-[#363092] outline-none text-sm" />
+                </div>
+
+                <button type="submit"
+                  className="w-full h-12 rounded-xl text-white font-bold text-base inline-flex items-center justify-center gap-2 transition hover:opacity-90 shadow-lg mt-2"
+                  style={{ background: `linear-gradient(135deg,${activeRole.color},${activeRole.color}cc)` }}>
+                  Sign In <ArrowRight className="h-4 w-4" />
+                </button>
+              </form>
+
+              {role !== "admin" && (
+                <>
+                  <div className="mt-5 flex items-center gap-3 text-[10px] text-gray-400 uppercase tracking-widest">
+                    <div className="flex-1 h-px bg-gray-100" /> New to portal? <div className="flex-1 h-px bg-gray-100" />
+                  </div>
+                  <Link to="/register"
+                    className="mt-4 w-full h-11 rounded-xl border-2 font-semibold text-sm inline-flex items-center justify-center gap-2 transition"
+                    style={{ borderColor: activeRole.color, color: activeRole.color }}>
+                    Create an Account <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+
+          <p className="mt-4 text-center text-[11px] text-gray-400">
+            Directorate of Sports & Youth Services, Maharashtra · Secure Portal
           </p>
         </div>
       </div>

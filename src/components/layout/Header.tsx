@@ -66,6 +66,7 @@ const NAV: Array<{
           { label: "Scholarships", desc: "Merit-based awards", to: "/scholarships", icon: GraduationCap },
           { label: "Stipends & Grants", to: "/stipends-grants", icon: Wallet },
           { label: "Award Schemes", to: "/award-schemes", icon: Award },
+          { label: "Hostel Schemes", desc: "Sports hostel facilities", to: "/hostel-schemes", icon: Home },
         ]},
         { title: "Training Programs", items: [
           { label: "Coaching Development", icon: ClipboardList }, { label: "Elite Athlete Programs", icon: Medal },
@@ -77,7 +78,20 @@ const NAV: Array<{
       featured: { tag: "FEATURED", title: "Shiv Chhatrapati Award Applications 2026–27", cta: "Apply Now", stat: "24 Active schemes & programs", variant: "indigo" },
     },
   },
-  { label: "Athletes", to: "/olympians" },
+  {
+    label: "Athletes",
+    mega: {
+      cols: [
+        { title: "Olympians", items: [
+          { label: "Maharashtra Olympians", desc: "Athletes who represented India at the Olympics", to: "/olympians", icon: Medal },
+        ]},
+        { title: "Elite Athletes", items: [
+          { label: "Elite Athletes", desc: "Top-performing state athletes across sports", to: "/elite-athletes", icon: Award },
+        ]},
+      ],
+      featured: { tag: "SPOTLIGHT", title: "P.T. Karnik — Bronze Medallist, Paris Olympics 2024", cta: "View Profile", stat: "16 Olympians · 11 Medals", variant: "indigo" },
+    },
+  },
   {
     label: "Tournaments",
     mega: {
@@ -96,27 +110,7 @@ const NAV: Array<{
       featured: { tag: "LIVE", title: "Maharashtra State Athletics Championship 2026", cta: "View Scores", variant: "green" },
     },
   },
-  {
-    label: "Media Center",
-    mega: {
-      cols: [
-        { title: "Read", items: [
-          { label: "News", desc: "Latest department & sports news", to: "/media-center/news", icon: Newspaper },
-          { label: "Press Releases", desc: "Official communications", to: "/media-center/press-releases", icon: FileText },
-        ]},
-        { title: "Watch & View", items: [
-          { label: "Photo Gallery", desc: "Event & ceremony albums", to: "/media-center/photo-gallery", icon: ImageIcon },
-          { label: "Video Gallery", desc: "Highlights & interviews", to: "/media-center/video-gallery", icon: Video },
-        ]},
-        { title: "Quick Links", items: [
-          { label: "Media Center Home", to: "/media-center", icon: LayoutGrid },
-          { label: "Press Accreditation", icon: BadgeCheck },
-          { label: "Brand Assets", icon: Palette },
-        ]},
-      ],
-      featured: { tag: "FEATURED", title: "Shiv Chhatrapati Awards 2026-27 — Highlights Reel", cta: "Watch Now", stat: "12.4K views this week", variant: "indigo" },
-    },
-  },
+  { label: "Media Center", to: "/media-center" },
   {
     label: "Notices",
     mega: {
@@ -158,9 +152,30 @@ function FeaturedCard({ f }: { f: Featured }) {
   );
 }
 
+function switchLanguage(lang: "en" | "mr" | "hi") {
+  if (typeof document === "undefined") return;
+  if (lang === "en") {
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + location.hostname;
+    window.location.reload();
+    return;
+  }
+  const code = lang === "mr" ? "/en/mr" : "/en/hi";
+  document.cookie = `googtrans=${code}; path=/`;
+  document.cookie = `googtrans=${code}; path=/; domain=${location.hostname}`;
+  window.location.reload();
+}
+
 export function Header() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const [contrast, setContrast] = useState(false);
+
+  // Detect active language from cookie (client-side only)
+  const activeLang = (() => {
+    if (typeof document === "undefined") return "en";
+    const m = document.cookie.match(/googtrans=\/en\/(mr|hi)/);
+    return m ? m[1] as "mr" | "hi" : "en";
+  })();
 
   return (
     <header className="sticky top-0 z-[1000] w-full bg-white shadow-sm">
@@ -169,9 +184,15 @@ export function Header() {
         <div className="container-page h-full flex items-center justify-between text-xs">
           <span className="text-gray-500 truncate">महाराष्ट्र शासन | Government of Maharashtra</span>
           <div className="hidden md:flex items-center gap-1 text-gray-700">
-            <button className="px-2 py-0.5 rounded-full text-white font-semibold" style={{ background: "#363092" }}>EN</button>
-            <button className="px-2 py-0.5 rounded-full hover:bg-gray-200">हिंदी</button>
-            <button className="px-2 py-0.5 rounded-full hover:bg-gray-200">मराठी</button>
+            {([["en","EN"],["hi","हिंदी"],["mr","मराठी"]] as const).map(([code, label]) => (
+              <button key={code} onClick={() => switchLanguage(code)}
+                className="px-2 py-0.5 rounded-full font-semibold transition"
+                style={activeLang === code
+                  ? { background: "#363092", color: "#fff" }
+                  : { color: "#374151" }}>
+                {label}
+              </button>
+            ))}
             <span className="mx-1 h-3 w-px bg-gray-300" />
             <button className="flex items-center gap-1 px-2 py-0.5 rounded-full hover:bg-gray-200"><Search className="h-3 w-3" />Search</button>
             <button className="flex items-center gap-1 px-2 py-0.5 rounded-full hover:bg-gray-200"><MapIcon className="h-3 w-3" />Sitemap</button>
@@ -205,10 +226,7 @@ export function Header() {
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <img src={mhSeal} alt="Maharashtra State Seal" className="h-12 md:h-[60px] w-auto object-contain" />
-            <div className="flex flex-col items-center">
-              <img src={digitalIndia} alt="Digital India" className="h-8 md:h-10 w-auto object-contain" />
-              <span className="text-[9px] uppercase tracking-wider text-gray-500 mt-0.5 hidden md:block">Digital India</span>
-            </div>
+            <img src={digitalIndia} alt="Digital India" className="h-12 md:h-[60px] w-auto object-contain" />
           </div>
         </div>
       </div>

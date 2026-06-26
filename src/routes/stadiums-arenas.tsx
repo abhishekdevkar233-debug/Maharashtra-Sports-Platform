@@ -55,8 +55,17 @@ function Page() {
       </SectionWrap>
 
       <SectionWrap alt>
-        <SectionTitle title="State-wide Overview" subtitle="An interactive look at sports infrastructure across Maharashtra's districts." />
-        <VenuesDashboard />
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 py-4">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Interactive Infrastructure Map</h2>
+            <p className="mt-2 text-gray-500 max-w-lg">Explore sports facilities across all 36 districts of Maharashtra — filter by facility type, region and more on our interactive map.</p>
+          </div>
+          <a href="/infrastructure-map"
+            className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white shadow-lg transition hover:opacity-90"
+            style={{ background: "#FF6B35" }}>
+            <MapPin className="h-5 w-5" /> Explore Interactive Map
+          </a>
+        </div>
       </SectionWrap>
     </>
   );

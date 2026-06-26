@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import b1 from "@/assets/banner-01.png";
 import b2 from "@/assets/banner-02.png";
 import b3 from "@/assets/banner-03.png";
 
+const NEWS = [
+  "Your Voice for Maharashtra Youth Policy 2026 | Submit your suggestions before 31 July 2026",
+  "Regarding the approval to develop a 'Krida e-Pramaan' system incorporating blockchain technology for the implementation of the 5% reservation",
+  "39th National Games 2027 — Maharashtra | Venue registrations now open for all 36 districts",
+  "Shiv Chhatrapati Sports Award 2026-27 — Applications invited from eligible athletes and coaches",
+  "Maharashtra State Athletics Championship 2026 — Registrations open | Last date: 15 July 2026",
+  "New Sports Hostel inaugurated at Balewadi High Performance Centre, Pune — 200 seats available",
+];
+
 const SLIDES = [
-  { img: b1, eyebrow: "Excellence in Governance", title: "Empowering Maharashtra", accent: "Through Sports Excellence", subtitle: "Building champions through world-class infrastructure, training and dedicated leadership across all 36 districts.", focal: "center" },
   { img: b2, eyebrow: "World-class Infrastructure", title: "Stadiums Built for", accent: "Champions of Tomorrow", subtitle: "486 sports facilities across Maharashtra — stadiums, training centres and academies powering the next generation.", focal: "center" },
   { img: b3, eyebrow: "Training the Future", title: "Where Discipline Meets", accent: "Olympic Ambition", subtitle: "Elite training programs and grassroots development preparing Maharashtra's athletes for national and global stage.", focal: "center 30%" },
 ];
@@ -58,7 +65,37 @@ export function HeroCarousel() {
       <button onClick={() => go(-1)} className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur grid place-items-center text-white"><ChevronLeft /></button>
       <button onClick={() => go(1)} className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur grid place-items-center text-white"><ChevronRight /></button>
 
-      <style>{`@keyframes kenburns { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }`}</style>
+      {/* News Ticker */}
+      <div className="absolute bottom-0 left-0 right-0 flex items-stretch h-10 z-10">
+        {/* Label */}
+        <div className="shrink-0 flex items-center gap-2 bg-[#FF6B35] px-4 text-white text-xs font-bold uppercase tracking-widest">
+          <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
+          Latest News
+        </div>
+        {/* Scrolling text */}
+        <div className="flex-1 overflow-hidden bg-black/70 backdrop-blur-sm flex items-center">
+          <div className="whitespace-nowrap animate-[ticker_35s_linear_infinite] text-white/90 text-xs font-medium">
+            {NEWS.map((n, idx) => (
+              <span key={idx} className="inline-flex items-center">
+                <span className="mx-4 text-[#FF6B35]">◆</span>
+                {n}
+              </span>
+            ))}
+            {/* duplicate for seamless loop */}
+            {NEWS.map((n, idx) => (
+              <span key={`b${idx}`} className="inline-flex items-center">
+                <span className="mx-4 text-[#FF6B35]">◆</span>
+                {n}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes kenburns { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+      `}</style>
     </section>
   );
 }

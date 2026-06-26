@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageHero, SectionWrap } from "@/components/layout/PageShell";
+import { SectionWrap } from "@/components/layout/PageShell";
 import { BarChart3, MessageSquareWarning, Building2, GraduationCap, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/")({
@@ -17,11 +17,6 @@ const SERVICES = [
 function Page() {
   return (
     <>
-      <PageHero
-        eyebrow="DSYS Dashboards"
-        title="Your one-stop platform for sports development, athlete welfare, and grievance management."
-        subtitle="Access analytics, services and operational dashboards of the Directorate of Sports & Youth Services, Maharashtra — in one place."
-      />
       <SectionWrap>
         <div className="mb-8">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 relative pl-3 border-l-[3px] border-[#FF6B35]">Explore Our Services</h2>

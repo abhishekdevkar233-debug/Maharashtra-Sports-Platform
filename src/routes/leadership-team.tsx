@@ -17,10 +17,6 @@ const TEAM = [
   { name: "Capt. Sanjay Rao", role: "Head Coach — Olympic Programs" },
   { name: "Dr. Priya Nair", role: "Lead — Sports Science & Nutrition" },
   { name: "Shri. Aditya Gokhale", role: "Director — Coaching & Training" },
-  { name: "Smt. Kavita Shinde", role: "Deputy Director — Scholarships & Grants" },
-  { name: "Shri. Mahesh Jadhav", role: "Regional Sports Officer — Pune Division" },
-  { name: "Dr. Snehal More", role: "Director — Events & Competitions" },
-  { name: "Shri. Nitin Bhosale", role: "Head — Sports Medicine & Rehabilitation" },
 ];
 
 const AVATAR_COLORS = ["#363092", "#FF6B35", "#0d9488", "#7c3aed", "#dc2626", "#0891b2"];

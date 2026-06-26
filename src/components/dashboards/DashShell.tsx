@@ -1,6 +1,4 @@
 import type { ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
 import indiaEmblem from "@/assets/india-emblem.png";
 import mhSeal from "@/assets/mh-seal.png";
 
@@ -18,11 +16,6 @@ export function DashHeader({ title, subtitle, updated, right }: { title: string;
           {right}
           <img src={mhSeal} alt="" className="h-12 w-auto object-contain" />
         </div>
-      </div>
-      <div className="container-page pb-3">
-        <Link to="/dashboard" className="inline-flex items-center gap-1 text-xs font-semibold text-[#363092] hover:text-[#FF6B35]">
-          <ArrowLeft className="h-3 w-3" /> Back to Dashboards
-        </Link>
       </div>
     </div>
   );

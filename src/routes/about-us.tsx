@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero, SectionWrap, SectionTitle, ImgBox } from "@/components/layout/PageShell";
+import { PageHero, SectionWrap, SectionTitle } from "@/components/layout/PageShell";
 import { Target, Eye, Heart, Trophy, Users, GraduationCap, Building2, Award } from "lucide-react";
+import departmentVisual from "@/assets/department-visual.png";
 
 export const Route = createFileRoute("/about-us")({
   head: () => ({ meta: [{ title: "About Us — Sports & Youth Services" }, { name: "description", content: "About the Sports & Youth Services Department of Maharashtra." }] }),
@@ -13,7 +14,7 @@ function AboutUs() {
       <PageHero eyebrow="About Department" title="Building the future of sports in Maharashtra" subtitle="The Sports & Youth Services Department drives policy, programs and partnerships that empower athletes and youth across all 36 districts of Maharashtra." />
       <SectionWrap>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <ImgBox h={360} label="Department Visual" />
+          <img src={departmentVisual} alt="Department Visual" className="w-full rounded-2xl object-cover shadow-md" style={{ height: 360 }} />
           <div>
             <SectionTitle title="Who we are" />
             <p className="text-gray-600 leading-relaxed">Established to nurture sporting excellence and youth welfare, the department coordinates state-level competitions, training infrastructure, financial assistance and grassroots programs. Through transparent governance and modern facilities, we are building a generation of champions.</p>

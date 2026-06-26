@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  Outlet, Link, createRootRouteWithContext, useRouter,
+  Outlet, Link, createRootRouteWithContext, useRouter, useLocation,
   HeadContent, Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
@@ -63,20 +63,50 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <head><HeadContent /></head>
-      <body>{children}<Scripts /></body>
+      <head>
+        <HeadContent />
+        {/* Google Translate — hidden widget, triggered programmatically */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              function googleTranslateElementInit() {
+                new google.translate.TranslateElement(
+                  { pageLanguage: 'en', includedLanguages: 'mr,hi,en', autoDisplay: false },
+                  'google_translate_element'
+                );
+              }
+            `,
+          }}
+        />
+        <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async />
+        <style dangerouslySetInnerHTML={{ __html: `
+          /* Hide Google Translate toolbar banner */
+          .goog-te-banner-frame, .goog-te-gadget { display: none !important; }
+          body { top: 0 !important; }
+          .skiptranslate { display: none !important; }
+        `}} />
+      </head>
+      <body>
+        {/* Hidden Google Translate mount point */}
+        <div id="google_translate_element" style={{ display: "none" }} />
+        {children}
+        <Scripts />
+      </body>
     </html>
   );
 }
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { pathname } = useLocation();
+  const isAuthPage = pathname === "/login" || pathname.startsWith("/register");
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen flex flex-col bg-white">
-        <Header />
+        {!isAuthPage && <Header />}
         <main className="flex-1"><Outlet /></main>
-        <Footer />
+        {!isAuthPage && <Footer />}
       </div>
     </QueryClientProvider>
   );
