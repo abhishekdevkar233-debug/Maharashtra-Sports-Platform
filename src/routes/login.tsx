@@ -10,6 +10,11 @@ import mhSeal from "@/assets/mh-seal.png";
 import digitalIndia from "@/assets/digital-india.png";
 import { GMSPortal } from "@/components/gms/GMSPortal";
 import { HMSPortal } from "@/components/gms/HMSPortal";
+import { HRPortal } from "@/components/gms/HRPortal";
+import { SSCMPortal } from "@/components/gms/SSCMPortal";
+import { CRDMPortal } from "@/components/gms/CRDMPortal";
+import { LMSPortal } from "@/components/gms/LMSPortal";
+import { AIMAPPortal } from "@/components/gms/AIMAPPortal";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [
@@ -101,6 +106,11 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   if (activeModule === "GMS") return <GMSPortal onBack={() => setActiveModule(null)} />;
   if (activeModule === "HMS") return <HMSPortal onBack={() => setActiveModule(null)} />;
+  if (activeModule === "HR & Pay") return <HRPortal onBack={() => setActiveModule(null)} />;
+  if (activeModule === "SSCM") return <SSCMPortal onBack={() => setActiveModule(null)} />;
+  if (activeModule === "CRDM") return <CRDMPortal onBack={() => setActiveModule(null)} />;
+  if (activeModule === "LMS") return <LMSPortal onBack={() => setActiveModule(null)} />;
+  if (activeModule === "AI MAP") return <AIMAPPortal onBack={() => setActiveModule(null)} />;
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#f4f5fb" }}>
@@ -233,8 +243,8 @@ function Page() {
   }
 
   return (
-    <div className="min-h-screen flex items-stretch" style={{ background: "linear-gradient(135deg,#f0f0fa 0%,#e8e8f5 100%)" }}>
-      <div className="flex-1 flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(135deg,#f0f0fa 0%,#e8e8f5 100%)" }}>
+      <div className="flex-1 flex items-center justify-center py-10 px-4">
         <div className="fixed inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: "radial-gradient(#363092 1px,transparent 1px)", backgroundSize: "24px 24px" }} />
 
         <div className="relative w-full max-w-md">

@@ -1,6 +1,7 @@
 import { Facebook, Instagram, Twitter, Youtube, MessageCircle, MapPin, Phone, Mail, Clock, ChevronRight, ArrowUp, Eye } from "lucide-react";
 import { useState } from "react";
 import mhSeal from "@/assets/mh-seal.png";
+import digitalIndia from "@/assets/digital-india.png";
 
 const QUICK_LINKS = [
   { label: "Home", href: "/" },
@@ -41,6 +42,9 @@ export function Footer() {
                 <div className="font-bold text-white text-base leading-snug">Government of Maharashtra</div>
                 <div className="font-semibold text-white/90 text-sm leading-snug">Sports & Youth Services<br />Department</div>
               </div>
+            </div>
+            <div className="mt-3">
+              <img src={digitalIndia} alt="Digital India" className="h-10 w-auto object-contain brightness-0 invert opacity-80" />
             </div>
             <div className="mt-3 h-1 w-12 rounded-full bg-[#FF6B35]" />
             <p className="mt-4 text-sm text-white/90 leading-relaxed">

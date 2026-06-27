@@ -1631,8 +1631,13 @@ export function HMSPortal({ onBack }: { onBack: () => void }) {
         <header className="h-14 bg-white border-b border-gray-100 flex items-center px-5 gap-4 sticky top-0 z-20 shadow-sm">
           <img src={mhSeal} alt="MH Seal" className="h-8 w-auto object-contain shrink-0" />
           <div className="h-5 w-px bg-gray-200" />
+          {nav !== "dashboard" && (
+            <button onClick={() => setNav("dashboard")} className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:border-blue-400 hover:text-blue-600 transition shrink-0">
+              <ArrowLeft className="h-3.5 w-3.5" /> Back
+            </button>
+          )}
           <div className="text-sm text-gray-500">
-            <span className="font-black text-gray-900">HMS Portal</span>
+            <span className="font-black text-gray-900 cursor-pointer hover:text-blue-600 transition" onClick={() => setNav("dashboard")}>HMS Portal</span>
             <ChevronRight className="inline h-3.5 w-3.5 mx-1 text-gray-300" />
             <span className="font-semibold">{activeLabel}</span>
           </div>

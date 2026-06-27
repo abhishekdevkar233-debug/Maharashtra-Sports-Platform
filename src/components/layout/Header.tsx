@@ -7,6 +7,7 @@ import {
   Award, Trophy, Medal, ClipboardList, UserPlus, ListChecks,
   Calendar, Activity, Archive, Newspaper, Image as ImageIcon, Video,
   LayoutGrid, BadgeCheck, Palette, Megaphone, History, Briefcase, FileSpreadsheet, FileSearch,
+  LogIn, UserPlus as UserPlusIcon,
   type LucideIcon,
 } from "lucide-react";
 import indiaEmblem from "@/assets/india-emblem.png";
@@ -234,7 +235,7 @@ export function Header() {
       {/* Tier 3 - Nav */}
       <nav className="border-b border-gray-200 bg-white relative" onMouseLeave={() => setOpenIdx(null)}>
         <div className="container-page h-12 flex items-center justify-between gap-4">
-          <ul className="flex items-center justify-center flex-1 overflow-x-auto">
+          <ul className="flex items-center justify-center flex-1 overflow-x-hidden">
             {NAV.map((n, i) => (
               <li
                 key={n.label}
@@ -273,11 +274,16 @@ export function Header() {
             ))}
           </ul>
           <div className="flex items-center gap-2 shrink-0">
-            <Link to="/login" className="h-8 px-4 inline-flex items-center text-sm font-medium rounded-lg border border-[#363092] text-[#363092] hover:bg-[#363092] hover:text-white transition">Login</Link>
-            <Link to="/register" className="h-8 px-4 inline-flex items-center text-sm font-medium rounded-lg text-white transition" style={{ background: "#363092" }}
+            <Link to="/login"
+              className="h-9 px-4 inline-flex items-center justify-center gap-1.5 text-sm font-semibold rounded-lg border border-[#363092] text-[#363092] hover:bg-[#363092] hover:text-white transition-all duration-150">
+              <LogIn className="h-3.5 w-3.5" /> Login
+            </Link>
+            <Link to="/register"
+              className="h-9 px-4 inline-flex items-center justify-center gap-1.5 text-sm font-semibold rounded-lg text-white transition-all duration-150"
+              style={{ background: "#363092" }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "#2a2470")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "#363092")}>
-              Register
+              <UserPlusIcon className="h-3.5 w-3.5" /> Register
             </Link>
           </div>
         </div>
@@ -287,7 +293,8 @@ export function Header() {
             className="absolute left-0 right-0 top-full z-[1001] pt-1 px-4"
             onMouseEnter={() => setOpenIdx(openIdx)}
           >
-            <div className="mx-auto w-[min(1100px,100%)] bg-white border border-gray-200 rounded-2xl shadow-xl p-6 grid grid-cols-1 md:grid-cols-4 gap-5">
+            <div className="mx-auto w-[min(1100px,100%)] bg-white border border-gray-200 rounded-2xl shadow-xl p-6 grid gap-5"
+              style={{ gridTemplateColumns: `repeat(${NAV[openIdx]!.mega!.cols.length + 1}, minmax(0,1fr))` }}>
               {NAV[openIdx]!.mega!.cols.map((c) => (
                 <div key={c.title}>
                   <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400 pb-2 border-b border-gray-200 mb-2">{c.title}</div>

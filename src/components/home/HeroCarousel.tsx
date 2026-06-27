@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { ChevronLeft, ChevronRight, Users, Medal } from "lucide-react";
 import b2 from "@/assets/banner-02.png";
 import b3 from "@/assets/banner-03.png";
 
@@ -19,6 +20,7 @@ const SLIDES = [
 
 export function HeroCarousel() {
   const [i, setI] = useState(0);
+  const navigate = useNavigate();
   useEffect(() => {
     const t = setInterval(() => setI(p => (p + 1) % SLIDES.length), 5000);
     return () => clearInterval(t);
@@ -50,8 +52,17 @@ export function HeroCarousel() {
           </h1>
           <p className="mt-5 text-base md:text-lg text-white/80 max-w-lg">{SLIDES[i].subtitle}</p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <button className="px-6 py-3 rounded-lg font-semibold text-white shadow-lg" style={{ background: "#FF6B35" }}>Explore Olympians</button>
-            <button className="px-6 py-3 rounded-lg font-semibold text-white border border-white/60 hover:bg-white/10">Discover Elite Athletes</button>
+            <button
+              onClick={() => navigate({ to: "/olympians" })}
+              className="px-6 py-3 rounded-lg font-semibold text-white shadow-lg flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all duration-150"
+              style={{ background: "#FF6B35" }}>
+              <Medal className="h-4 w-4" /> Explore Olympians
+            </button>
+            <button
+              onClick={() => navigate({ to: "/elite-athletes" })}
+              className="px-6 py-3 rounded-lg font-semibold text-white border border-white/60 hover:bg-white/10 flex items-center gap-2 active:scale-95 transition-all duration-150">
+              <Users className="h-4 w-4" /> Discover Elite Athletes
+            </button>
           </div>
           <div className="mt-10 flex gap-2">
             {SLIDES.map((_, idx) => (
@@ -67,12 +78,10 @@ export function HeroCarousel() {
 
       {/* News Ticker */}
       <div className="absolute bottom-0 left-0 right-0 flex items-stretch h-10 z-10">
-        {/* Label */}
         <div className="shrink-0 flex items-center gap-2 bg-[#FF6B35] px-4 text-white text-xs font-bold uppercase tracking-widest">
           <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
           Latest News
         </div>
-        {/* Scrolling text */}
         <div className="flex-1 overflow-hidden bg-black/70 backdrop-blur-sm flex items-center">
           <div className="whitespace-nowrap animate-[ticker_35s_linear_infinite] text-white/90 text-xs font-medium">
             {NEWS.map((n, idx) => (
@@ -81,7 +90,6 @@ export function HeroCarousel() {
                 {n}
               </span>
             ))}
-            {/* duplicate for seamless loop */}
             {NEWS.map((n, idx) => (
               <span key={`b${idx}`} className="inline-flex items-center">
                 <span className="mx-4 text-[#FF6B35]">◆</span>
