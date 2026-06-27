@@ -58,19 +58,6 @@ function Page() {
         subtitle="Residential facilities and accommodation programs empowering Maharashtra athletes to train, study and excel — all under one roof."
       />
 
-      {/* Stats bar */}
-      <div style={{ background: "#363092" }}>
-        <div className="container-page py-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10">
-            {[["740+","Total Beds"],["9","Hostel Centres"],["36","Districts Covered"],["4","Active Schemes"]].map(([v, l]) => (
-              <div key={l} className="bg-[#363092] px-6 py-5 text-center">
-                <div className="text-3xl font-black text-white">{v}</div>
-                <div className="text-xs text-white/60 uppercase tracking-widest mt-1">{l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* Hostel Search & Locations */}
       <SectionWrap>

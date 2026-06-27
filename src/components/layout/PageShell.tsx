@@ -8,10 +8,10 @@ export function PageHero({
     <section className="relative overflow-hidden" style={{ background: "linear-gradient(135deg,#363092 0%,#2a2470 60%,#1a1450 100%)" }}>
       <div className="absolute inset-0 opacity-20 pointer-events-none"
            style={{ background: "radial-gradient(circle at 80% 20%, #FF6B35 0%, transparent 50%)" }} />
-      <div className="container-page py-16 md:py-24 relative">
-        {eyebrow && <div className="text-xs uppercase tracking-[0.2em] text-[#FF6B35] font-semibold mb-3">{eyebrow}</div>}
-        <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight max-w-3xl">{title}</h1>
-        {subtitle && <p className="mt-4 text-white/75 max-w-2xl text-base md:text-lg">{subtitle}</p>}
+      <div className="container-page py-8 md:py-10 relative">
+        {eyebrow && <div className="text-[11px] uppercase tracking-[0.2em] text-[#FF6B35] font-semibold mb-2">{eyebrow}</div>}
+        <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight max-w-3xl">{title}</h1>
+        {subtitle && <p className="mt-2 text-white/75 max-w-2xl text-sm">{subtitle}</p>}
         {children}
       </div>
     </section>

@@ -1430,7 +1430,8 @@ export function HRPortal({ onBack }: { onBack: () => void }) {
 
         <div className="p-2 border-t border-gray-100">
           <button onClick={onBack} title={collapsed ? "Back to Admin" : undefined}
-            className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-xs text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition">
+            className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-xs font-semibold text-white transition hover:opacity-90 active:scale-95"
+            style={{ background: "linear-gradient(135deg,#363092,#1e2a7a)" }}>
             <LogOut className="h-4 w-4 shrink-0" />
             {!collapsed && <span>Back to Admin</span>}
           </button>

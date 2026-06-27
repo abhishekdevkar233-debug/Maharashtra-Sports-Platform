@@ -1,94 +1,296 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { MediaHero, MediaSection, PreviewBox } from "@/components/media/MediaShell";
-import { Calendar, MapPin, Camera, ChevronLeft, ChevronRight, X, Download, Share2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Calendar, MapPin, Camera, ChevronLeft, ChevronRight, X, Download, Share2, ZoomIn, Grid3X3, LayoutGrid, ChevronRight as Chevron } from "lucide-react";
+
+import galAsianGames from "@/assets/gallery/asian-games.webp";
+import galCricket from "@/assets/gallery/cricket-team.jpg";
+import galWrestling from "@/assets/gallery/wrestling.avif";
+import galBadminton from "@/assets/gallery/badminton.webp";
+import galKheloIndia from "@/assets/gallery/khelo-india.jpg";
+import newsKheloMedals from "@/assets/news/khelo-india-medals.png";
+import newsKhoKho from "@/assets/news/kho-kho.png";
+import newsSportsComplex from "@/assets/news/sports-complex.jpg";
+import newsScholarships from "@/assets/news/scholarships.png";
 
 export const Route = createFileRoute("/media-center/photo-gallery/$id")({
-  head: () => ({ meta: [{ title: "Album — Photo Gallery | DSYS Maharashtra" }] }),
+  head: () => ({ meta: [{ title: "Photo Album — DSYS Maharashtra" }] }),
   component: AlbumDetails,
 });
 
-function AlbumDetails() {
-  const { id } = Route.useParams();
-  const photos = Array.from({ length: 18 }, (_, i) => i + 1);
-  const [open, setOpen] = useState<number | null>(null);
+const PRIMARY = "#363092";
+
+type Photo = { src: string; caption: string; tag: string };
+
+const ALBUMS: Record<string, {
+  title: string; date: string; venue: string; desc: string;
+  cover: string; photos: Photo[];
+}> = {
+  "khelo-india-medals": {
+    title: "Maharashtra wins 186 medals at Khelo India Youth Games 2026",
+    date: "4 Jun 2026", venue: "Chandigarh, Punjab",
+    desc: "A historic performance as Maharashtra athletes sweep the medal table at Khelo India Youth Games 2026, with gold in athletics, swimming, wrestling and kabaddi.",
+    cover: newsKheloMedals,
+    photos: [
+      { src: newsKheloMedals,   caption: "Maharashtra contingent marching at the opening ceremony",     tag: "Ceremony"  },
+      { src: galKheloIndia,     caption: "Athletes celebrating gold medals on the podium",               tag: "Ceremony"  },
+      { src: galAsianGames,     caption: "Track and field finals — 100m sprint",                        tag: "Athletics" },
+      { src: galWrestling,      caption: "Wrestling finals — Maharashtra wins gold",                     tag: "Wrestling" },
+      { src: galBadminton,      caption: "Badminton team in action during semi-finals",                  tag: "Badminton" },
+      { src: galCricket,        caption: "Cricket squad after defeating Uttar Pradesh",                  tag: "Cricket"   },
+      { src: newsKhoKho,        caption: "Kho-Kho team sprint drill during warm-up",                    tag: "Kho-Kho"   },
+      { src: newsSportsComplex, caption: "Venue overview — Chandigarh Sports Complex",                  tag: "Venue"     },
+      { src: newsScholarships,  caption: "Award ceremony — scholarship recipients felicitated",          tag: "Ceremony"  },
+    ],
+  },
+  "asian-games-2023": {
+    title: "Asian Games 2023 — Team Maharashtra",
+    date: "14 Oct 2023", venue: "Hangzhou, China",
+    desc: "Coverage of Maharashtra athletes competing at the 19th Asian Games in Hangzhou.",
+    cover: galAsianGames,
+    photos: [
+      { src: galAsianGames, caption: "Team Maharashtra at the Asian Games opening parade", tag: "Ceremony" },
+      { src: galCricket,    caption: "Cricket team practice session before quarterfinals",  tag: "Cricket"  },
+      { src: galWrestling,  caption: "Wrestling bout — Maharashtra athlete wins bronze",    tag: "Wrestling"},
+      { src: galBadminton,  caption: "Badminton doubles pair in action",                   tag: "Badminton"},
+      { src: galKheloIndia, caption: "Athletics — Maharashtra 4×400m relay team",          tag: "Athletics"},
+      { src: newsKheloMedals, caption: "Medal presentation ceremony",                      tag: "Ceremony" },
+    ],
+  },
+  "cricket-team": {
+    title: "Maharashtra Cricket Team — Victory Celebration",
+    date: "20 May 2026", venue: "Pune, Maharashtra",
+    desc: "Celebration after Maharashtra cricket team's landmark victory at the Ranji Trophy.",
+    cover: galCricket,
+    photos: [
+      { src: galCricket,       caption: "Team photo with the Ranji Trophy",              tag: "Ceremony"  },
+      { src: newsKheloMedals,  caption: "Captain addressing fans after the win",          tag: "Ceremony"  },
+      { src: galAsianGames,    caption: "Victory parade through Pune city",               tag: "Ceremony"  },
+      { src: galKheloIndia,    caption: "Training session before the final match",        tag: "Training"  },
+      { src: galBadminton,     caption: "Press conference at MCA stadium",                tag: "Press"     },
+    ],
+  },
+};
+
+const FALLBACK = ALBUMS["khelo-india-medals"];
+
+/* ── Lightbox ── */
+function Lightbox({ photos, index, onClose, onPrev, onNext }: {
+  photos: Photo[]; index: number;
+  onClose: () => void; onPrev: () => void; onNext: () => void;
+}) {
+  const photo = photos[index];
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft") onPrev();
+      if (e.key === "ArrowRight") onNext();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose, onPrev, onNext]);
+
+  const [thumbStart, setThumbStart] = useState(0);
+  const VISIBLE = 6;
+
+  useEffect(() => {
+    if (index < thumbStart) setThumbStart(index);
+    else if (index >= thumbStart + VISIBLE) setThumbStart(index - VISIBLE + 1);
+  }, [index]);
 
   return (
-    <>
-      <MediaHero
-        eyebrow="Photo Album"
-        title="Shiv Chhatrapati Awards 2026-27"
-        subtitle="Maharashtra's highest sports honour, presented to 46 athletes and coaches at the Raj Bhavan ceremony."
-        crumbs={[
-          { label: "Home", to: "/" },
-          { label: "Media Center", to: "/media-center" },
-          { label: "Photo Gallery", to: "/media-center/photo-gallery" },
-          { label: id.replace(/-/g, " ") },
-        ]}
-      />
+    <div className="fixed inset-0 z-[2000] flex flex-col bg-black/95" onClick={onClose}>
 
-      <MediaSection>
-        <div className="grid lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-2">
-            <PreviewBox h={360} label="Album Cover" />
-          </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-5">
-            <h3 className="font-semibold text-gray-900 mb-4">Album Information</h3>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-center gap-2 text-gray-700"><Calendar className="h-4 w-4 text-purple-700" />14 June 2026</li>
-              <li className="flex items-center gap-2 text-gray-700"><MapPin className="h-4 w-4 text-purple-700" />Raj Bhavan, Mumbai</li>
-              <li className="flex items-center gap-2 text-gray-700"><Camera className="h-4 w-4 text-purple-700" />64 photos · 6 photographers</li>
-            </ul>
-            <p className="mt-4 text-sm text-gray-600 leading-relaxed">
-              Highlights from the awards ceremony recognising outstanding athletes, coaches and lifetime
-              achievers across 46 sports disciplines.
-            </p>
-            <div className="mt-5 flex gap-2">
-              <button className="flex-1 h-10 inline-flex items-center justify-center gap-1 rounded-lg bg-purple-700 text-white text-sm font-medium hover:bg-purple-800"><Download className="h-4 w-4" />Download all</button>
-              <button className="h-10 w-10 grid place-items-center rounded-lg border border-gray-200 text-gray-700 hover:border-purple-300"><Share2 className="h-4 w-4" /></button>
-            </div>
+      {/* Top bar */}
+      <div className="flex items-center justify-between px-6 py-4 shrink-0" onClick={e => e.stopPropagation()}>
+        <div className="text-white/70 text-sm font-medium">
+          <span className="text-white font-bold">{index + 1}</span> / {photos.length}
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="h-9 px-4 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-medium flex items-center gap-2 transition">
+            <Download className="h-4 w-4" /> Download
+          </button>
+          <button className="h-9 px-4 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-medium flex items-center gap-2 transition">
+            <Share2 className="h-4 w-4" /> Share
+          </button>
+          <button onClick={onClose} className="h-9 w-9 grid place-items-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Main image */}
+      <div className="flex-1 flex items-center justify-center relative px-16 min-h-0" onClick={e => e.stopPropagation()}>
+        <button onClick={onPrev} disabled={index === 0}
+          className="absolute left-4 h-12 w-12 grid place-items-center rounded-full bg-white/10 hover:bg-white/25 text-white transition disabled:opacity-30">
+          <ChevronLeft className="h-7 w-7" />
+        </button>
+
+        <img
+          key={photo.src + index}
+          src={photo.src}
+          alt={photo.caption}
+          className="max-h-full max-w-full object-contain rounded-xl"
+          style={{ maxHeight: "calc(100vh - 230px)" }}
+        />
+
+        <button onClick={onNext} disabled={index === photos.length - 1}
+          className="absolute right-4 h-12 w-12 grid place-items-center rounded-full bg-white/10 hover:bg-white/25 text-white transition disabled:opacity-30">
+          <ChevronRight className="h-7 w-7" />
+        </button>
+      </div>
+
+      {/* Caption + tag */}
+      <div className="text-center pb-3 px-8 shrink-0" onClick={e => e.stopPropagation()}>
+        <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold mb-1" style={{ background: `${PRIMARY}80`, color: "#fff" }}>{photo.tag}</span>
+        <p className="text-white/80 text-sm">{photo.caption}</p>
+      </div>
+
+      {/* Thumbnail strip */}
+      <div className="px-6 pb-5 shrink-0" onClick={e => e.stopPropagation()}>
+        <div className="flex gap-2 justify-center">
+          {photos.slice(thumbStart, thumbStart + VISIBLE).map((p, i) => {
+            const realIdx = thumbStart + i;
+            return (
+              <button key={realIdx} onClick={() => {
+                const el = document.querySelector(`[data-lb-idx="${realIdx}"]`) as HTMLElement;
+                if (el) el.click();
+              }}
+                data-lb-idx={realIdx}
+                onClick2={() => {}}
+                className={`h-14 w-20 rounded-lg overflow-hidden border-2 transition shrink-0 ${realIdx === index ? "border-white scale-105" : "border-white/20 opacity-60 hover:opacity-90"}`}
+                onClick={() => {
+                  // navigate to this index via parent
+                  const diff = realIdx - index;
+                  if (diff > 0) for (let x = 0; x < diff; x++) onNext();
+                  else if (diff < 0) for (let x = 0; x < -diff; x++) onPrev();
+                }}>
+                <img src={p.src} alt="" className="h-full w-full object-cover" />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Page ── */
+function AlbumDetails() {
+  const { id } = Route.useParams();
+  const album = ALBUMS[id] ?? FALLBACK;
+  const { photos } = album;
+
+  const [open, setOpen] = useState<number | null>(null);
+  const [view, setView] = useState<"grid" | "masonry">("masonry");
+
+  const close  = useCallback(() => setOpen(null), []);
+  const prev   = useCallback(() => setOpen(i => (i != null && i > 0 ? i - 1 : i)), []);
+  const next   = useCallback(() => setOpen(i => (i != null && i < photos.length - 1 ? i + 1 : i)), [photos.length]);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+
+      {/* Breadcrumb header */}
+      <div style={{ background: PRIMARY }}>
+        <div className="container-page py-3 flex items-center gap-1.5 text-xs text-white/70">
+          <Link to="/" className="hover:text-white">Home</Link>
+          <Chevron className="h-3 w-3" />
+          <Link to="/media-center" className="hover:text-white">Media Center</Link>
+          <Chevron className="h-3 w-3" />
+          <span className="text-white">Photo Gallery</span>
+        </div>
+      </div>
+
+      {/* Hero cover */}
+      <div className="relative h-72 md:h-96 overflow-hidden">
+        <img src={album.cover} alt={album.title} className="w-full h-full object-cover" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 40%, rgba(0,0,0,0.2) 100%)" }} />
+        <div className="absolute bottom-0 left-0 right-0 container-page pb-8">
+          <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold text-white mb-3" style={{ background: PRIMARY }}>Photo Album</span>
+          <h1 className="text-2xl md:text-3xl font-black text-white leading-tight max-w-3xl">{album.title}</h1>
+          <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-white/80">
+            <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" />{album.date}</span>
+            <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" />{album.venue}</span>
+            <span className="flex items-center gap-1.5"><Camera className="h-4 w-4" />{photos.length} photos</span>
           </div>
         </div>
+      </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {photos.map(n => (
-            <button key={n} onClick={() => setOpen(n)} className="rounded-xl overflow-hidden hover:ring-2 hover:ring-purple-400 transition">
-              <PreviewBox h={170} label={`Photo ${n}`} />
+      <div className="container-page py-8">
+
+        {/* Toolbar */}
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <p className="text-sm text-gray-600 max-w-2xl">{album.desc}</p>
+          <div className="flex items-center gap-2 shrink-0">
+            <button onClick={() => setView("masonry")}
+              className={`h-9 w-9 grid place-items-center rounded-lg border transition ${view === "masonry" ? "border-[#363092] bg-[#363092] text-white" : "border-gray-200 text-gray-500 hover:border-gray-300"}`}>
+              <LayoutGrid className="h-4 w-4" />
             </button>
-          ))}
+            <button onClick={() => setView("grid")}
+              className={`h-9 w-9 grid place-items-center rounded-lg border transition ${view === "grid" ? "border-[#363092] bg-[#363092] text-white" : "border-gray-200 text-gray-500 hover:border-gray-300"}`}>
+              <Grid3X3 className="h-4 w-4" />
+            </button>
+            <button className="h-9 px-4 rounded-lg border border-gray-200 text-sm font-semibold text-gray-600 flex items-center gap-2 hover:border-[#363092] hover:text-[#363092] transition">
+              <Download className="h-4 w-4" /> Download All
+            </button>
+            <button className="h-9 px-4 rounded-lg border border-gray-200 text-sm font-semibold text-gray-600 flex items-center gap-2 hover:border-gray-300 transition">
+              <Share2 className="h-4 w-4" /> Share
+            </button>
+          </div>
         </div>
 
-        {open !== null && (
-          <div className="fixed inset-0 z-[2000] bg-black/85 grid place-items-center p-6" onClick={() => setOpen(null)}>
-            <button className="absolute top-5 right-5 h-10 w-10 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20"><X className="h-5 w-5" /></button>
-            <button onClick={(e) => { e.stopPropagation(); setOpen(o => Math.max(1, (o ?? 1) - 1)); }} className="absolute left-5 h-12 w-12 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20"><ChevronLeft className="h-6 w-6" /></button>
-            <button onClick={(e) => { e.stopPropagation(); setOpen(o => Math.min(photos.length, (o ?? 1) + 1)); }} className="absolute right-5 h-12 w-12 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20"><ChevronRight className="h-6 w-6" /></button>
-            <div className="max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
-              <PreviewBox h={520} label={`Photo ${open} of ${photos.length}`} />
-              <div className="mt-3 text-center text-white/80 text-sm">Photo {open} of {photos.length}</div>
-            </div>
+        {/* Grid — uniform */}
+        {view === "grid" && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {photos.map((p, i) => (
+              <button key={i} onClick={() => setOpen(i)}
+                className="group relative rounded-xl overflow-hidden aspect-square bg-gray-100 hover:ring-2 hover:ring-[#363092] transition">
+                <img src={p.src} alt={p.caption} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition flex items-center justify-center">
+                  <ZoomIn className="h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition" />
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent translate-y-full group-hover:translate-y-0 transition-transform">
+                  <p className="text-[10px] text-white line-clamp-2 leading-snug">{p.caption}</p>
+                </div>
+              </button>
+            ))}
           </div>
         )}
 
-        <div className="mt-12">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Related Albums</h3>
-          <div className="grid md:grid-cols-3 gap-5">
-            {[
-              { id: "balewadi-inauguration", title: "Balewadi Aquatic Centre Inauguration", date: "10 Jun 2026" },
-              { id: "khelo-india-camp", title: "Khelo India Training Camp — Pune", date: "02 Jun 2026" },
-              { id: "coach-summit", title: "Maharashtra Coach Summit 2026", date: "28 Apr 2026" },
-            ].map(r => (
-              <Link key={r.id} to="/media-center/photo-gallery/$id" params={{ id: r.id }} className="group rounded-2xl border border-gray-200 bg-white overflow-hidden hover:border-purple-300 hover:shadow-md transition">
-                <PreviewBox h={150} label={r.title} />
-                <div className="p-4">
-                  <h4 className="text-sm font-semibold text-gray-900 group-hover:text-purple-700">{r.title}</h4>
-                  <span className="text-xs text-gray-500">{r.date}</span>
-                </div>
-              </Link>
-            ))}
+        {/* Masonry — Pinterest-style varying heights */}
+        {view === "masonry" && (
+          <div className="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
+            {photos.map((p, i) => {
+              const heights = ["aspect-square", "aspect-[4/3]", "aspect-[3/4]", "aspect-[16/9]", "aspect-[3/4]", "aspect-square", "aspect-[4/3]", "aspect-[3/2]", "aspect-square"];
+              const h = heights[i % heights.length];
+              return (
+                <button key={i} onClick={() => setOpen(i)}
+                  className={`group relative w-full rounded-xl overflow-hidden ${h} bg-gray-100 hover:ring-2 hover:ring-[#363092] transition break-inside-avoid block`}>
+                  <img src={p.src} alt={p.caption} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition flex items-center justify-center">
+                    <ZoomIn className="h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition" />
+                  </div>
+                  <div className="absolute top-2 left-2">
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold text-white" style={{ background: `${PRIMARY}cc` }}>{p.tag}</span>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-black/70 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-200">
+                    <p className="text-[11px] text-white line-clamp-2 leading-snug text-left">{p.caption}</p>
+                  </div>
+                </button>
+              );
+            })}
           </div>
-        </div>
-      </MediaSection>
-    </>
+        )}
+
+        {/* Photo count summary */}
+        <div className="mt-6 text-center text-sm text-gray-400">{photos.length} photos · Click any photo to view full screen</div>
+      </div>
+
+      {/* Lightbox */}
+      {open !== null && (
+        <Lightbox photos={photos} index={open} onClose={close} onPrev={prev} onNext={next} />
+      )}
+    </div>
   );
 }

@@ -9,6 +9,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { AIChatbot } from "@/components/ui/AIChatbot";
 
 function NotFoundComponent() {
   return (
@@ -99,7 +100,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { pathname } = useLocation();
-  const isAuthPage = pathname.startsWith("/register");
+  const isAuthPage = pathname === "/login" || pathname.startsWith("/register");
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -107,6 +108,7 @@ function RootComponent() {
         {!isAuthPage && <Header />}
         <main className="flex-1"><Outlet /></main>
         {!isAuthPage && <Footer />}
+        <AIChatbot />
       </div>
     </QueryClientProvider>
   );

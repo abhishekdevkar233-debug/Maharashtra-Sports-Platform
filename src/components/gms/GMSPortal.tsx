@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Trophy, Calendar, Users, ShieldCheck,
   BarChart3, FileText, Settings, Bell, ChevronRight,
-  LogOut, Plus, Eye, Edit3, Award, AlertCircle, CheckCircle,
+  LogOut, Plus, Eye, Edit3, Award, AlertCircle, CheckCircle, CheckCircle2,
   Clock, MapPin, Filter, Search, Download, Upload,
   Lock, Zap, Target, Activity, Send, TrendingUp,
   X, Check, ArrowLeft, Star, Radio, Wifi, WifiOff, ChevronLeft,
@@ -196,29 +196,26 @@ function ScreenDashboard({ onCreateEvent }: { onCreateEvent: () => void }) {
           <h1 className="text-xl font-black text-gray-900">Events Dashboard</h1>
           <p className="text-xs text-gray-400 mt-0.5">Directorate of Sports & Youth Services · Government of Maharashtra</p>
         </div>
-        <button onClick={onCreateEvent}
-          className="h-10 px-5 rounded-xl text-white text-sm font-bold flex items-center gap-2 hover:opacity-90 transition shadow-sm"
-          style={{ background: PRIMARY }}>
-          <Plus className="h-4 w-4"/> Create Event
-        </button>
       </div>
 
-      {/* Hero KPI strip */}
+      {/* KPI strip — new flat icon-left design */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: "Total Events",       value: EVENTS_DATA.length, sub: "Across "+sports+" sports",   color1: PRIMARY,   color2: "#2d5986", icon: Trophy    },
-          { label: "Live Right Now",     value: live,               sub: "Active venues",              color1: "#059669", color2: "#047857", icon: Activity  },
-          { label: "Upcoming / Reg Open",value: upcoming,           sub: "Next 60 days",               color1: ACCENT,    color2: "#ea580c", icon: Clock     },
-          { label: "Total Entries",      value: total.toLocaleString(), sub: "All events combined",    color1: "#7c3aed", color2: "#6d28d9", icon: Users     },
-        ].map(({ label, value, sub, color1, color2, icon: Icon }) => (
-          <div key={label} className="rounded-2xl p-5 text-white shadow-lg relative overflow-hidden"
-            style={{ background: `linear-gradient(135deg, ${color1}, ${color2})` }}>
-            <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full opacity-10 bg-white"/>
-            <div className="absolute -right-2 -bottom-6 h-24 w-24 rounded-full opacity-10 bg-white"/>
-            <Icon className="h-7 w-7 mb-3 opacity-90"/>
-            <div className="text-3xl font-black">{value}</div>
-            <div className="text-xs font-bold opacity-90 mt-0.5">{label}</div>
-            <div className="text-[11px] opacity-70 mt-0.5">{sub}</div>
+          { label: "Total Events",        value: String(EVENTS_DATA.length), sub: "Across "+sports+" sports",  icon: Trophy,    accent: PRIMARY,   bg: "#f0f2ff" },
+          { label: "Live Right Now",      value: String(live),               sub: "Active venues",             icon: Activity,  accent: "#059669", bg: "#f0fdf4" },
+          { label: "Upcoming / Reg Open", value: String(upcoming),           sub: "Next 60 days",              icon: Clock,     accent: ACCENT,    bg: "#fff7ed" },
+          { label: "Total Entries",       value: total.toLocaleString(),     sub: "All events combined",       icon: Users,     accent: "#7c3aed", bg: "#faf5ff" },
+        ].map(({ label, value, sub, icon: Icon, accent, bg }) => (
+          <div key={label} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-3.5 flex items-center gap-4">
+            <div className="h-11 w-11 rounded-xl grid place-items-center shrink-0" style={{ background: bg }}>
+              <Icon className="h-5 w-5" style={{ color: accent }}/>
+            </div>
+            <div className="min-w-0">
+              <div className="text-2xl font-black text-gray-900 leading-none">{value}</div>
+              <div className="text-xs font-semibold text-gray-700 mt-0.5">{label}</div>
+              <div className="text-[10px] text-gray-400 mt-0.5">{sub}</div>
+            </div>
+            <div className="ml-auto h-1.5 w-1.5 rounded-full shrink-0" style={{ background: accent }}/>
           </div>
         ))}
       </div>
@@ -226,164 +223,24 @@ function ScreenDashboard({ onCreateEvent }: { onCreateEvent: () => void }) {
       {/* Second KPI row */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          ["Completed This Year", "33", "92% on schedule", "#6b7280"],
-          ["Pending Certifications","22","Awaiting sign-off","#ef4444"],
-          ["Open Protests",       "3",  "Require decision", "#f59e0b"],
-          ["Accreditations Issued","1,840","Active passes", PRIMARY],
-        ].map(([l,v,s,c])=>(
-          <div key={l as string} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center justify-between">
-            <div>
-              <div className="text-2xl font-black" style={{color:c as string}}>{v as string}</div>
-              <div className="text-xs font-semibold text-gray-800 mt-0.5">{l as string}</div>
-              <div className="text-[10px] text-gray-400 mt-0.5">{s as string}</div>
+          { l:"Completed This Year",  v:"33",   s:"92% on schedule",  c:"#6b7280", i:CheckCircle2 },
+          { l:"Pending Certifications",v:"22",  s:"Awaiting sign-off", c:"#ef4444", i:AlertCircle  },
+          { l:"Open Protests",        v:"3",    s:"Require decision",  c:"#f59e0b", i:AlertCircle  },
+          { l:"Accreditations Issued",v:"1,840",s:"Active passes",     c:PRIMARY,   i:ShieldCheck  },
+        ].map(({ l,v,s,c,i:Icon })=>(
+          <div key={l} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3">
+            <div className="h-9 w-9 rounded-xl grid place-items-center shrink-0" style={{ background:`${c}12` }}>
+              <Icon className="h-4 w-4" style={{ color:c }}/>
             </div>
-            <div className="h-10 w-10 rounded-xl grid place-items-center" style={{background:`${c as string}15`}}>
-              <BarChart3 className="h-5 w-5" style={{color:c as string}}/>
+            <div>
+              <div className="text-xl font-black leading-none" style={{ color:c }}>{v}</div>
+              <div className="text-[11px] font-semibold text-gray-700 mt-0.5">{l}</div>
+              <div className="text-[10px] text-gray-400">{s}</div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-5">
-        {/* Events table — 2/3 */}
-        <div className="col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-            <span className="font-bold text-gray-800 text-sm">All Events</span>
-            <span className="text-xs text-gray-400 font-semibold">{filtered.length} of {EVENTS_DATA.length}</span>
-          </div>
-          {/* Filter bar */}
-          <div className="flex flex-wrap gap-2 px-5 py-3 border-b border-gray-100 bg-gray-50">
-            <select value={sportFilter} onChange={e => setSportFilter(e.target.value)}
-              className="h-8 px-3 rounded-xl border border-gray-200 text-xs text-gray-600 bg-white outline-none focus:border-blue-400">
-              <option>All</option>
-              {Object.keys(SPORT_COLORS).map(s => <option key={s}>{s}</option>)}
-            </select>
-            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-              className="h-8 px-3 rounded-xl border border-gray-200 text-xs text-gray-600 bg-white outline-none focus:border-blue-400">
-              {["All","Live","Upcoming","Registration Open","Completed","Cancelled"].map(s => <option key={s}>{s}</option>)}
-            </select>
-            <div className="flex-1 min-w-40 relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/>
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search events…"
-                className="w-full h-8 pl-8 pr-3 rounded-xl border border-gray-200 text-xs outline-none focus:border-blue-400"/>
-            </div>
-            <button className="h-8 px-3 rounded-xl border border-gray-200 text-xs font-bold text-gray-600 hover:border-blue-400 transition flex items-center gap-1.5">
-              <Download className="h-3.5 w-3.5"/> Export
-            </button>
-          </div>
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  {["Event","Sport","Dates","Status","Entries","Trend","Actions"].map(h => (
-                    <th key={h} className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider px-5 py-3">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {filtered.map((e, i) => (
-                  <tr key={i} className="hover:bg-gray-50 transition">
-                    <td className="px-5 py-3.5">
-                      <div className="font-semibold text-gray-900 text-xs leading-snug">{e.name}</div>
-                      <div className="text-[10px] text-gray-400 mt-0.5 flex items-center gap-1"><MapPin className="h-2.5 w-2.5"/>{e.venue}</div>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background:`${SPORT_COLORS[e.sport]}20`, color:SPORT_COLORS[e.sport] }}>{e.sport}</span>
-                    </td>
-                    <td className="px-5 py-3.5 text-[11px] text-gray-500 whitespace-nowrap">{e.dates}</td>
-                    <td className="px-5 py-3.5"><StatusBadge status={e.status}/></td>
-                    <td className="px-5 py-3.5">
-                      <div className="text-xs font-bold text-gray-800">{e.entries}/{e.capacity}</div>
-                      <div className="mt-1 h-1.5 w-16 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full" style={{width:`${Math.round(e.entries/e.capacity*100)}%`, background:SPORT_COLORS[e.sport]}}/>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <Sparkline data={e.sparkData} color={SPORT_COLORS[e.sport]} width={72} height={28}/>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-1">
-                        {[{ icon: Eye, tip:"View" },{ icon: Edit3, tip:"Edit" },{ icon: Award, tip:"Results" }].map(({ icon: Ic, tip }) => (
-                          <button key={tip} title={tip} className="h-6 w-6 rounded-lg grid place-items-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition">
-                            <Ic className="h-3.5 w-3.5"/>
-                          </button>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Right sidebar panels — 1/3 */}
-        <div className="space-y-4">
-          {/* Live sessions */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"/>
-              <span className="font-bold text-gray-800 text-sm">Live Sessions</span>
-            </div>
-            <div className="divide-y divide-gray-50">
-              {LIVE_SESSIONS.map((s, i) => (
-                <div key={i} className="px-4 py-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold text-gray-800">{s.sport}</span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.status==="On Time"?"bg-emerald-50 text-emerald-700":"bg-amber-50 text-amber-700"}`}>{s.status}</span>
-                  </div>
-                  <div className="text-[10px] text-gray-500 font-semibold">{s.session}</div>
-                  <div className="text-[10px] text-gray-400 flex items-center gap-1 mt-0.5"><MapPin className="h-2.5 w-2.5"/>{s.venue}</div>
-                  <button className="mt-2 text-[10px] font-bold px-2 py-0.5 rounded-lg border transition"
-                    style={{color:s.color, borderColor:`${s.color}40`}}>Monitor →</button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Pending actions */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-              <AlertCircle className="h-3.5 w-3.5 text-amber-500"/>
-              <span className="font-bold text-gray-800 text-sm">Pending Actions</span>
-              <span className="ml-auto h-5 w-5 rounded-full bg-red-500 text-white text-[9px] font-black grid place-items-center">
-                {PENDING_ACTIONS.reduce((a,p)=>a+p.count,0)}
-              </span>
-            </div>
-            <div className="divide-y divide-gray-50">
-              {PENDING_ACTIONS.map((p, i) => (
-                <div key={i} className="px-4 py-3 flex items-center gap-3">
-                  <div className="h-7 w-7 rounded-xl grid place-items-center text-xs font-black text-white shrink-0" style={{ background: p.color }}>
-                    {p.count}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold text-gray-800 truncate">{p.label}</div>
-                    <div className="text-[10px] text-gray-400">{p.sub}</div>
-                  </div>
-                  <button className="text-[10px] font-bold hover:underline shrink-0" style={{color:PRIMARY}}>Review →</button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Sport-wise entries mini chart */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-            <div className="font-bold text-gray-800 text-sm mb-3">Entries by Sport</div>
-            <div className="space-y-2.5">
-              {SPORT_DIST.map(([sport, count]) => (
-                <div key={sport} className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-gray-500 w-16 truncate">{sport}</span>
-                  <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width:`${Math.round((count/maxEntries)*100)}%`, background: SPORT_COLORS[sport] }}/>
-                  </div>
-                  <span className="text-[10px] font-black w-8 text-right" style={{color:SPORT_COLORS[sport]}}>{count}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -1178,6 +1035,161 @@ function ScreenSettings() {
 /* ═══════════════════════════════════════
    GMS PORTAL SHELL
 ═══════════════════════════════════════ */
+/* ═══════════════════════════════════════
+   SCREEN — EVENTS (with Create Event button)
+═══════════════════════════════════════ */
+function ScreenEvents({ onCreateEvent }: { onCreateEvent: () => void }) {
+  const [sportFilter, setSportFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [search, setSearch] = useState("");
+  const filtered = EVENTS_DATA.filter(e =>
+    (sportFilter === "All" || e.sport === sportFilter) &&
+    (statusFilter === "All" || e.status === statusFilter) &&
+    (search === "" || e.name.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  return (
+    <div className="p-6 space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-lg font-bold text-gray-900">Events</h1>
+          <p className="text-xs text-gray-400 mt-0.5">Directorate of Sports & Youth Services · Maharashtra</p>
+        </div>
+        <button onClick={onCreateEvent}
+          className="h-10 px-5 rounded-xl text-white text-sm font-bold flex items-center gap-2 hover:opacity-90 transition shadow-md"
+          style={{ background: `linear-gradient(135deg,${PRIMARY},#1e2a7a)` }}>
+          <Plus className="h-4 w-4"/> Create Event
+        </button>
+      </div>
+
+      {/* Table card */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-3 px-5 py-3.5 border-b border-gray-100">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search events…"
+              className="h-8 w-56 pl-8 pr-3 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#363092] focus:ring-1 focus:ring-[#363092]/20"/>
+          </div>
+          <select value={sportFilter} onChange={e => setSportFilter(e.target.value)}
+            className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white outline-none focus:border-[#363092]">
+            <option value="All">All Sports</option>
+            {Object.keys(SPORT_COLORS).map(s => <option key={s}>{s}</option>)}
+          </select>
+          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+            className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white outline-none focus:border-[#363092]">
+            <option value="All">All Status</option>
+            {["Live","Upcoming","Registration Open","Completed","Cancelled"].map(s => <option key={s}>{s}</option>)}
+          </select>
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-xs text-gray-400">{filtered.length} of {EVENTS_DATA.length} events</span>
+            <button className="h-8 px-3 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:border-[#363092] transition flex items-center gap-1.5">
+              <Download className="h-3.5 w-3.5"/> Export
+            </button>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50">
+                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-5 py-3 w-[35%]">Event</th>
+                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 py-3">Sport</th>
+                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 py-3">Dates</th>
+                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 py-3">Venue</th>
+                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 py-3">Status</th>
+                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 py-3">Capacity</th>
+                <th className="text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest px-5 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((e, i) => {
+                const pct = Math.round((e.entries / e.capacity) * 100);
+                const color = SPORT_COLORS[e.sport];
+                return (
+                  <tr key={i} className="border-b border-gray-50 hover:bg-[#f8f9ff] transition-colors group">
+                    {/* Event name */}
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-lg grid place-items-center shrink-0 text-white text-[10px] font-black" style={{ background: `${color}20` }}>
+                          <span style={{ color }}>{e.sport.slice(0,2).toUpperCase()}</span>
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-gray-900 leading-snug">{e.name}</div>
+                          <div className="text-[10px] text-gray-400 mt-0.5">ID: GMS-EVT-{2027}-{String(i+1).padStart(3,"0")}</div>
+                        </div>
+                      </div>
+                    </td>
+                    {/* Sport */}
+                    <td className="px-4 py-3.5">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-md"
+                        style={{ background:`${color}15`, color }}>
+                        {e.sport}
+                      </span>
+                    </td>
+                    {/* Dates */}
+                    <td className="px-4 py-3.5 whitespace-nowrap">
+                      <div className="text-xs font-semibold text-gray-800">{e.dates}</div>
+                    </td>
+                    {/* Venue */}
+                    <td className="px-4 py-3.5">
+                      <div className="text-xs text-gray-500 flex items-center gap-1 max-w-[140px] truncate">
+                        <MapPin className="h-3 w-3 text-gray-300 shrink-0"/>{e.venue}
+                      </div>
+                    </td>
+                    {/* Status */}
+                    <td className="px-4 py-3.5"><StatusBadge status={e.status}/></td>
+                    {/* Capacity fill */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2 min-w-[110px]">
+                        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full rounded-full" style={{ width:`${pct}%`, background: color }}/>
+                        </div>
+                        <span className="text-[11px] font-bold text-gray-600 w-10 text-right">{e.entries}<span className="text-gray-300 font-normal">/{e.capacity}</span></span>
+                      </div>
+                      <div className="text-[10px] text-gray-400 mt-0.5 pl-0">{pct}% filled</div>
+                    </td>
+                    {/* Actions */}
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button title="View" className="h-7 px-2.5 rounded-lg text-[11px] font-semibold text-gray-500 hover:text-[#363092] hover:bg-[#363092]/8 border border-gray-200 hover:border-[#363092]/30 transition flex items-center gap-1">
+                          <Eye className="h-3.5 w-3.5"/> View
+                        </button>
+                        <button title="Edit" className="h-7 px-2.5 rounded-lg text-[11px] font-semibold text-gray-500 hover:text-amber-600 hover:bg-amber-50 border border-gray-200 hover:border-amber-200 transition flex items-center gap-1">
+                          <Edit3 className="h-3.5 w-3.5"/> Edit
+                        </button>
+                        <button title="Results" className="h-7 px-2.5 rounded-lg text-[11px] font-semibold text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-200 transition flex items-center gap-1">
+                          <Award className="h-3.5 w-3.5"/> Results
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+          <span className="text-[11px] text-gray-400">Showing {filtered.length} of {EVENTS_DATA.length} events</span>
+          <div className="flex items-center gap-1">
+            {["Live","Upcoming","Registration Open","Completed"].map(s => (
+              <button key={s} onClick={() => setStatusFilter(statusFilter === s ? "All" : s)}
+                className={`h-6 px-2.5 rounded-md text-[10px] font-semibold border transition ${statusFilter === s ? "border-[#363092] text-[#363092] bg-[#363092]/5" : "border-gray-200 text-gray-500 hover:border-gray-300"}`}>
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const NAV_ITEMS = [
   { id:"dashboard",     label:"Dashboard",        icon:LayoutDashboard, badge:0 },
   { id:"events",        label:"Events",            icon:Trophy,          badge:0 },
@@ -1202,7 +1214,7 @@ export function GMSPortal({ onBack }: { onBack: () => void }) {
     if (createMode) return <ScreenCreateEvent onBack={() => setCreateMode(false)}/>;
     switch (nav) {
       case "dashboard":     return <ScreenDashboard onCreateEvent={() => setCreateMode(true)}/>;
-      case "events":        return <ScreenDashboard onCreateEvent={() => setCreateMode(true)}/>;
+      case "events":        return <ScreenEvents onCreateEvent={() => setCreateMode(true)}/>;
       case "schedule":      return <ScreenCalendar/>;
       case "participation": return <ScreenParticipation/>;
       case "results":       return <ScreenResults/>;
@@ -1261,7 +1273,8 @@ export function GMSPortal({ onBack }: { onBack: () => void }) {
 
         <div className="p-2 border-t border-gray-100">
           <button onClick={onBack} title={collapsed?"Back to Admin":undefined}
-            className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-xs text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition">
+            className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-xs font-semibold text-white transition hover:opacity-90 active:scale-95"
+            style={{ background: "linear-gradient(135deg,#363092,#1e2a7a)" }}>
             <LogOut className="h-4 w-4 shrink-0"/>
             {!collapsed && <span>Back to Admin</span>}
           </button>

@@ -46,15 +46,14 @@ const NAV: Array<{
     mega: {
       cols: [
         { title: "Facilities", items: [
-          { label: "Stadiums & Arenas", to: "/stadiums-arenas", icon: Building2 },
-          { label: "Sports Complexes", to: "/sports-complexes", icon: Building },
+          { label: "Stadiums & Sports Complexes", to: "/stadiums-arenas", icon: Building2 },
           { label: "Infrastructure Map", to: "/infrastructure-map", icon: MapIcon },
         ]},
         { title: "Training", items: [
           { label: "Sports Academies", to: "/sports-academies", icon: GraduationCap },
-          { label: "Training Centres", icon: Dumbbell }, { label: "Hostels", icon: Home },
+          { label: "Training Centres", icon: Dumbbell },
         ]},
-        { title: "District-wise", items: [{ label: "District Sports Offices", icon: MapPin }, { label: "District Websites", icon: Globe }] },
+        { title: "District-wise", items: [{ label: "District Sports Offices", icon: MapPin }, { label: "District Websites", to: "/district-websites", icon: Globe }] },
       ],
       featured: { tag: "FEATURED", title: "Interactive Infrastructure Map — All 36 Districts", cta: "Explore Map", stat: "486 Sports facilities across Maharashtra", variant: "orange" },
     },
@@ -66,7 +65,7 @@ const NAV: Array<{
         { title: "Financial Support", items: [
           { label: "Scholarships", desc: "Merit-based awards", to: "/scholarships", icon: GraduationCap },
           { label: "Stipends & Grants", to: "/stipends-grants", icon: Wallet },
-          { label: "Award Schemes", to: "/award-schemes", icon: Award },
+
           { label: "Hostel Schemes", desc: "Sports hostel facilities", to: "/hostel-schemes", icon: Home },
         ]},
         { title: "Training Programs", items: [

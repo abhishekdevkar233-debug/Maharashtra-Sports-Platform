@@ -11,12 +11,7 @@ export const Route = createFileRoute("/infrastructure-map")({
 function Page() {
   return (
     <>
-      <PageHero
-        eyebrow="Infrastructure"
-        title="Interactive Infrastructure Map"
-        subtitle="Explore 486 sports facilities across all 36 districts of Maharashtra — filter by facility type, region and more."
-      />
-
+      <PageHero eyebrow="Infrastructure" title="Interactive Infrastructure Map" subtitle="Explore 486 sports facilities across all 36 districts of Maharashtra — filter by facility type, region and more." />
       {/* Stats bar */}
       <SectionWrap>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">

@@ -28,13 +28,18 @@ import { Route as InfrastructureMapRouteImport } from './routes/infrastructure-m
 import { Route as HostelSchemesRouteImport } from './routes/hostel-schemes'
 import { Route as EventCalendarRouteImport } from './routes/event-calendar'
 import { Route as EliteAthletesRouteImport } from './routes/elite-athletes'
+import { Route as DistrictWebsitesRouteImport } from './routes/district-websites'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AwardSchemesRouteImport } from './routes/award-schemes'
 import { Route as AboutUsRouteImport } from './routes/about-us'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StadiumsArenasIndexRouteImport } from './routes/stadiums-arenas.index'
 import { Route as RegisterIndexRouteImport } from './routes/register.index'
 import { Route as OlympiansIndexRouteImport } from './routes/olympians.index'
+import { Route as MediaCenterIndexRouteImport } from './routes/media-center.index'
+import { Route as DistrictWebsitesIndexRouteImport } from './routes/district-websites.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as StadiumsArenasIdRouteImport } from './routes/stadiums-arenas.$id'
 import { Route as RegisterYouthClubRouteImport } from './routes/register.youth-club'
 import { Route as RegisterSportsComplexRouteImport } from './routes/register.sports-complex'
 import { Route as RegisterLocalSelfGovernmentRouteImport } from './routes/register.local-self-government'
@@ -52,6 +57,7 @@ import { Route as MediaCenterPressReleasesRouteImport } from './routes/media-cen
 import { Route as MediaCenterPhotoGalleryRouteImport } from './routes/media-center.photo-gallery'
 import { Route as MediaCenterNewsRouteImport } from './routes/media-center.news'
 import { Route as EliteAthletesIdRouteImport } from './routes/elite-athletes.$id'
+import { Route as DistrictWebsitesIdRouteImport } from './routes/district-websites.$id'
 import { Route as DashboardScholarshipRouteImport } from './routes/dashboard.scholarship'
 import { Route as DashboardGrievanceRouteImport } from './routes/dashboard.grievance'
 import { Route as DashboardFundUtilizationRouteImport } from './routes/dashboard.fund-utilization'
@@ -158,6 +164,11 @@ const EliteAthletesRoute = EliteAthletesRouteImport.update({
   path: '/elite-athletes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DistrictWebsitesRoute = DistrictWebsitesRouteImport.update({
+  id: '/district-websites',
+  path: '/district-websites',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -178,6 +189,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StadiumsArenasIndexRoute = StadiumsArenasIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StadiumsArenasRoute,
+} as any)
 const RegisterIndexRoute = RegisterIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -188,10 +204,25 @@ const OlympiansIndexRoute = OlympiansIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OlympiansRoute,
 } as any)
+const MediaCenterIndexRoute = MediaCenterIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MediaCenterRoute,
+} as any)
+const DistrictWebsitesIndexRoute = DistrictWebsitesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DistrictWebsitesRoute,
+} as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const StadiumsArenasIdRoute = StadiumsArenasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => StadiumsArenasRoute,
 } as any)
 const RegisterYouthClubRoute = RegisterYouthClubRouteImport.update({
   id: '/youth-club',
@@ -281,6 +312,11 @@ const EliteAthletesIdRoute = EliteAthletesIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => EliteAthletesRoute,
 } as any)
+const DistrictWebsitesIdRoute = DistrictWebsitesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => DistrictWebsitesRoute,
+} as any)
 const DashboardScholarshipRoute = DashboardScholarshipRouteImport.update({
   id: '/scholarship',
   path: '/scholarship',
@@ -341,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/about-us': typeof AboutUsRoute
   '/award-schemes': typeof AwardSchemesRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/district-websites': typeof DistrictWebsitesRouteWithChildren
   '/elite-athletes': typeof EliteAthletesRouteWithChildren
   '/event-calendar': typeof EventCalendarRoute
   '/hostel-schemes': typeof HostelSchemesRoute
@@ -357,13 +394,14 @@ export interface FileRoutesByFullPath {
   '/scholarships': typeof ScholarshipsRoute
   '/sports-academies': typeof SportsAcademiesRoute
   '/sports-complexes': typeof SportsComplexesRoute
-  '/stadiums-arenas': typeof StadiumsArenasRoute
+  '/stadiums-arenas': typeof StadiumsArenasRouteWithChildren
   '/stipends-grants': typeof StipendsGrantsRoute
   '/venues': typeof VenuesRoute
   '/dashboard/cm': typeof DashboardCmRoute
   '/dashboard/fund-utilization': typeof DashboardFundUtilizationRoute
   '/dashboard/grievance': typeof DashboardGrievanceRoute
   '/dashboard/scholarship': typeof DashboardScholarshipRoute
+  '/district-websites/$id': typeof DistrictWebsitesIdRoute
   '/elite-athletes/$id': typeof EliteAthletesIdRoute
   '/media-center/news': typeof MediaCenterNewsRouteWithChildren
   '/media-center/photo-gallery': typeof MediaCenterPhotoGalleryRouteWithChildren
@@ -381,9 +419,13 @@ export interface FileRoutesByFullPath {
   '/register/local-self-government': typeof RegisterLocalSelfGovernmentRoute
   '/register/sports-complex': typeof RegisterSportsComplexRoute
   '/register/youth-club': typeof RegisterYouthClubRoute
+  '/stadiums-arenas/$id': typeof StadiumsArenasIdRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/district-websites/': typeof DistrictWebsitesIndexRoute
+  '/media-center/': typeof MediaCenterIndexRoute
   '/olympians/': typeof OlympiansIndexRoute
   '/register/': typeof RegisterIndexRoute
+  '/stadiums-arenas/': typeof StadiumsArenasIndexRoute
   '/media-center/news/$id': typeof MediaCenterNewsIdRoute
   '/media-center/photo-gallery/$id': typeof MediaCenterPhotoGalleryIdRoute
   '/media-center/press-releases/$id': typeof MediaCenterPressReleasesIdRoute
@@ -402,20 +444,19 @@ export interface FileRoutesByTo {
   '/leadership-team': typeof LeadershipTeamRoute
   '/live-scores': typeof LiveScoresRoute
   '/login': typeof LoginRoute
-  '/media-center': typeof MediaCenterRouteWithChildren
   '/national-games': typeof NationalGamesRoute
   '/organisation-structure': typeof OrganisationStructureRoute
   '/results-archive': typeof ResultsArchiveRoute
   '/scholarships': typeof ScholarshipsRoute
   '/sports-academies': typeof SportsAcademiesRoute
   '/sports-complexes': typeof SportsComplexesRoute
-  '/stadiums-arenas': typeof StadiumsArenasRoute
   '/stipends-grants': typeof StipendsGrantsRoute
   '/venues': typeof VenuesRoute
   '/dashboard/cm': typeof DashboardCmRoute
   '/dashboard/fund-utilization': typeof DashboardFundUtilizationRoute
   '/dashboard/grievance': typeof DashboardGrievanceRoute
   '/dashboard/scholarship': typeof DashboardScholarshipRoute
+  '/district-websites/$id': typeof DistrictWebsitesIdRoute
   '/elite-athletes/$id': typeof EliteAthletesIdRoute
   '/media-center/news': typeof MediaCenterNewsRouteWithChildren
   '/media-center/photo-gallery': typeof MediaCenterPhotoGalleryRouteWithChildren
@@ -432,9 +473,13 @@ export interface FileRoutesByTo {
   '/register/local-self-government': typeof RegisterLocalSelfGovernmentRoute
   '/register/sports-complex': typeof RegisterSportsComplexRoute
   '/register/youth-club': typeof RegisterYouthClubRoute
+  '/stadiums-arenas/$id': typeof StadiumsArenasIdRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/district-websites': typeof DistrictWebsitesIndexRoute
+  '/media-center': typeof MediaCenterIndexRoute
   '/olympians': typeof OlympiansIndexRoute
   '/register': typeof RegisterIndexRoute
+  '/stadiums-arenas': typeof StadiumsArenasIndexRoute
   '/media-center/news/$id': typeof MediaCenterNewsIdRoute
   '/media-center/photo-gallery/$id': typeof MediaCenterPhotoGalleryIdRoute
   '/media-center/press-releases/$id': typeof MediaCenterPressReleasesIdRoute
@@ -448,6 +493,7 @@ export interface FileRoutesById {
   '/about-us': typeof AboutUsRoute
   '/award-schemes': typeof AwardSchemesRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/district-websites': typeof DistrictWebsitesRouteWithChildren
   '/elite-athletes': typeof EliteAthletesRouteWithChildren
   '/event-calendar': typeof EventCalendarRoute
   '/hostel-schemes': typeof HostelSchemesRoute
@@ -464,13 +510,14 @@ export interface FileRoutesById {
   '/scholarships': typeof ScholarshipsRoute
   '/sports-academies': typeof SportsAcademiesRoute
   '/sports-complexes': typeof SportsComplexesRoute
-  '/stadiums-arenas': typeof StadiumsArenasRoute
+  '/stadiums-arenas': typeof StadiumsArenasRouteWithChildren
   '/stipends-grants': typeof StipendsGrantsRoute
   '/venues': typeof VenuesRoute
   '/dashboard/cm': typeof DashboardCmRoute
   '/dashboard/fund-utilization': typeof DashboardFundUtilizationRoute
   '/dashboard/grievance': typeof DashboardGrievanceRoute
   '/dashboard/scholarship': typeof DashboardScholarshipRoute
+  '/district-websites/$id': typeof DistrictWebsitesIdRoute
   '/elite-athletes/$id': typeof EliteAthletesIdRoute
   '/media-center/news': typeof MediaCenterNewsRouteWithChildren
   '/media-center/photo-gallery': typeof MediaCenterPhotoGalleryRouteWithChildren
@@ -488,9 +535,13 @@ export interface FileRoutesById {
   '/register/local-self-government': typeof RegisterLocalSelfGovernmentRoute
   '/register/sports-complex': typeof RegisterSportsComplexRoute
   '/register/youth-club': typeof RegisterYouthClubRoute
+  '/stadiums-arenas/$id': typeof StadiumsArenasIdRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/district-websites/': typeof DistrictWebsitesIndexRoute
+  '/media-center/': typeof MediaCenterIndexRoute
   '/olympians/': typeof OlympiansIndexRoute
   '/register/': typeof RegisterIndexRoute
+  '/stadiums-arenas/': typeof StadiumsArenasIndexRoute
   '/media-center/news/$id': typeof MediaCenterNewsIdRoute
   '/media-center/photo-gallery/$id': typeof MediaCenterPhotoGalleryIdRoute
   '/media-center/press-releases/$id': typeof MediaCenterPressReleasesIdRoute
@@ -505,6 +556,7 @@ export interface FileRouteTypes {
     | '/about-us'
     | '/award-schemes'
     | '/dashboard'
+    | '/district-websites'
     | '/elite-athletes'
     | '/event-calendar'
     | '/hostel-schemes'
@@ -528,6 +580,7 @@ export interface FileRouteTypes {
     | '/dashboard/fund-utilization'
     | '/dashboard/grievance'
     | '/dashboard/scholarship'
+    | '/district-websites/$id'
     | '/elite-athletes/$id'
     | '/media-center/news'
     | '/media-center/photo-gallery'
@@ -545,9 +598,13 @@ export interface FileRouteTypes {
     | '/register/local-self-government'
     | '/register/sports-complex'
     | '/register/youth-club'
+    | '/stadiums-arenas/$id'
     | '/dashboard/'
+    | '/district-websites/'
+    | '/media-center/'
     | '/olympians/'
     | '/register/'
+    | '/stadiums-arenas/'
     | '/media-center/news/$id'
     | '/media-center/photo-gallery/$id'
     | '/media-center/press-releases/$id'
@@ -566,20 +623,19 @@ export interface FileRouteTypes {
     | '/leadership-team'
     | '/live-scores'
     | '/login'
-    | '/media-center'
     | '/national-games'
     | '/organisation-structure'
     | '/results-archive'
     | '/scholarships'
     | '/sports-academies'
     | '/sports-complexes'
-    | '/stadiums-arenas'
     | '/stipends-grants'
     | '/venues'
     | '/dashboard/cm'
     | '/dashboard/fund-utilization'
     | '/dashboard/grievance'
     | '/dashboard/scholarship'
+    | '/district-websites/$id'
     | '/elite-athletes/$id'
     | '/media-center/news'
     | '/media-center/photo-gallery'
@@ -596,9 +652,13 @@ export interface FileRouteTypes {
     | '/register/local-self-government'
     | '/register/sports-complex'
     | '/register/youth-club'
+    | '/stadiums-arenas/$id'
     | '/dashboard'
+    | '/district-websites'
+    | '/media-center'
     | '/olympians'
     | '/register'
+    | '/stadiums-arenas'
     | '/media-center/news/$id'
     | '/media-center/photo-gallery/$id'
     | '/media-center/press-releases/$id'
@@ -611,6 +671,7 @@ export interface FileRouteTypes {
     | '/about-us'
     | '/award-schemes'
     | '/dashboard'
+    | '/district-websites'
     | '/elite-athletes'
     | '/event-calendar'
     | '/hostel-schemes'
@@ -634,6 +695,7 @@ export interface FileRouteTypes {
     | '/dashboard/fund-utilization'
     | '/dashboard/grievance'
     | '/dashboard/scholarship'
+    | '/district-websites/$id'
     | '/elite-athletes/$id'
     | '/media-center/news'
     | '/media-center/photo-gallery'
@@ -651,9 +713,13 @@ export interface FileRouteTypes {
     | '/register/local-self-government'
     | '/register/sports-complex'
     | '/register/youth-club'
+    | '/stadiums-arenas/$id'
     | '/dashboard/'
+    | '/district-websites/'
+    | '/media-center/'
     | '/olympians/'
     | '/register/'
+    | '/stadiums-arenas/'
     | '/media-center/news/$id'
     | '/media-center/photo-gallery/$id'
     | '/media-center/press-releases/$id'
@@ -667,6 +733,7 @@ export interface RootRouteChildren {
   AboutUsRoute: typeof AboutUsRoute
   AwardSchemesRoute: typeof AwardSchemesRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  DistrictWebsitesRoute: typeof DistrictWebsitesRouteWithChildren
   EliteAthletesRoute: typeof EliteAthletesRouteWithChildren
   EventCalendarRoute: typeof EventCalendarRoute
   HostelSchemesRoute: typeof HostelSchemesRoute
@@ -683,7 +750,7 @@ export interface RootRouteChildren {
   ScholarshipsRoute: typeof ScholarshipsRoute
   SportsAcademiesRoute: typeof SportsAcademiesRoute
   SportsComplexesRoute: typeof SportsComplexesRoute
-  StadiumsArenasRoute: typeof StadiumsArenasRoute
+  StadiumsArenasRoute: typeof StadiumsArenasRouteWithChildren
   StipendsGrantsRoute: typeof StipendsGrantsRoute
   VenuesRoute: typeof VenuesRoute
   NoticesAnnouncementsRoute: typeof NoticesAnnouncementsRoute
@@ -827,6 +894,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EliteAthletesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/district-websites': {
+      id: '/district-websites'
+      path: '/district-websites'
+      fullPath: '/district-websites'
+      preLoaderRoute: typeof DistrictWebsitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -855,6 +929,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stadiums-arenas/': {
+      id: '/stadiums-arenas/'
+      path: '/'
+      fullPath: '/stadiums-arenas/'
+      preLoaderRoute: typeof StadiumsArenasIndexRouteImport
+      parentRoute: typeof StadiumsArenasRoute
+    }
     '/register/': {
       id: '/register/'
       path: '/'
@@ -869,12 +950,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OlympiansIndexRouteImport
       parentRoute: typeof OlympiansRoute
     }
+    '/media-center/': {
+      id: '/media-center/'
+      path: '/'
+      fullPath: '/media-center/'
+      preLoaderRoute: typeof MediaCenterIndexRouteImport
+      parentRoute: typeof MediaCenterRoute
+    }
+    '/district-websites/': {
+      id: '/district-websites/'
+      path: '/'
+      fullPath: '/district-websites/'
+      preLoaderRoute: typeof DistrictWebsitesIndexRouteImport
+      parentRoute: typeof DistrictWebsitesRoute
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/stadiums-arenas/$id': {
+      id: '/stadiums-arenas/$id'
+      path: '/$id'
+      fullPath: '/stadiums-arenas/$id'
+      preLoaderRoute: typeof StadiumsArenasIdRouteImport
+      parentRoute: typeof StadiumsArenasRoute
     }
     '/register/youth-club': {
       id: '/register/youth-club'
@@ -995,6 +1097,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EliteAthletesIdRouteImport
       parentRoute: typeof EliteAthletesRoute
     }
+    '/district-websites/$id': {
+      id: '/district-websites/$id'
+      path: '/$id'
+      fullPath: '/district-websites/$id'
+      preLoaderRoute: typeof DistrictWebsitesIdRouteImport
+      parentRoute: typeof DistrictWebsitesRoute
+    }
     '/dashboard/scholarship': {
       id: '/dashboard/scholarship'
       path: '/scholarship'
@@ -1088,6 +1197,19 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface DistrictWebsitesRouteChildren {
+  DistrictWebsitesIdRoute: typeof DistrictWebsitesIdRoute
+  DistrictWebsitesIndexRoute: typeof DistrictWebsitesIndexRoute
+}
+
+const DistrictWebsitesRouteChildren: DistrictWebsitesRouteChildren = {
+  DistrictWebsitesIdRoute: DistrictWebsitesIdRoute,
+  DistrictWebsitesIndexRoute: DistrictWebsitesIndexRoute,
+}
+
+const DistrictWebsitesRouteWithChildren =
+  DistrictWebsitesRoute._addFileChildren(DistrictWebsitesRouteChildren)
+
 interface EliteAthletesRouteChildren {
   EliteAthletesIdRoute: typeof EliteAthletesIdRoute
 }
@@ -1159,6 +1281,7 @@ interface MediaCenterRouteChildren {
   MediaCenterPhotoGalleryRoute: typeof MediaCenterPhotoGalleryRouteWithChildren
   MediaCenterPressReleasesRoute: typeof MediaCenterPressReleasesRouteWithChildren
   MediaCenterVideoGalleryRoute: typeof MediaCenterVideoGalleryRouteWithChildren
+  MediaCenterIndexRoute: typeof MediaCenterIndexRoute
 }
 
 const MediaCenterRouteChildren: MediaCenterRouteChildren = {
@@ -1166,6 +1289,7 @@ const MediaCenterRouteChildren: MediaCenterRouteChildren = {
   MediaCenterPhotoGalleryRoute: MediaCenterPhotoGalleryRouteWithChildren,
   MediaCenterPressReleasesRoute: MediaCenterPressReleasesRouteWithChildren,
   MediaCenterVideoGalleryRoute: MediaCenterVideoGalleryRouteWithChildren,
+  MediaCenterIndexRoute: MediaCenterIndexRoute,
 }
 
 const MediaCenterRouteWithChildren = MediaCenterRoute._addFileChildren(
@@ -1226,11 +1350,26 @@ const RegisterRouteWithChildren = RegisterRoute._addFileChildren(
   RegisterRouteChildren,
 )
 
+interface StadiumsArenasRouteChildren {
+  StadiumsArenasIdRoute: typeof StadiumsArenasIdRoute
+  StadiumsArenasIndexRoute: typeof StadiumsArenasIndexRoute
+}
+
+const StadiumsArenasRouteChildren: StadiumsArenasRouteChildren = {
+  StadiumsArenasIdRoute: StadiumsArenasIdRoute,
+  StadiumsArenasIndexRoute: StadiumsArenasIndexRoute,
+}
+
+const StadiumsArenasRouteWithChildren = StadiumsArenasRoute._addFileChildren(
+  StadiumsArenasRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutUsRoute: AboutUsRoute,
   AwardSchemesRoute: AwardSchemesRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  DistrictWebsitesRoute: DistrictWebsitesRouteWithChildren,
   EliteAthletesRoute: EliteAthletesRouteWithChildren,
   EventCalendarRoute: EventCalendarRoute,
   HostelSchemesRoute: HostelSchemesRoute,
@@ -1247,7 +1386,7 @@ const rootRouteChildren: RootRouteChildren = {
   ScholarshipsRoute: ScholarshipsRoute,
   SportsAcademiesRoute: SportsAcademiesRoute,
   SportsComplexesRoute: SportsComplexesRoute,
-  StadiumsArenasRoute: StadiumsArenasRoute,
+  StadiumsArenasRoute: StadiumsArenasRouteWithChildren,
   StipendsGrantsRoute: StipendsGrantsRoute,
   VenuesRoute: VenuesRoute,
   NoticesAnnouncementsRoute: NoticesAnnouncementsRoute,

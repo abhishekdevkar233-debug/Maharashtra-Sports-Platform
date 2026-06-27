@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import mhSeal from "@/assets/mh-seal.png";
 import digitalIndia from "@/assets/digital-india.png";
+import { Header } from "@/components/layout/Header";
 import { GMSPortal } from "@/components/gms/GMSPortal";
 import { HMSPortal } from "@/components/gms/HMSPortal";
 import { HRPortal } from "@/components/gms/HRPortal";
@@ -244,17 +245,17 @@ function Page() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(135deg,#f0f0fa 0%,#e8e8f5 100%)" }}>
+      <Header />
       <div className="flex-1 flex items-center justify-center py-10 px-4">
         <div className="fixed inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: "radial-gradient(#363092 1px,transparent 1px)", backgroundSize: "24px 24px" }} />
 
-        <div className="relative w-full max-w-md">
+        <div className="relative w-full max-w-lg">
 
           {/* Role tabs */}
           <div className="flex rounded-2xl bg-white border border-gray-200 shadow-sm p-1.5 mb-5 gap-1">
             {ROLES.map(r => (
               <button key={r.id} onClick={() => setRole(r.id)}
-                className={`flex-1 flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-semibold transition ${role === r.id ? "text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
-                style={role === r.id ? { background: r.color } : {}}>
+                className={`flex-1 flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-semibold transition ${role === r.id ? "bg-[#363092] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}>
                 <r.icon className="h-4 w-4" />
                 {r.label}
               </button>
@@ -265,10 +266,10 @@ function Page() {
           <div className="rounded-2xl bg-white border border-gray-200 shadow-[0_30px_60px_-20px_rgba(54,48,146,0.18)] overflow-hidden">
 
             {/* Header strip */}
-            <div className="px-8 py-5 border-b border-gray-100" style={{ background: `${activeRole.color}08` }}>
+            <div className="px-8 py-5 border-b border-gray-100" style={{ background: "#363092" + "08" }}>
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl grid place-items-center shrink-0" style={{ background: `${activeRole.color}15` }}>
-                  <activeRole.icon className="h-5 w-5" style={{ color: activeRole.color }} />
+                <div className="h-10 w-10 rounded-xl grid place-items-center shrink-0" style={{ background: "#363092" + "15" }}>
+                  <activeRole.icon className="h-5 w-5" style={{ color: "#363092" }} />
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-gray-900">
@@ -327,7 +328,7 @@ function Page() {
                   <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
                     <input type="checkbox" className="rounded border-gray-300 accent-[#363092]" /> Remember me
                   </label>
-                  <a href="#" className="text-xs font-semibold hover:underline" style={{ color: activeRole.color }}>Forgot password?</a>
+                  <a href="#" className="text-xs font-semibold text-[#363092] hover:underline">Forgot password?</a>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -343,7 +344,7 @@ function Page() {
 
                 <button type="submit"
                   className="w-full h-12 rounded-xl text-white font-bold text-base inline-flex items-center justify-center gap-2 transition hover:opacity-90 shadow-lg mt-2"
-                  style={{ background: `linear-gradient(135deg,${activeRole.color},${activeRole.color}cc)` }}>
+                  style={{ background: "linear-gradient(135deg,#363092,#1e2a7a)" }}>
                   Sign In <ArrowRight className="h-4 w-4" />
                 </button>
               </form>
@@ -354,8 +355,7 @@ function Page() {
                     <div className="flex-1 h-px bg-gray-100" /> New to portal? <div className="flex-1 h-px bg-gray-100" />
                   </div>
                   <Link to="/register"
-                    className="mt-4 w-full h-11 rounded-xl border-2 font-semibold text-sm inline-flex items-center justify-center gap-2 transition"
-                    style={{ borderColor: activeRole.color, color: activeRole.color }}>
+                    className="mt-4 w-full h-11 rounded-xl border-2 border-[#363092] text-[#363092] font-semibold text-sm inline-flex items-center justify-center gap-2 transition hover:bg-[#363092] hover:text-white">
                     Create an Account <ArrowRight className="h-4 w-4" />
                   </Link>
                 </>

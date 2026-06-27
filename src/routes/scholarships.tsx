@@ -291,57 +291,29 @@ function Page() {
 
   return (
     <>
-      <PageHero eyebrow="Schemes" title="Sports Scholarships" subtitle="Financial support that powers Maharashtra's athletes from grassroots to global." />
-
-      <div style={{ background:"#363092" }}>
-        <div className="container-page py-5">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10">
-            {[["12+","Scholarships"],["₹3L","Max Award"],["5000+","Beneficiaries"],["Jul–Sep","Apply Window"]].map(([v,l]) => (
-              <div key={l} className="bg-[#363092] px-6 py-4 text-center">
-                <div className="text-2xl font-black text-white">{v}</div>
-                <div className="text-xs text-white/60 uppercase tracking-widest mt-0.5">{l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      {!applying && (
+        <PageHero eyebrow="Schemes" title="Sports Scholarships" subtitle="Financial support that powers Maharashtra's athletes from grassroots to global." />
+      )}
 
       <SectionWrap>
-        {/* Search + Filters */}
-        <div className="mb-8 space-y-4">
-          <div className="relative">
+
+        {/* Search bar */}
+        {!applying && (
+          <div className="relative mb-6">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input value={query} onChange={e => setQuery(e.target.value)}
+            <input
+              value={query}
+              onChange={e => setQuery(e.target.value)}
               placeholder="Search scholarships by name, eligibility or description…"
-              className="w-full h-12 pl-11 pr-10 rounded-xl border border-gray-200 bg-white focus:border-[#363092] focus:ring-2 focus:ring-[#363092]/10 outline-none text-sm" />
-            {query && <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>}
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Filter className="h-4 w-4 text-gray-400 shrink-0" />
-            <div className="flex flex-wrap gap-2">
-              {CATS.map(c => (
-                <button key={c} onClick={() => setCat(c)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${cat === c ? "bg-[#363092] text-white border-[#363092]" : "bg-white text-gray-600 border-gray-200 hover:border-[#363092]"}`}>{c}</button>
-              ))}
-            </div>
-            <div className="h-5 w-px bg-gray-200 hidden sm:block" />
-            <select value={level} onChange={e => setLevel(e.target.value)} className="h-9 px-3 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 bg-white focus:border-[#363092] outline-none">
-              {LEVELS.map(l => <option key={l}>{l}</option>)}
-            </select>
-            <select value={status} onChange={e => setStatus(e.target.value)} className="h-9 px-3 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 bg-white focus:border-[#363092] outline-none">
-              {STATUSES.map(s => <option key={s}>{s}</option>)}
-            </select>
-            {hasFilters && (
-              <button onClick={clearAll} className="h-9 px-3 rounded-lg border border-red-200 text-xs font-semibold text-red-500 hover:bg-red-50 transition flex items-center gap-1">
-                <X className="h-3.5 w-3.5" /> Clear All
+              className="w-full h-11 pl-11 pr-10 rounded-xl border border-gray-200 bg-white focus:border-[#363092] focus:ring-2 focus:ring-[#363092]/10 outline-none text-sm"
+            />
+            {query && (
+              <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <X className="h-4 w-4" />
               </button>
             )}
           </div>
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">Showing <span className="font-semibold text-gray-900">{filtered.length}</span> of {ALL_SCHOLARSHIPS.length} scholarships</p>
-            {hasFilters && <p className="text-xs text-[#363092] font-semibold">Filters active</p>}
-          </div>
-        </div>
+        )}
 
         {/* Scholarship Cards */}
         {!applying && (

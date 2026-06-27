@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Reveal } from "@/components/ui/Reveal";
 import { ArrowRight, MapPin, Phone, FileText, Award, Users, Shield, AlertCircle, ChevronLeft, ChevronRight, ChevronDown, Trophy, Briefcase, Building2, Target, FileSpreadsheet, ClipboardList } from "lucide-react";
 
 // Leadership photos
@@ -53,32 +54,35 @@ export function LiveUpdates() {
   return (
     <section className="bg-white py-12">
       <div className="container-page">
-        <SectionTitle title="Live Sports Updates" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1 hover:text-[#FF6B35] transition-colors" href="/live-scores">View All Matches <ArrowRight className="h-3 w-3" /></a>} />
+        <Reveal>
+          <SectionTitle title="Live Sports Updates" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1 hover:text-[#FF6B35] transition-colors" href="/live-scores">View All Matches <ArrowRight className="h-3 w-3" /></a>} />
+        </Reveal>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {cards.map(c => (
-            <div key={c.sport}
-              className="border border-gray-200 rounded-xl p-4 bg-white cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#363092]/10 hover:border-[#363092]/30 group">
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-[10px] font-bold tracking-wider flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse inline-block" />LIVE
-                </span>
-                <span className="text-xs text-gray-500 font-medium">{c.sport}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col items-center gap-1.5 flex-1">
-                  <img src={c.aLogo} alt={c.a} className="h-14 w-14 rounded-full object-contain bg-gray-50 p-1 ring-1 ring-gray-200 group-hover:ring-[#363092]/30 group-hover:scale-105 transition-all duration-200" />
-                  <span className="text-xs font-semibold text-gray-700 text-center">{c.a}</span>
+          {cards.map((c, i) => (
+            <Reveal key={c.sport} delay={i * 120}>
+              <div className="border border-gray-200 rounded-xl p-4 bg-white cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#363092]/10 hover:border-[#363092]/30 group">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-[10px] font-bold tracking-wider flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse inline-block" />LIVE
+                  </span>
+                  <span className="text-xs text-gray-500 font-medium">{c.sport}</span>
                 </div>
-                <div className="text-xl font-bold text-gray-900 px-2 group-hover:text-[#363092] transition-colors duration-200">{c.score}</div>
-                <div className="flex flex-col items-center gap-1.5 flex-1">
-                  <img src={c.bLogo} alt={c.b} className="h-14 w-14 rounded-full object-contain bg-gray-50 p-1 ring-1 ring-gray-200 group-hover:ring-[#363092]/30 group-hover:scale-105 transition-all duration-200" />
-                  <span className="text-xs font-semibold text-gray-700 text-center">{c.b}</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col items-center gap-1.5 flex-1">
+                    <img src={c.aLogo} alt={c.a} className="h-14 w-14 rounded-full object-contain bg-gray-50 p-1 ring-1 ring-gray-200 group-hover:ring-[#363092]/30 group-hover:scale-105 transition-all duration-200" />
+                    <span className="text-xs font-semibold text-gray-700 text-center">{c.a}</span>
+                  </div>
+                  <div className="text-xl font-bold text-gray-900 px-2 group-hover:text-[#363092] transition-colors duration-200">{c.score}</div>
+                  <div className="flex flex-col items-center gap-1.5 flex-1">
+                    <img src={c.bLogo} alt={c.b} className="h-14 w-14 rounded-full object-contain bg-gray-50 p-1 ring-1 ring-gray-200 group-hover:ring-[#363092]/30 group-hover:scale-105 transition-all duration-200" />
+                    <span className="text-xs font-semibold text-gray-700 text-center">{c.b}</span>
+                  </div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500 flex justify-between">
+                  <span>{c.venue}</span><span className="font-medium text-[#FF6B35]">{c.time}</span>
                 </div>
               </div>
-              <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500 flex justify-between">
-                <span>{c.venue}</span><span className="font-medium text-[#FF6B35]">{c.time}</span>
-              </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -97,14 +101,16 @@ export function Leadership() {
   return (
     <section className="py-12" style={{ background: "#F9FAFB" }}>
       <div className="container-page">
-        <SectionTitle title="Leadership" />
+        <Reveal><SectionTitle title="Leadership" /></Reveal>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-          {team.map(p => (
-            <div key={p.name} className="text-center">
-              <img src={p.img} alt={p.name} className="mx-auto h-32 w-32 rounded-full object-cover object-top bg-gray-200 shadow-md" />
-              <div className="mt-4 font-bold text-gray-900 text-base">{p.name}</div>
-              <div className="text-sm text-gray-500 mt-1">{p.role}</div>
-            </div>
+          {team.map((p, i) => (
+            <Reveal key={p.name} delay={i * 100}>
+              <div className="text-center">
+                <img src={p.img} alt={p.name} className="mx-auto h-32 w-32 rounded-full object-cover object-top bg-gray-200 shadow-md" />
+                <div className="mt-4 font-bold text-gray-900 text-base">{p.name}</div>
+                <div className="text-sm text-gray-500 mt-1">{p.role}</div>
+              </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -121,33 +127,37 @@ export function NewsSection() {
   return (
     <section className="bg-white py-12">
       <div className="container-page">
-        <SectionTitle title="News & Announcements" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1 hover:text-[#FF6B35] transition-colors" href="/notices/announcements">View All News <ArrowRight className="h-3 w-3" /></a>} />
+        <Reveal><SectionTitle title="News & Announcements" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1 hover:text-[#FF6B35] transition-colors" href="/media-center">View All News <ArrowRight className="h-3 w-3" /></a>} /></Reveal>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Featured card — left half */}
-          <div className="relative rounded-2xl overflow-hidden min-h-[360px] bg-gray-800">
-            <img src={newsFeatured} alt="Maharashtra wins 186 medals at Khelo India Youth Games 2026" className="absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 to-black/20" />
-            <div className="relative h-full p-7 flex flex-col justify-end text-white">
-              <span className="self-start px-2.5 py-0.5 rounded-md bg-[#FF6B35] text-[10px] font-bold tracking-wider mb-3">FEATURED</span>
-              <h3 className="text-2xl md:text-3xl font-bold leading-snug">Maharashtra wins 186 medals at Khelo India Youth Games 2026</h3>
-              <div className="mt-3 text-sm text-white/70">June 4, 2026 · Chennai</div>
+          <Reveal delay={100}>
+            <div className="relative rounded-2xl overflow-hidden min-h-[360px] bg-gray-800">
+              <img src={newsFeatured} alt="Maharashtra wins 186 medals at Khelo India Youth Games 2026" className="absolute inset-0 h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 to-black/20" />
+              <div className="relative h-full p-7 flex flex-col justify-end text-white">
+                <span className="self-start px-2.5 py-0.5 rounded-md bg-[#FF6B35] text-[10px] font-bold tracking-wider mb-3">FEATURED</span>
+                <h3 className="text-2xl md:text-3xl font-bold leading-snug">Maharashtra wins 186 medals at Khelo India Youth Games 2026</h3>
+                <div className="mt-3 text-sm text-white/70">June 4, 2026 · Chennai</div>
+              </div>
             </div>
-          </div>
+          </Reveal>
 
           {/* News list — right half */}
           <div className="flex flex-col justify-between gap-4">
-            {items.map(it => (
-              <div key={it.text} className="flex gap-4 p-4 border border-gray-200 rounded-xl hover:border-[#363092] hover:shadow-sm transition flex-1">
-                <img src={it.img} alt={it.text} className="h-20 w-24 object-cover bg-gray-200 rounded-lg shrink-0" />
-                <div className="min-w-0 flex flex-col justify-center">
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${it.color}`}>{it.tag}</span>
-                    <span className="text-xs text-gray-400">{it.date}</span>
+            {items.map((it, i) => (
+              <Reveal key={it.text} delay={200 + i * 100}>
+                <div className="flex gap-4 p-4 border border-gray-200 rounded-xl hover:border-[#363092] hover:shadow-sm transition flex-1">
+                  <img src={it.img} alt={it.text} className="h-20 w-24 object-cover bg-gray-200 rounded-lg shrink-0" />
+                  <div className="min-w-0 flex flex-col justify-center">
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${it.color}`}>{it.tag}</span>
+                      <span className="text-xs text-gray-400">{it.date}</span>
+                    </div>
+                    <div className="mt-1.5 text-base font-semibold text-gray-900 leading-snug">{it.text}</div>
+                    <a href="#" className="mt-2 text-xs font-semibold text-[#363092] flex items-center gap-1">Read More <ArrowRight className="h-3 w-3" /></a>
                   </div>
-                  <div className="mt-1.5 text-base font-semibold text-gray-900 leading-snug">{it.text}</div>
-                  <a href="#" className="mt-2 text-xs font-semibold text-[#363092] flex items-center gap-1">Read More <ArrowRight className="h-3 w-3" /></a>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -167,21 +177,25 @@ export function Gallery() {
   return (
     <section className="bg-white py-12">
       <div className="container-page">
-        <SectionTitle title="Photo & Video Gallery" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1 hover:text-[#FF6B35] transition-colors" href="/media-center/photo-gallery">View All Gallery <ArrowRight className="h-3 w-3" /></a>} />
-        <div className="flex gap-6 border-b border-gray-200 mb-5">
-          <button className="pb-2 text-sm font-semibold border-b-[3px] border-[#363092] text-[#363092]">Photos</button>
-          <button className="pb-2 text-sm font-medium text-gray-500">Videos</button>
-        </div>
+        <Reveal><SectionTitle title="Photo & Video Gallery" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1 hover:text-[#FF6B35] transition-colors" href="/media-center/photo-gallery">View All Gallery <ArrowRight className="h-3 w-3" /></a>} /></Reveal>
+        <Reveal delay={80}>
+          <div className="flex gap-6 border-b border-gray-200 mb-5">
+            <button className="pb-2 text-sm font-semibold border-b-[3px] border-[#363092] text-[#363092]">Photos</button>
+            <button className="pb-2 text-sm font-medium text-gray-500">Videos</button>
+          </div>
+        </Reveal>
         <div className="relative">
           <div className="grid grid-cols-5 gap-5">
-            {items.map(it => (
-              <div key={it.name} className="group cursor-pointer">
-                <div className="overflow-hidden rounded-xl">
-                  <img src={it.img} alt={it.name} className="h-[220px] w-full object-cover bg-gray-200 group-hover:scale-105 transition-transform duration-300" />
+            {items.map((it, i) => (
+              <Reveal key={it.name} delay={i * 90}>
+                <div className="group cursor-pointer">
+                  <div className="overflow-hidden rounded-xl">
+                    <img src={it.img} alt={it.name} className="h-[220px] w-full object-cover bg-gray-200 group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                  <div className="mt-3 text-sm font-bold text-gray-900 leading-tight">{it.name}</div>
+                  <div className="text-xs text-[#FF6B35] mt-0.5">{it.loc}</div>
                 </div>
-                <div className="mt-3 text-sm font-bold text-gray-900 leading-tight">{it.name}</div>
-                <div className="text-xs text-[#FF6B35] mt-0.5">{it.loc}</div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -202,15 +216,17 @@ export function Services() {
   return (
     <section className="py-12" style={{ background: "#F9FAFB" }}>
       <div className="container-page">
-        <SectionTitle title="Our Services" />
+        <Reveal><SectionTitle title="Our Services" /></Reveal>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {items.map(({ i: I, label, desc }) => (
-            <div key={label} className="bg-white border border-gray-200 rounded-lg p-5 text-center">
-              <I className="h-8 w-8 mx-auto text-[#363092]" strokeWidth={1.5} />
-              <div className="mt-3 font-bold text-sm text-gray-900">{label}</div>
-              <div className="mt-1 text-xs text-gray-500">{desc}</div>
-              <a href="#" className="mt-3 text-xs font-semibold text-[#363092] flex items-center justify-center gap-1">Know More <ArrowRight className="h-3 w-3" /></a>
-            </div>
+          {items.map(({ i: I, label, desc }, idx) => (
+            <Reveal key={label} delay={idx * 80}>
+              <div className="bg-white border border-gray-200 rounded-lg p-5 text-center">
+                <I className="h-8 w-8 mx-auto text-[#363092]" strokeWidth={1.5} />
+                <div className="mt-3 font-bold text-sm text-gray-900">{label}</div>
+                <div className="mt-1 text-xs text-gray-500">{desc}</div>
+                <a href="#" className="mt-3 text-xs font-semibold text-[#363092] flex items-center justify-center gap-1">Know More <ArrowRight className="h-3 w-3" /></a>
+              </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -230,24 +246,26 @@ export function Directorate() {
   return (
     <section className="bg-white py-12">
       <div className="container-page">
-        <SectionTitle title="Directorate of Sports and Youth Services" />
+        <Reveal><SectionTitle title="Directorate of Sports and Youth Services" /></Reveal>
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-          <div className="lg:col-span-3">
+          <Reveal delay={100} className="lg:col-span-3">
             <div className="group border border-gray-200 rounded-xl p-4 hover:border-[#363092] hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden">
               <div className="overflow-hidden rounded-md">
                 <img src={sportsCollage} alt="Directorate of Sports" className="w-full object-cover transition-transform duration-500 group-hover:scale-105" style={{ height: 180 }} />
               </div>
               <p className="mt-3 text-sm text-gray-600 group-hover:text-gray-900 transition-colors duration-300">The Directorate is committed to promoting sports, youth welfare and physical education across Maharashtra through policy, programs and partnerships.</p>
             </div>
-          </div>
+          </Reveal>
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tiles.map(({ i: I, label, d }) => (
-              <div key={label} className="border border-gray-200 rounded-lg p-4">
-                <I className="h-7 w-7 text-[#363092]" strokeWidth={1.5} />
-                <div className="mt-2 font-bold text-gray-900">{label}</div>
-                <div className="text-xs text-gray-500">{d}</div>
-                <a href="#" className="mt-3 text-xs font-semibold text-[#363092] flex items-center gap-1">Explore <ArrowRight className="h-3 w-3" /></a>
-              </div>
+            {tiles.map(({ i: I, label, d }, idx) => (
+              <Reveal key={label} delay={150 + idx * 70}>
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <I className="h-7 w-7 text-[#363092]" strokeWidth={1.5} />
+                  <div className="mt-2 font-bold text-gray-900">{label}</div>
+                  <div className="text-xs text-gray-500">{d}</div>
+                  <a href="#" className="mt-3 text-xs font-semibold text-[#363092] flex items-center gap-1">Explore <ArrowRight className="h-3 w-3" /></a>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -366,7 +384,7 @@ export function DistrictFinder() {
   return (
     <section className="py-12 text-white" style={{ background: "#1a237e" }}>
       <div className="container-page grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-        <div>
+        <Reveal>
           <h2 className="text-2xl md:text-3xl font-bold">Find Sports Offices and Facilities in Your District</h2>
           <p className="mt-3 text-white/70 text-sm max-w-md">Search across all 36 districts of Maharashtra to discover stadiums, training centres, sports academies and district sports offices near you.</p>
           <div className="mt-5 flex flex-col sm:flex-row gap-3">
@@ -383,9 +401,9 @@ export function DistrictFinder() {
             <button className="h-12 px-6 rounded-lg font-semibold text-white shrink-0 hover:brightness-110 transition" style={{ background: "#FF6B35" }}>Search District</button>
           </div>
           <div className="mt-4 text-xs text-white/50">Tip: click any marker on the map to select a district.</div>
-        </div>
+        </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Reveal delay={150} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Interactive Maharashtra map */}
           <div className="relative bg-white/10 rounded-xl p-2 overflow-hidden">
             <MiniMaharashtraMap
@@ -411,7 +429,7 @@ export function DistrictFinder() {
             </ul>
             <a href="#" className="mt-4 inline-flex text-sm font-semibold text-[#FF6B35] items-center gap-1">View All Facilities <ArrowRight className="h-3 w-3" /></a>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -431,14 +449,16 @@ export function Downloads() {
   return (
     <section className="bg-white py-12">
       <div className="container-page">
-        <SectionTitle title="Downloads & Information" />
+        <Reveal><SectionTitle title="Downloads & Information" /></Reveal>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
-          {items.map(it => (
-            <div key={it.label} className="border border-gray-200 rounded-xl p-6 text-center hover:shadow-md transition-shadow">
-              <div className={`h-16 w-16 mx-auto rounded-xl grid place-items-center ${it.color}`}><FileText className="h-8 w-8" /></div>
-              <div className="mt-4 text-sm font-bold text-gray-900 min-h-[2.5rem] leading-snug">{it.label}</div>
-              <a href="#" className="mt-3 text-xs font-semibold text-[#363092] flex justify-center items-center gap-1">View All <ArrowRight className="h-3 w-3" /></a>
-            </div>
+          {items.map((it, i) => (
+            <Reveal key={it.label} delay={i * 60}>
+              <div className="border border-gray-200 rounded-xl p-6 text-center hover:shadow-md transition-shadow">
+                <div className={`h-16 w-16 mx-auto rounded-xl grid place-items-center ${it.color}`}><FileText className="h-8 w-8" /></div>
+                <div className="mt-4 text-sm font-bold text-gray-900 min-h-[2.5rem] leading-snug">{it.label}</div>
+                <a href="#" className="mt-3 text-xs font-semibold text-[#363092] flex justify-center items-center gap-1">View All <ArrowRight className="h-3 w-3" /></a>
+              </div>
+            </Reveal>
           ))}
         </div>
       </div>
