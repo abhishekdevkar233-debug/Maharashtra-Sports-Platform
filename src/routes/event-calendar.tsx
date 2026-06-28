@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, SectionWrap, SectionTitle } from "@/components/layout/PageShell";
 import { Calendar, MapPin, X, ChevronLeft, ChevronRight, CheckCircle, Upload, CheckCircle2, ArrowLeft, Search } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { Reveal } from "@/components/ui/Reveal";
 
 export const Route = createFileRoute("/event-calendar")({
   head: () => ({ meta: [{ title: "Event Calendar" }] }),
@@ -279,8 +280,9 @@ function Page() {
               <div className="py-16 text-center text-gray-400">No events found matching your search.</div>
             )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filtered.map(e=>(
-                <div key={e.n} className="group border border-gray-200 rounded-2xl p-5 flex gap-4 bg-white hover:border-[#363092] hover:shadow-md transition-all duration-200">
+              {filtered.map((e, idx)=>(
+                <Reveal key={e.n} delay={idx * 80}>
+                <div className="group border border-gray-200 rounded-2xl p-5 flex gap-4 bg-white hover:border-[#363092] hover:shadow-md transition-all duration-200">
                   <div className="text-center w-16 shrink-0">
                     <div className="text-3xl font-bold text-[#363092]">{e.d}</div>
                     <div className="text-xs uppercase text-gray-500">{e.m}</div>
@@ -298,6 +300,7 @@ function Page() {
                     </div>
                   </div>
                 </div>
+                </Reveal>
               ))}
             </div>
           </>

@@ -178,9 +178,9 @@ export function VenuesDashboard() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[7fr_3fr]">
-        {/* Map */}
-        <div ref={mapRef} className="relative bg-gradient-to-br from-[#F7F9FC] to-[#EEF2FA] p-4 md:p-6"
+      <div>
+        {/* Map — full width */}
+        <div ref={mapRef} className="relative bg-gradient-to-br from-[#F7F9FC] to-[#EEF2FA] px-6 pt-4 pb-10"
           onMouseMove={(e) => { const r = mapRef.current!.getBoundingClientRect(); setPointer({ x: e.clientX - r.left, y: e.clientY - r.top }); }}
           onMouseLeave={() => setHovered(null)}>
           {!geo ? (
@@ -250,31 +250,6 @@ export function VenuesDashboard() {
           </div>
         </div>
 
-        {/* Stats panel */}
-        <div className="relative p-5 md:p-6 bg-[#0d1b4b] text-white">
-          <div aria-hidden className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full" style={{ background: "radial-gradient(circle,#FF6B00,transparent 70%)", opacity: 0.25 }} />
-          <div className="relative">
-            <div className="text-[11px] uppercase tracking-[0.2em] text-[#FF6B00] font-bold">Live Overview</div>
-            <h3 className="text-lg font-bold mt-1 flex items-center gap-1.5"><MapPin className="h-4 w-4 text-[#FF6B00]" />{scopeLabel}</h3>
-            <div className="mt-5 space-y-3">
-              {KPIS.map((k) => {
-                const v = kpiValue(k.key, scopeNames);
-                return (
-                  <div key={k.label} className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 px-4 py-3 flex items-center gap-3">
-                    <span className="text-2xl leading-none">{k.icon}</span>
-                    <div className="flex-1">
-                      <div className="text-[11px] uppercase tracking-wider text-white/60">{k.label}</div>
-                      <div className="text-2xl font-bold leading-tight">
-                        <CountUp key={`${k.key}-${v}`} end={v} duration={1.1} separator="," />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <p className="mt-5 text-[11px] text-white/40 leading-relaxed">Hover a district for a quick summary · click to zoom in and open full details.</p>
-          </div>
-        </div>
       </div>
 
       {/* Detail drawer */}

@@ -31,6 +31,7 @@ import { Route as EliteAthletesRouteImport } from './routes/elite-athletes'
 import { Route as DistrictWebsitesRouteImport } from './routes/district-websites'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AwardSchemesRouteImport } from './routes/award-schemes'
+import { Route as AthletePortalRouteImport } from './routes/athlete-portal'
 import { Route as AboutUsRouteImport } from './routes/about-us'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StadiumsArenasIndexRouteImport } from './routes/stadiums-arenas.index'
@@ -177,6 +178,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const AwardSchemesRoute = AwardSchemesRouteImport.update({
   id: '/award-schemes',
   path: '/award-schemes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AthletePortalRoute = AthletePortalRouteImport.update({
+  id: '/athlete-portal',
+  path: '/athlete-portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutUsRoute = AboutUsRouteImport.update({
@@ -375,6 +381,7 @@ const MediaCenterNewsIdRoute = MediaCenterNewsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about-us': typeof AboutUsRoute
+  '/athlete-portal': typeof AthletePortalRoute
   '/award-schemes': typeof AwardSchemesRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/district-websites': typeof DistrictWebsitesRouteWithChildren
@@ -436,6 +443,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about-us': typeof AboutUsRoute
+  '/athlete-portal': typeof AthletePortalRoute
   '/award-schemes': typeof AwardSchemesRoute
   '/elite-athletes': typeof EliteAthletesRouteWithChildren
   '/event-calendar': typeof EventCalendarRoute
@@ -491,6 +499,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about-us': typeof AboutUsRoute
+  '/athlete-portal': typeof AthletePortalRoute
   '/award-schemes': typeof AwardSchemesRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/district-websites': typeof DistrictWebsitesRouteWithChildren
@@ -554,6 +563,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about-us'
+    | '/athlete-portal'
     | '/award-schemes'
     | '/dashboard'
     | '/district-websites'
@@ -615,6 +625,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about-us'
+    | '/athlete-portal'
     | '/award-schemes'
     | '/elite-athletes'
     | '/event-calendar'
@@ -669,6 +680,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about-us'
+    | '/athlete-portal'
     | '/award-schemes'
     | '/dashboard'
     | '/district-websites'
@@ -731,6 +743,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutUsRoute: typeof AboutUsRoute
+  AthletePortalRoute: typeof AthletePortalRoute
   AwardSchemesRoute: typeof AwardSchemesRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   DistrictWebsitesRoute: typeof DistrictWebsitesRouteWithChildren
@@ -913,6 +926,13 @@ declare module '@tanstack/react-router' {
       path: '/award-schemes'
       fullPath: '/award-schemes'
       preLoaderRoute: typeof AwardSchemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/athlete-portal': {
+      id: '/athlete-portal'
+      path: '/athlete-portal'
+      fullPath: '/athlete-portal'
+      preLoaderRoute: typeof AthletePortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about-us': {
@@ -1367,6 +1387,7 @@ const StadiumsArenasRouteWithChildren = StadiumsArenasRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutUsRoute: AboutUsRoute,
+  AthletePortalRoute: AthletePortalRoute,
   AwardSchemesRoute: AwardSchemesRoute,
   DashboardRoute: DashboardRouteWithChildren,
   DistrictWebsitesRoute: DistrictWebsitesRouteWithChildren,

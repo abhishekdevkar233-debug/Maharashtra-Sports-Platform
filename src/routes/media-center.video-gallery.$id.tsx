@@ -22,6 +22,7 @@ function VideoDetails() {
       <MediaHero
         eyebrow="Video Gallery"
         title="Shiv Chhatrapati Awards 2026-27 — Highlights Reel"
+        back={{ label: "Back to Media Center", to: "/media-center" }}
         crumbs={[
           { label: "Home", to: "/" },
           { label: "Media Center", to: "/media-center" },

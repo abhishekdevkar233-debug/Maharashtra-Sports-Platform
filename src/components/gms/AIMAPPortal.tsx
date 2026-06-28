@@ -1,7 +1,7 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   LayoutDashboard, Users, Brain, TrendingUp, TrendingDown,
-  Activity, Award, BarChart3, Settings, ChevronRight,
+  Activity, Award, BarChart3, Settings, ChevronRight, Search,
   X, LogOut, ArrowLeft, Bell, AlertTriangle, CheckCircle,
   XCircle, Clock, Zap, Target, Eye, Download, RefreshCw,
   Star, Shield, MapPin, Calendar, Filter, ChevronDown,
@@ -132,14 +132,14 @@ function RiskBar({ score, label }: { score: number; label: string }) {
 ═══════════════════════════════════════ */
 function Badge({ label, color }: { label: string; color: string }) {
   const map: Record<string, string> = {
-    green: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-    red: "bg-red-50 text-red-600 border border-red-200",
-    amber: "bg-amber-50 text-amber-700 border border-amber-200",
-    blue: "bg-blue-50 text-blue-700 border border-blue-200",
-    purple: "bg-purple-50 text-purple-700 border border-purple-200",
-    gray: "bg-gray-100 text-gray-500 border border-gray-200",
-    navy: "bg-[#1e3a5f]/10 text-[#1e3a5f] border border-[#1e3a5f]/20",
-    ai: "bg-violet-50 text-violet-700 border border-violet-200",
+    green: "border border-emerald-500 text-emerald-600",
+    red: "border border-red-400 text-red-600",
+    amber: "border border-amber-400 text-amber-600",
+    blue: "border border-blue-400 text-blue-600",
+    purple: "border border-purple-400 text-purple-600",
+    gray: "border border-gray-400 text-gray-500",
+    navy: "border border-[#1e3a5f]/50 text-[#1e3a5f]",
+    ai: "border border-violet-400 text-violet-600",
   };
   return <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${map[color] || map.gray}`}>{label}</span>;
 }
@@ -153,17 +153,56 @@ function AIChip({ label }: { label: string }) {
 }
 
 function TableWrap({ heads, children }: { heads: string[]; children: React.ReactNode }) {
+  const [show, setShow] = useState(10);
+  const [search, setSearch] = useState("");
+  const allRows = React.Children.toArray(children);
+  const cnt = allRows.length;
+  const rows = allRows.slice(0, show);
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              {heads.map(h => <th key={h} className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider px-5 py-3">{h}</th>)}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">{children}</tbody>
-        </table>
+    <div>
+      <div className="flex items-center gap-3 mb-4">
+        <select value={show} onChange={e => setShow(+e.target.value)}
+          className="h-9 px-3 rounded-xl border border-gray-200 text-xs font-semibold text-gray-700 bg-white focus:outline-none focus:border-[#363092]">
+          {[10, 25, 50].map(n => <option key={n} value={n}>Show {n}</option>)}
+        </select>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
+            className="h-9 pl-8 pr-3 w-56 rounded-xl border border-gray-200 text-xs text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:border-[#363092]"/>
+        </div>
+      </div>
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="w-10 px-4 py-3"><input type="checkbox" className="rounded border-gray-300"/></th>
+                <th className="text-left px-4 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider w-12 whitespace-nowrap">SL</th>
+                {heads.map(h => <th key={h} className="text-left px-4 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">{h}</th>)}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {rows.map((child, i) => {
+                if (!React.isValidElement(child)) return child;
+                const idx = String(i + 1).padStart(2, "0");
+                const tr = child as React.ReactElement<{ children?: React.ReactNode }>;
+                return React.cloneElement(tr, {}, [
+                  <td key="cb" className="w-10 px-4 py-3"><input type="checkbox" className="rounded border-gray-300"/></td>,
+                  <td key="sl" className="px-4 py-3 text-[10px] font-bold text-gray-400 tabular-nums">{idx}</td>,
+                  ...React.Children.toArray(tr.props.children)
+                ]);
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="flex items-center justify-between px-1 mt-3">
+        <span className="text-xs text-gray-500">Showing 1 to {Math.min(show, cnt)} of {cnt} entries</span>
+        <div className="flex items-center gap-1">
+          {["«", "‹", "1", "2", "›", "»"].map((l, i) => (
+            <button key={i} className={`h-7 w-7 rounded-lg border text-xs font-bold transition ${l === "1" ? "border-[#363092] bg-[#363092] text-white" : "border-gray-200 text-gray-500 hover:border-[#363092] hover:text-[#363092]"}`}>{l}</button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -220,6 +259,9 @@ const ATTENDANCE_GRID = {
    SCREEN 1 — AI DASHBOARD
 ═══════════════════════════════════════ */
 function ScreenDashboard({ setNav }: { setNav:(n:string)=>void }) {
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setLoaded(true), 60); return () => clearTimeout(t); }, []);
+
   const highRisk   = ATHLETES_AI.filter(a=>a.injuryRisk>=70).length;
   const medalReady = ATHLETES_AI.filter(a=>a.medalPotential>=85).length;
   const dropoutAt  = ATHLETES_AI.filter(a=>a.dropoutRisk>=30).length;
@@ -249,41 +291,66 @@ function ScreenDashboard({ setNav }: { setNav:(n:string)=>void }) {
   ];
 
   return (
-    <div className="p-6 space-y-5">
-      {/* Hero KPI strip with gradients */}
+    <div className="min-h-full relative" style={{ background: "linear-gradient(180deg,#F5F6FB 0%,#EEF1F8 100%)" }}>
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-24 -left-16 h-64 w-64 rounded-full" style={{ background:"radial-gradient(circle,#7c3aed 0%,transparent 70%)", opacity:0.07 }}/>
+        <div className="absolute top-32 right-0 h-72 w-72 rounded-full" style={{ background:"radial-gradient(circle,#f97316 0%,transparent 70%)", opacity:0.06 }}/>
+      </div>
+      <div className="relative p-6 space-y-5">
+
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[18px] font-semibold text-gray-900">AI Analytics Dashboard</h1>
+          <p className="text-xs text-gray-400 mt-0.5">AI & ML Analytics Platform · Government of Maharashtra</p>
+        </div>
+      </div>
+
+      {/* Primary KPI strip */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label:"Athletes Monitored", value:ATHLETES_AI.length,    sub:"Real-time tracking",    color1:"#1e3a5f", color2:"#2d5986", icon:Users },
-          { label:"Avg Medal Potential", value:`${avgPerf}%`,         sub:"AI score, all athletes", color1:AI_COLOR,  color2:"#7c3aed", icon:Brain },
-          { label:"High Injury Risk",    value:highRisk,              sub:"Require immediate action",color1:"#dc2626", color2:"#ef4444", icon:AlertTriangle },
-          { label:"AI Recommendations", value:RECOMMENDATIONS.filter(r=>r.status==="Pending").length, sub:"Awaiting action", color1:ACCENT, color2:"#fb923c", icon:Zap },
-        ].map(({ label, value, sub, color1, color2, icon: Icon }) => (
-          <div key={label} className="rounded-2xl p-5 text-white shadow-lg relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${color1}, ${color2})` }}>
-            <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full opacity-10 bg-white" />
-            <div className="absolute -right-2 -bottom-6 h-24 w-24 rounded-full opacity-10 bg-white" />
-            <Icon className="h-7 w-7 mb-3 opacity-90" />
-            <div className="text-3xl font-black">{value}</div>
-            <div className="text-xs font-bold opacity-90 mt-0.5">{label}</div>
-            <div className="text-[11px] opacity-70 mt-0.5">{sub}</div>
+          { label:"Athletes Monitored",  value:ATHLETES_AI.length,  sub:"Real-time tracking",       accent:"#1e3a5f", iconBg:"rgba(30,58,95,0.10)",   icon:Users         },
+          { label:"Avg Medal Potential", value:`${avgPerf}%`,        sub:"AI score, all athletes",   accent:AI_COLOR,  iconBg:"rgba(124,58,237,0.10)", icon:Brain         },
+          { label:"High Injury Risk",    value:highRisk,             sub:"Require immediate action", accent:"#dc2626", iconBg:"rgba(220,38,38,0.10)",  icon:AlertTriangle },
+          { label:"AI Recommendations",  value:RECOMMENDATIONS.filter(r=>r.status==="Pending").length, sub:"Awaiting action", accent:ACCENT, iconBg:"rgba(249,115,22,0.10)", icon:Zap },
+        ].map(({ label, value, sub, accent, iconBg, icon: Icon }, i) => (
+          <div key={label}
+            className="rounded-2xl bg-white border border-gray-100 shadow-sm p-5 flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-shadow duration-300"
+            style={{ opacity:loaded?1:0, transform:loaded?"translateY(0)":"translateY(14px)", transition:`opacity 0.45s ease, transform 0.45s ease`, transitionDelay:`${i*70}ms` }}>
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl"
+              style={{ background:`radial-gradient(circle at 90% 10%, ${accent}08 0%, transparent 70%)` }}/>
+            <div className="flex-1 min-w-0 relative">
+              <div className="text-[10px] uppercase tracking-[0.18em] font-bold text-gray-400 leading-none mb-2">{label}</div>
+              <div className="text-2xl md:text-3xl font-black text-gray-900 leading-none tracking-tight">{value}</div>
+              <div className="text-xs font-semibold mt-1.5" style={{ color: accent }}>{sub}</div>
+            </div>
+            <div className="h-14 w-14 rounded-2xl grid place-items-center shrink-0 transition-transform duration-300 group-hover:scale-110" style={{ background: iconBg }}>
+              <Icon className="h-6 w-6" style={{ color: accent }}/>
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Second strip */}
+      {/* Secondary KPI strip */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          ["Medal-Ready Athletes", medalReady,  "#059669"],
-          ["Dropout Risk Flags",   dropoutAt,   "#f59e0b"],
-          ["Coaches Monitored",    COACHES_AI.length, PRIMARY ],
-          ["Model Accuracy",      "88%",        AI_COLOR  ],
-        ].map(([l,v,c])=>(
-          <div key={l as string} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center justify-between">
-            <div>
-              <div className="text-2xl font-black" style={{color:c as string}}>{v as string|number}</div>
-              <div className="text-xs font-semibold text-gray-400 mt-0.5">{l as string}</div>
+          { label:"Medal-Ready Athletes", value:medalReady,        sub:"Performance ≥ 85", accent:"#059669", iconBg:"rgba(5,150,105,0.10)",   icon:Award    },
+          { label:"Dropout Risk Flags",   value:dropoutAt,         sub:"Need intervention", accent:"#f59e0b", iconBg:"rgba(245,158,11,0.10)",  icon:AlertTriangle },
+          { label:"Coaches Monitored",    value:COACHES_AI.length, sub:"Active tracking",   accent:PRIMARY,   iconBg:"rgba(30,58,95,0.10)",    icon:Users    },
+          { label:"Model Accuracy",       value:"88%",             sub:"Q2 2027 retrain",   accent:AI_COLOR,  iconBg:"rgba(124,58,237,0.10)", icon:Brain    },
+        ].map(({ label, value, sub, accent, iconBg, icon: Icon }, i) => (
+          <div key={label}
+            className="rounded-2xl bg-white border border-gray-100 shadow-sm p-5 flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-shadow duration-300"
+            style={{ opacity:loaded?1:0, transform:loaded?"translateY(0)":"translateY(12px)", transition:`opacity 0.4s ease, transform 0.4s ease`, transitionDelay:`${280+i*70}ms` }}>
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl"
+              style={{ background:`radial-gradient(circle at 90% 10%, ${accent}08 0%, transparent 70%)` }}/>
+            <div className="flex-1 min-w-0 relative">
+              <div className="text-[10px] uppercase tracking-[0.18em] font-bold text-gray-400 leading-none mb-2">{label}</div>
+              <div className="text-2xl md:text-3xl font-black text-gray-900 leading-none tracking-tight">{value}</div>
+              <div className="text-xs font-semibold mt-1.5" style={{ color: accent }}>{sub}</div>
             </div>
-            <div className="h-10 w-10 rounded-xl grid place-items-center" style={{background:`${c as string}15`}}>
-              <Activity className="h-5 w-5" style={{color:c as string}}/>
+            <div className="h-14 w-14 rounded-2xl grid place-items-center shrink-0 transition-transform duration-300 group-hover:scale-110" style={{ background: iconBg }}>
+              <Icon className="h-6 w-6" style={{ color: accent }}/>
             </div>
           </div>
         ))}
@@ -399,6 +466,7 @@ function ScreenDashboard({ setNav }: { setNav:(n:string)=>void }) {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
@@ -1224,13 +1292,10 @@ export function AIMAPPortal({ onBack }: { onBack: () => void }) {
     <div className="min-h-screen flex" style={{ background: "#f5f6fa" }}>
       <aside className={`${collapsed?"w-16":"w-[220px]"} shrink-0 flex flex-col transition-all duration-300 sticky top-0 h-screen z-30 bg-white border-r border-gray-100 shadow-sm`}>
         <div className="flex items-center gap-2.5 px-3 py-4 border-b border-gray-100 min-h-[64px]">
-          <div className="h-9 w-9 rounded-xl grid place-items-center shrink-0 text-white" style={{background:`linear-gradient(135deg,${PRIMARY},${AI_COLOR})`}}>
-            <Brain className="h-5 w-5"/>
-          </div>
+          <img src={mhSeal} alt="Maharashtra Seal" className="h-10 w-10 object-contain shrink-0"/>
           {!collapsed&&(
             <div className="min-w-0">
-              <div className="font-black text-gray-900 text-sm leading-none">AI MAP Portal</div>
-              <div className="text-[10px] text-gray-400 mt-0.5">AI Analytics Platform</div>
+              <div className="font-black text-gray-900 text-[11px] leading-tight">AI & ML Analytics Platform</div>
             </div>
           )}
           <button onClick={()=>setCollapsed(c=>!c)} className="ml-auto text-gray-300 hover:text-gray-600 transition shrink-0">
@@ -1242,7 +1307,7 @@ export function AIMAPPortal({ onBack }: { onBack: () => void }) {
           {AIMAP_NAV.map(item=>(
             <button key={item.id} onClick={()=>setNav(item.id)} title={collapsed?item.label:undefined}
               className={`w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-sm font-medium transition-all ${nav===item.id?"text-white shadow-sm":"text-gray-500 hover:text-gray-800 hover:bg-gray-50"}`}
-              style={nav===item.id?{background:`linear-gradient(135deg,${PRIMARY},${AI_COLOR})`}:{}}>
+              style={nav===item.id?{background:"linear-gradient(135deg,#363092,#1e2a7a)"}:{}}>
               <item.icon className="h-4 w-4 shrink-0"/>
               {!collapsed&&<span className="flex-1 text-left text-xs truncate">{item.label}</span>}
               {!collapsed&&item.badge>0&&(
@@ -1252,48 +1317,23 @@ export function AIMAPPortal({ onBack }: { onBack: () => void }) {
           ))}
         </nav>
 
-        {!collapsed&&(
-          <div className="mx-2 mb-2 p-3 rounded-xl border border-violet-200 bg-violet-50">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="h-2 w-2 rounded-full bg-violet-500 animate-pulse"/>
-              <span className="text-[10px] font-bold text-violet-700">AI Engine Active</span>
-            </div>
-            <div className="text-[10px] text-violet-600">Models running · 88% accuracy · {pendingRecs} actions pending</div>
-          </div>
-        )}
-
         <div className="p-2 border-t border-gray-100">
           <button onClick={onBack} title={collapsed?"Back to Admin":undefined}
-            className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-xs font-semibold text-white transition hover:opacity-90 active:scale-95"
-            style={{ background: "linear-gradient(135deg,#363092,#1e2a7a)" }}>
-            <LogOut className="h-4 w-4 shrink-0"/>
+            className="w-full flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl text-xs font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition group">
+            <ArrowLeft className="h-4 w-4 shrink-0 group-hover:-translate-x-0.5 transition-transform"/>
             {!collapsed&&<span>Back to Admin</span>}
           </button>
         </div>
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Topbar with AI branding */}
         <header className="h-14 bg-white border-b border-gray-100 flex items-center px-5 gap-4 sticky top-0 z-20 shadow-sm">
-          <img src={mhSeal} alt="MH Seal" className="h-8 w-auto object-contain shrink-0"/>
-          <div className="h-5 w-px bg-gray-200"/>
           {nav!=="dashboard"&&(
-            <button onClick={()=>setNav("dashboard")} className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:border-blue-400 hover:text-blue-600 transition shrink-0">
+            <button onClick={()=>setNav("dashboard")} className="flex items-center gap-1.5 h-8 px-3 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:border-[#363092] hover:text-[#363092] transition shrink-0">
               <ArrowLeft className="h-3.5 w-3.5"/> Back
             </button>
           )}
-          <div className="text-sm text-gray-500">
-            <span className="font-black text-gray-900 cursor-pointer hover:text-blue-600 transition" onClick={()=>setNav("dashboard")}>AI MAP Portal</span>
-            <ChevronRight className="inline h-3.5 w-3.5 mx-1 text-gray-300"/>
-            <span className="font-semibold">{activeLabel}</span>
-          </div>
           <div className="ml-auto flex items-center gap-3">
-            {/* AI status chip */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold" style={{borderColor:`${AI_COLOR}40`,background:`${AI_COLOR}08`,color:AI_COLOR}}>
-              <div className="h-1.5 w-1.5 rounded-full animate-pulse" style={{background:AI_COLOR}}/>
-              <Brain className="h-3.5 w-3.5"/>
-              AI Engine Active · 88% accuracy
-            </div>
             <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
               {["EN","HI","MR"].map(l=>(
                 <button key={l} className={`px-2 py-1 rounded text-[11px] font-bold transition ${l==="EN"?"bg-white shadow-sm":"text-gray-400"}`}>{l}</button>

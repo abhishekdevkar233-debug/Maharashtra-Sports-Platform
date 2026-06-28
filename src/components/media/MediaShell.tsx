@@ -1,19 +1,31 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { ChevronRight, Newspaper, FileText, Image as ImageIcon, Video } from "lucide-react";
+import { ChevronRight, Newspaper, FileText, Image as ImageIcon, Video, ArrowLeft } from "lucide-react";
 
 export const PURPLE = "#6D28D9";
 export const PURPLE_DARK = "#4C1D95";
 export const PURPLE_SOFT = "#F5F3FF";
 
 export function MediaHero({
-  eyebrow, title, subtitle, crumbs,
-}: { eyebrow?: string; title: string; subtitle?: string; crumbs?: { label: string; to?: string }[] }) {
+  eyebrow, title, subtitle, crumbs, back,
+}: {
+  eyebrow?: string; title: string; subtitle?: string;
+  crumbs?: { label: string; to?: string }[];
+  back?: { label: string; to: string };
+}) {
   return (
     <section className="relative overflow-hidden" style={{ background: `linear-gradient(135deg,${PURPLE_DARK} 0%,${PURPLE} 60%,#8B5CF6 100%)` }}>
       <div className="absolute inset-0 opacity-25 pointer-events-none"
         style={{ background: "radial-gradient(circle at 85% 15%, #ffffff55 0%, transparent 45%), radial-gradient(circle at 10% 90%, #ffffff33 0%, transparent 50%)" }} />
       <div className="container-page py-14 md:py-20 relative">
+        {back && (
+          <div className="mb-5">
+            <Link to={back.to}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/40 backdrop-blur-sm border border-white/15 text-white text-sm font-semibold hover:bg-black/60 transition">
+              <ArrowLeft className="h-4 w-4" /> {back.label}
+            </Link>
+          </div>
+        )}
         {crumbs && (
           <nav className="flex items-center gap-1 text-xs text-white/70 mb-4">
             {crumbs.map((c, i) => (

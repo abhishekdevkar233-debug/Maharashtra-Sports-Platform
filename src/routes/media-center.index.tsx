@@ -15,6 +15,7 @@ import newsKheloMedals from "@/assets/news/khelo-india-medals.png";
 import newsKhoKho from "@/assets/news/kho-kho.png";
 import newsSportsComplex from "@/assets/news/sports-complex.jpg";
 import newsScholarships from "@/assets/news/scholarships.png";
+import mhdCover from "@/assets/gallery/mahadeva/photo-3.png";
 
 export const Route = createFileRoute("/media-center/")({
   head: () => ({ meta: [{ title: "Media Center — Sports & Youth Services Maharashtra" }] }),
@@ -27,10 +28,10 @@ const NEWS = [
   { id: "balewadi-aquatic",    cat: "Infrastructure", date: "10 Jun 2026", title: "Balewadi Aquatic Centre inaugurated in Pune",                       excerpt: "FINA-spec 50m pool with diving platform now open for elite athlete training camps.", img: galKheloIndia },
   { id: "khelo-india-prep",    cat: "Tournaments",    date: "05 Jun 2026", title: "State squad announced for Khelo India Youth Games 2026",           excerpt: "428 athletes selected across 27 disciplines — Maharashtra contingent largest in the country.", img: newsKheloMedals },
   { id: "coach-cert-program",  cat: "Department",     date: "29 May 2026", title: "New NIS-affiliated coach certification rolled out",                 excerpt: "Department partners with SAI to certify 1,200 coaches across districts over the next 18 months.", img: galBadminton },
-  { id: "shiv-chhatrapati",    cat: "Athletes",       date: "20 May 2026", title: "Shiv Chhatrapati Award nominations open for 2026-27",              excerpt: "Applications invited across 46 sports disciplines from athletes, coaches and lifetime achievers.", img: newsScholarships },
 ];
 
 const PHOTOS = [
+  { id: "project-maha-deva",            title: "Project Maha-Deva Launch — Mumbai, December 2025",          date: "14 Dec 2025",  count: 5,   tag: "Inaugurations", img: mhdCover },
   { id: "khelo-india-medals",           title: "Maharashtra wins 186 medals at Khelo India Youth Games 2026", date: "4 Jun 2026",   count: 120, tag: "Tournaments",   img: newsKheloMedals },
   { id: "asian-games-2023",             title: "Asian Games 2023 — Team Maharashtra",                          date: "14 Oct 2023",  count: 64,  tag: "Tournaments",   img: galAsianGames },
   { id: "cricket-team",                 title: "Maharashtra Cricket Team — Victory Celebration",               date: "20 May 2026",  count: 42,  tag: "Ceremonies",    img: galCricket },
@@ -95,7 +96,7 @@ function NewsSection() {
           <Link key={a.id} to="/media-center/news/$id" params={{ id: a.id }}
             className="group rounded-2xl border border-gray-200 bg-white overflow-hidden hover:border-[#363092] hover:shadow-lg transition-all duration-200">
             <div className="relative h-44 overflow-hidden">
-              <img src={a.img} alt={a.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src={a.img} alt={a.title} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
               <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-[#363092] text-white text-[10px] font-bold">{a.cat}</span>
             </div>
             <div className="p-4">

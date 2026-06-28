@@ -57,17 +57,17 @@ export function LiveUpdates() {
         <Reveal>
           <SectionTitle title="Live Sports Updates" right={<a className="text-sm font-semibold text-[#363092] flex items-center gap-1 hover:text-[#FF6B35] transition-colors" href="/live-scores">View All Matches <ArrowRight className="h-3 w-3" /></a>} />
         </Reveal>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
           {cards.map((c, i) => (
-            <Reveal key={c.sport} delay={i * 120}>
-              <div className="border border-gray-200 rounded-xl p-4 bg-white cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#363092]/10 hover:border-[#363092]/30 group">
+            <Reveal key={c.sport} delay={i * 120} className="h-full">
+              <div className="h-full flex flex-col border border-gray-200 rounded-xl p-4 bg-white cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#363092]/10 hover:border-[#363092]/30 group">
                 <div className="flex items-center justify-between mb-3">
                   <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-[10px] font-bold tracking-wider flex items-center gap-1">
                     <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse inline-block" />LIVE
                   </span>
                   <span className="text-xs text-gray-500 font-medium">{c.sport}</span>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-1">
                   <div className="flex flex-col items-center gap-1.5 flex-1">
                     <img src={c.aLogo} alt={c.a} className="h-14 w-14 rounded-full object-contain bg-gray-50 p-1 ring-1 ring-gray-200 group-hover:ring-[#363092]/30 group-hover:scale-105 transition-all duration-200" />
                     <span className="text-xs font-semibold text-gray-700 text-center">{c.a}</span>

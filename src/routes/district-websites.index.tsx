@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, SectionWrap } from "@/components/layout/PageShell";
 import { useState } from "react";
-import { Search, Globe, MapPin, X } from "lucide-react";
+import { Search, Globe, MapPin, X, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/district-websites/")({
   head: () => ({ meta: [{ title: "District Websites — DSYS Maharashtra" }] }),
@@ -28,6 +28,44 @@ const DIVISION_COLORS: Record<string, { bg: string; accent: string; text: string
   "Nagpur":     { bg: "#ECFDF5", accent: "#0D9488", text: "#0F766E" },
 };
 
+const DISTRICT_URLS: Record<string, string> = {
+  "Mumbai City":      "https://mumbaicity.gov.in",
+  "Mumbai Suburban":  "https://mumbaisuburban.gov.in",
+  "Thane":            "https://thane.gov.in",
+  "Raigad":           "https://raigad.gov.in",
+  "Ratnagiri":        "https://ratnagiri.gov.in",
+  "Sindhudurg":       "https://sindhudurg.gov.in",
+  "Nashik":           "https://nashik.gov.in",
+  "Dhule":            "https://dhule.gov.in",
+  "Nandurbar":        "https://nandurbar.gov.in",
+  "Jalgaon":          "https://jalgaon.gov.in",
+  "Ahmednagar":       "https://ahmednagar.gov.in",
+  "Pune":             "https://pune.gov.in",
+  "Solapur":          "https://solapur.gov.in",
+  "Satara":           "https://satara.gov.in",
+  "Sangli":           "https://sangli.gov.in",
+  "Kolhapur":         "https://kolhapur.gov.in",
+  "Aurangabad":       "https://aurangabad.gov.in",
+  "Jalna":            "https://jalna.gov.in",
+  "Beed":             "https://beed.gov.in",
+  "Latur":            "https://latur.gov.in",
+  "Osmanabad":        "https://osmanabad.gov.in",
+  "Nanded":           "https://nanded.gov.in",
+  "Hingoli":          "https://hingoli.gov.in",
+  "Parbhani":         "https://parbhani.gov.in",
+  "Amravati":         "https://amravati.gov.in",
+  "Akola":            "https://akola.gov.in",
+  "Washim":           "https://washim.gov.in",
+  "Buldhana":         "https://buldhana.gov.in",
+  "Yavatmal":         "https://yavatmal.gov.in",
+  "Nagpur":           "https://nagpur.gov.in",
+  "Wardha":           "https://wardha.gov.in",
+  "Bhandara":         "https://bhandara.gov.in",
+  "Gondiya":          "https://gondiya.gov.in",
+  "Chandrapur":       "https://chandrapur.gov.in",
+  "Gadchiroli":       "https://gadchiroli.gov.in",
+};
+
 function districtSlug(name: string) {
   return name.toLowerCase().replace(/\s+/g, "-");
 }
@@ -44,16 +82,19 @@ function DistrictCard({ name, colors, division }: {
   division?: string;
 }) {
   const [hovered, setHovered] = useState(false);
+  const url = DISTRICT_URLS[name] ?? `https://${districtSlug(name)}.sports.maharashtra.gov.in`;
   return (
-    <Link
-      to="/district-websites/$id"
-      params={{ id: districtSlug(name) }}
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="flex flex-col items-center gap-2.5 p-4 rounded-2xl border bg-white transition-all duration-200 text-center"
+      className="flex flex-col items-center gap-2.5 p-4 rounded-2xl border bg-white transition-all duration-200 text-center cursor-pointer"
       style={{
         borderColor: hovered ? colors.accent + "80" : "#E5E7EB",
         boxShadow: hovered ? `0 4px 16px -4px ${colors.accent}30` : "none",
+        textDecoration: "none",
       }}
     >
       <div
@@ -66,11 +107,11 @@ function DistrictCard({ name, colors, division }: {
         <p className="text-xs font-bold text-gray-900 leading-snug">{name}</p>
         {division && <p className="text-[10px] text-gray-400 mt-0.5">{division}</p>}
       </div>
-      <div className="text-[10px] font-semibold transition-opacity duration-200"
+      <div className="flex items-center gap-1 text-[10px] font-semibold transition-opacity duration-200"
         style={{ color: colors.accent, opacity: hovered ? 1 : 0 }}>
-        Visit portal →
+        <ExternalLink className="h-3 w-3" /> Visit portal
       </div>
-    </Link>
+    </a>
   );
 }
 

@@ -114,9 +114,9 @@ function Page() {
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filtered.map(h => (
-              <div key={h.name} className="group rounded-2xl border border-gray-200 bg-white overflow-hidden hover:border-[#363092] hover:shadow-lg transition-all duration-200">
+              <div key={h.name} className="group rounded-2xl border border-gray-200 bg-white overflow-hidden hover:border-[#363092] hover:shadow-lg transition-all duration-200 flex flex-col">
                 <div className="h-2" style={{ background: h.color }} />
-                <div className="p-5">
+                <div className="p-5 flex flex-col flex-1">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="h-10 w-10 rounded-xl grid place-items-center shrink-0" style={{ background: `${h.color}15` }}>
                       <Home className="h-5 w-5" style={{ color: h.color }} />
@@ -145,10 +145,13 @@ function Page() {
                       ))}
                     </div>
                   </div>
-                  <Link to="/register/youth-club"
-                    className="mt-4 w-full h-9 rounded-xl border border-gray-200 hover:bg-[#363092] hover:text-white hover:border-[#363092] text-sm font-semibold text-gray-600 flex items-center justify-center gap-1.5 transition">
-                    Apply for Admission <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
+                  <div className="mt-auto pt-4">
+                    <Link to="/register/youth-club"
+                      className="w-full h-10 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-1.5 transition hover:opacity-90 active:scale-95"
+                      style={{ background: "linear-gradient(135deg,#363092,#1e2a7a)" }}>
+                      Apply for Admission <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}

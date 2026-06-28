@@ -30,7 +30,7 @@ function Page() {
           <Select label="Category" options={["All", "Scheme", "Policy", "Circular", "Notice"]} />
         </NoticeToolbar>
 
-        <div className="mt-6 space-y-3">
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           {LIST.map((a, i) => (
             <div key={i} className={`bg-white border border-gray-200 rounded-2xl p-5 flex gap-4 hover:shadow-md transition ${a.priority ? "border-l-[4px] border-l-[#FF6B35]" : ""}`}>
               <div className="h-11 w-11 rounded-xl bg-[#363092]/10 text-[#363092] grid place-items-center shrink-0">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   LayoutDashboard, BookOpen, FileText, Users, ClipboardList,
   Award, BarChart3, Settings, ChevronRight, Search, Plus,
@@ -23,16 +23,16 @@ const ACCENT  = "#f97316";
 ═══════════════════════════════════════════════ */
 function Badge({ label, color }: { label: string; color: string }) {
   const map: Record<string, string> = {
-    green:  "bg-emerald-50 text-emerald-700 border border-emerald-200",
-    red:    "bg-red-50 text-red-600 border border-red-200",
-    amber:  "bg-amber-50 text-amber-700 border border-amber-200",
-    blue:   "bg-blue-50 text-blue-700 border border-blue-200",
-    indigo: "bg-indigo-50 text-indigo-700 border border-indigo-200",
-    gray:   "bg-gray-100 text-gray-500 border border-gray-200",
-    purple: "bg-purple-50 text-purple-700 border border-purple-200",
-    navy:   "bg-[#1e3a5f]/10 text-[#1e3a5f] border border-[#1e3a5f]/20",
-    orange: "bg-orange-50 text-orange-600 border border-orange-200",
-    cyan:   "bg-cyan-50 text-cyan-700 border border-cyan-200",
+    green:  "border border-emerald-500 text-emerald-600",
+    red:    "border border-red-400 text-red-600",
+    amber:  "border border-amber-400 text-amber-600",
+    blue:   "border border-blue-400 text-blue-600",
+    indigo: "border border-indigo-400 text-indigo-600",
+    gray:   "border border-gray-400 text-gray-500",
+    purple: "border border-purple-400 text-purple-600",
+    navy:   "border border-[#1e3a5f]/50 text-[#1e3a5f]",
+    orange: "border border-orange-400 text-orange-600",
+    cyan:   "border border-cyan-400 text-cyan-600",
   };
   return <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${map[color]||map.gray}`}>{label}</span>;
 }
@@ -62,17 +62,56 @@ function KpiCard({ label, value, sub, icon: Icon, color, trend }: {
 }
 
 function TableWrap({ heads, children }: { heads: string[]; children: React.ReactNode }) {
+  const [show, setShow] = useState(10);
+  const [search, setSearch] = useState("");
+  const allRows = React.Children.toArray(children);
+  const cnt = allRows.length;
+  const rows = allRows.slice(0, show);
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              {heads.map(h=><th key={h} className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider px-5 py-3">{h}</th>)}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">{children}</tbody>
-        </table>
+    <div>
+      <div className="flex items-center gap-3 mb-4">
+        <select value={show} onChange={e => setShow(+e.target.value)}
+          className="h-9 px-3 rounded-xl border border-gray-200 text-xs font-semibold text-gray-700 bg-white focus:outline-none focus:border-[#363092]">
+          {[10, 25, 50].map(n => <option key={n} value={n}>Show {n}</option>)}
+        </select>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
+            className="h-9 pl-8 pr-3 w-56 rounded-xl border border-gray-200 text-xs text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:border-[#363092]"/>
+        </div>
+      </div>
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="w-10 px-4 py-3"><input type="checkbox" className="rounded border-gray-300"/></th>
+                <th className="text-left px-4 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider w-12 whitespace-nowrap">SL</th>
+                {heads.map(h => <th key={h} className="text-left px-4 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">{h}</th>)}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {rows.map((child, i) => {
+                if (!React.isValidElement(child)) return child;
+                const idx = String(i + 1).padStart(2, "0");
+                const tr = child as React.ReactElement<{ children?: React.ReactNode }>;
+                return React.cloneElement(tr, {}, [
+                  <td key="cb" className="w-10 px-4 py-3"><input type="checkbox" className="rounded border-gray-300"/></td>,
+                  <td key="sl" className="px-4 py-3 text-[10px] font-bold text-gray-400 tabular-nums">{idx}</td>,
+                  ...React.Children.toArray(tr.props.children)
+                ]);
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="flex items-center justify-between px-1 mt-3">
+        <span className="text-xs text-gray-500">Showing 1 to {Math.min(show, cnt)} of {cnt} entries</span>
+        <div className="flex items-center gap-1">
+          {["«", "‹", "1", "2", "›", "»"].map((l, i) => (
+            <button key={i} className={`h-7 w-7 rounded-lg border text-xs font-bold transition ${l === "1" ? "border-[#363092] bg-[#363092] text-white" : "border-gray-200 text-gray-500 hover:border-[#363092] hover:text-[#363092]"}`}>{l}</button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -381,8 +420,8 @@ function ScreenCourses() {
                 <td className="px-4 py-3.5">{c.mandatory?<Lock className="h-3.5 w-3.5 text-red-400"/>:<Unlock className="h-3.5 w-3.5 text-gray-300"/>}</td>
                 <td className="px-4 py-3.5">
                   <div className="flex gap-1.5">
-                    <button className="h-6 w-6 rounded-lg border border-gray-200 grid place-items-center text-gray-400 hover:text-blue-600 hover:border-blue-300 transition"><Eye className="h-3.5 w-3.5"/></button>
-                    <button className="h-6 w-6 rounded-lg border border-gray-200 grid place-items-center text-gray-400 hover:text-amber-500 hover:border-amber-300 transition"><Edit3 className="h-3.5 w-3.5"/></button>
+                    <button className="h-7 w-7 rounded-full border border-gray-200 grid place-items-center text-gray-400 hover:text-blue-600 hover:border-blue-300 transition"><Eye className="h-3.5 w-3.5"/></button>
+                    <button className="h-7 w-7 rounded-full border border-gray-200 grid place-items-center text-gray-400 hover:text-amber-500 hover:border-amber-300 transition"><Edit3 className="h-3.5 w-3.5"/></button>
                   </div>
                 </td>
               </tr>
@@ -588,9 +627,9 @@ function ScreenContent() {
                           </div>
                         </div>
                         <div className="flex gap-1.5 shrink-0">
-                          <button className="h-6 w-6 rounded-lg border border-gray-200 grid place-items-center text-gray-400 hover:text-blue-600 transition"><Eye className="h-3.5 w-3.5"/></button>
-                          <button className="h-6 w-6 rounded-lg border border-gray-200 grid place-items-center text-gray-400 hover:text-amber-500 transition"><Edit3 className="h-3.5 w-3.5"/></button>
-                          <button className="h-6 w-6 rounded-lg border border-gray-200 grid place-items-center text-gray-400 hover:text-red-500 transition"><Trash2 className="h-3.5 w-3.5"/></button>
+                          <button className="h-7 w-7 rounded-full border border-gray-200 grid place-items-center text-gray-400 hover:text-blue-600 transition"><Eye className="h-3.5 w-3.5"/></button>
+                          <button className="h-7 w-7 rounded-full border border-gray-200 grid place-items-center text-gray-400 hover:text-amber-500 transition"><Edit3 className="h-3.5 w-3.5"/></button>
+                          <button className="h-7 w-7 rounded-full border border-gray-200 grid place-items-center text-gray-400 hover:text-red-500 transition"><Trash2 className="h-3.5 w-3.5"/></button>
                         </div>
                       </div>
                     );
@@ -733,7 +772,7 @@ function ScreenLearners() {
               <td className="px-5 py-3.5 min-w-[130px]"><ProgressBar pct={l.progress}/></td>
               <td className="px-5 py-3.5">
                 <div className="flex gap-1.5">
-                  <button className="h-6 w-6 rounded-lg border border-gray-200 grid place-items-center text-gray-400 hover:text-blue-600 hover:border-blue-300 transition"><Eye className="h-3.5 w-3.5"/></button>
+                  <button className="h-7 w-7 rounded-full border border-gray-200 grid place-items-center text-gray-400 hover:text-blue-600 hover:border-blue-300 transition"><Eye className="h-3.5 w-3.5"/></button>
                   <button className="h-6 px-2 rounded-lg border border-gray-200 text-[10px] font-bold text-gray-600 hover:bg-gray-50 transition">Enroll</button>
                 </div>
               </td>
@@ -852,8 +891,8 @@ function ScreenAssessments() {
                 <td className="px-5 py-3.5"><Badge label={a.status} color={a.status==="Active"?"green":"gray"}/></td>
                 <td className="px-5 py-3.5">
                   <div className="flex gap-1.5">
-                    <button className="h-6 w-6 rounded-lg border border-gray-200 grid place-items-center text-gray-400 hover:text-blue-600 hover:border-blue-300 transition"><Eye className="h-3.5 w-3.5"/></button>
-                    <button className="h-6 w-6 rounded-lg border border-gray-200 grid place-items-center text-gray-400 hover:text-amber-500 hover:border-amber-300 transition"><Edit3 className="h-3.5 w-3.5"/></button>
+                    <button className="h-7 w-7 rounded-full border border-gray-200 grid place-items-center text-gray-400 hover:text-blue-600 hover:border-blue-300 transition"><Eye className="h-3.5 w-3.5"/></button>
+                    <button className="h-7 w-7 rounded-full border border-gray-200 grid place-items-center text-gray-400 hover:text-amber-500 hover:border-amber-300 transition"><Edit3 className="h-3.5 w-3.5"/></button>
                   </div>
                 </td>
               </tr>
@@ -1196,7 +1235,7 @@ function ScreenSettings() {
                 <span className="text-xs font-semibold text-gray-700">{cat}</span>
                 <div className="flex gap-1.5">
                   <span className="text-[10px] font-bold text-gray-400">{COURSES.filter(c=>c.cat===cat).length} courses</span>
-                  <button className="h-6 w-6 rounded-lg border border-gray-200 grid place-items-center text-gray-400 hover:text-amber-500 transition"><Edit3 className="h-3 w-3"/></button>
+                  <button className="h-7 w-7 rounded-full border border-gray-200 grid place-items-center text-gray-400 hover:text-amber-500 transition"><Edit3 className="h-3 w-3"/></button>
                 </div>
               </div>
             ))}
@@ -1213,7 +1252,7 @@ function ScreenSettings() {
                   <Badge label={role as string} color={color}/>
                   <span className="text-[11px] text-gray-500 leading-snug">{desc as string}</span>
                 </div>
-                <button className="h-6 w-6 rounded-lg border border-gray-200 grid place-items-center text-gray-400 hover:text-amber-500 shrink-0 transition"><Edit3 className="h-3 w-3"/></button>
+                <button className="h-7 w-7 rounded-full border border-gray-200 grid place-items-center text-gray-400 hover:text-amber-500 shrink-0 transition"><Edit3 className="h-3 w-3"/></button>
               </div>
             ))}
           </div>
@@ -1261,13 +1300,10 @@ export function LMSPortal({ onBack }: { onBack: () => void }) {
     <div className="min-h-screen flex" style={{ background: "#f5f6fa" }}>
       <aside className={`${collapsed?"w-16":"w-[220px]"} shrink-0 flex flex-col transition-all duration-300 sticky top-0 h-screen z-30 bg-white border-r border-gray-100 shadow-sm`}>
         <div className="flex items-center gap-2.5 px-3 py-4 border-b border-gray-100 min-h-[64px]">
-          <div className="h-9 w-9 rounded-xl grid place-items-center shrink-0 text-white" style={{background:PRIMARY}}>
-            <GraduationCap className="h-5 w-5"/>
-          </div>
+          <img src={mhSeal} alt="Maharashtra Seal" className="h-10 w-10 object-contain shrink-0"/>
           {!collapsed&&(
             <div className="min-w-0">
-              <div className="font-black text-gray-900 text-sm leading-none">LMS Portal</div>
-              <div className="text-[10px] text-gray-400 mt-0.5">e-Learning Platform</div>
+              <div className="font-black text-gray-900 text-[11px] leading-tight">Learning Management System</div>
             </div>
           )}
           <button onClick={()=>setCollapsed(c=>!c)} className="ml-auto text-gray-300 hover:text-gray-600 transition shrink-0">
@@ -1279,7 +1315,7 @@ export function LMSPortal({ onBack }: { onBack: () => void }) {
           {LMS_NAV.map(item=>(
             <button key={item.id} onClick={()=>setNav(item.id)} title={collapsed?item.label:undefined}
               className={`w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-sm font-medium transition-all ${nav===item.id?"text-white shadow-sm":"text-gray-500 hover:text-gray-800 hover:bg-gray-50"}`}
-              style={nav===item.id?{background:PRIMARY}:{}}>
+              style={nav===item.id?{background:"linear-gradient(135deg,#363092,#1e2a7a)"}:{}}>
               <item.icon className="h-4 w-4 shrink-0"/>
               {!collapsed&&<span className="flex-1 text-left text-xs truncate">{item.label}</span>}
               {!collapsed&&item.badge>0&&(
@@ -1291,9 +1327,8 @@ export function LMSPortal({ onBack }: { onBack: () => void }) {
 
         <div className="p-2 border-t border-gray-100">
           <button onClick={onBack} title={collapsed?"Back to Admin":undefined}
-            className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-xs font-semibold text-white transition hover:opacity-90 active:scale-95"
-            style={{ background: "linear-gradient(135deg,#363092,#1e2a7a)" }}>
-            <LogOut className="h-4 w-4 shrink-0"/>
+            className="w-full flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl text-xs font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition group">
+            <ArrowLeft className="h-4 w-4 shrink-0 group-hover:-translate-x-0.5 transition-transform"/>
             {!collapsed&&<span>Back to Admin</span>}
           </button>
         </div>
@@ -1301,23 +1336,12 @@ export function LMSPortal({ onBack }: { onBack: () => void }) {
 
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-14 bg-white border-b border-gray-100 flex items-center px-5 gap-4 sticky top-0 z-20 shadow-sm">
-          <img src={mhSeal} alt="MH Seal" className="h-8 w-auto object-contain shrink-0"/>
-          <div className="h-5 w-px bg-gray-200"/>
           {nav!=="dashboard"&&(
-            <button onClick={()=>setNav("dashboard")} className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:border-blue-400 hover:text-blue-600 transition shrink-0">
+            <button onClick={()=>setNav("dashboard")} className="flex items-center gap-1.5 h-8 px-3 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:border-[#363092] hover:text-[#363092] transition shrink-0">
               <ArrowLeft className="h-3.5 w-3.5"/> Back
             </button>
           )}
-          <div className="text-sm text-gray-500">
-            <span className="font-black text-gray-900 cursor-pointer hover:text-blue-600 transition" onClick={()=>setNav("dashboard")}>LMS Portal</span>
-            <ChevronRight className="inline h-3.5 w-3.5 mx-1 text-gray-300"/>
-            <span className="font-semibold">{activeLabel}</span>
-          </div>
           <div className="ml-auto flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
-              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"/>
-              {LEARNERS.filter(l=>l.lastActive==="Today").length} Learners Active
-            </div>
             <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
               {["EN","HI","MR"].map(l=>(
                 <button key={l} className={`px-2 py-1 rounded text-[11px] font-bold transition ${l==="EN"?"bg-white shadow-sm":"text-gray-400"}`}>{l}</button>

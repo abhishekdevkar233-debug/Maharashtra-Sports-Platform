@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, SectionWrap } from "@/components/layout/PageShell";
 import { useState, useRef, useEffect } from "react";
 import { Search, X, ChevronRight, Clock, MapPin, Trophy, BarChart2, User, Calendar, ArrowLeft } from "lucide-react";
+import { Reveal } from "@/components/ui/Reveal";
 import puneImg from "@/assets/teams/pune.png";
 import mumbaiImg from "@/assets/teams/mumbai.png";
 import vidarbhaImg from "@/assets/teams/vidarbha.png";
@@ -402,7 +403,11 @@ function Page() {
 
             {filtered.length>0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {filtered.map(m=><MatchCard key={m.id} match={m} onClick={()=>setSelected(m)}/>)}
+                {filtered.map((m, idx)=>(
+                  <Reveal key={m.id} delay={idx * 80}>
+                    <MatchCard match={m} onClick={()=>setSelected(m)}/>
+                  </Reveal>
+                ))}
               </div>
             ) : (
               <div className="py-20 text-center">

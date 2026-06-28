@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard, Trophy, Calendar, Users, ShieldCheck,
   BarChart3, FileText, Settings, Bell, ChevronRight,
@@ -99,15 +99,18 @@ function Sparkline({ data, color, width = 120, height = 40 }: { data: number[]; 
 }
 
 function DonutChart({ pct, color, size = 72 }: { pct: number; color: string; size?: number }) {
+  const [anim, setAnim] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setAnim(true), 80); return () => clearTimeout(t); }, []);
   const r = (size - 10) / 2, c = size / 2, circ = 2 * Math.PI * r;
-  const dash = (pct / 100) * circ;
+  const dash = anim ? (pct / 100) * circ : 0;
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size}>
         <circle cx={c} cy={c} r={r} fill="none" stroke="#f3f4f6" strokeWidth="7"/>
         <circle cx={c} cy={c} r={r} fill="none" stroke={color} strokeWidth="7"
           strokeDasharray={`${dash} ${circ - dash}`}
-          strokeDashoffset={circ * 0.25} strokeLinecap="round"/>
+          strokeDashoffset={circ * 0.25} strokeLinecap="round"
+          style={{transition:"stroke-dasharray 1s cubic-bezier(0.4,0,0.2,1)"}}/>
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-sm font-black" style={{ color }}>{pct}%</span>
@@ -149,98 +152,220 @@ const EVENTS_DATA = [
 ];
 
 /* ═══════════════════════════════════════
-   SCREEN 1 — DASHBOARD  (redesigned)
+   SCREEN 1 — DASHBOARD
 ═══════════════════════════════════════ */
 function ScreenDashboard({ onCreateEvent }: { onCreateEvent: () => void }) {
-  const [search, setSearch] = useState("");
-  const [sportFilter, setSportFilter] = useState("All");
+  const [search, setSearch]       = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setLoaded(true), 60); return () => clearTimeout(t); }, []);
 
   const filtered = EVENTS_DATA.filter(e => {
     const q = search.toLowerCase();
-    return (sportFilter === "All" || e.sport === sportFilter)
-      && (statusFilter === "All" || e.status === statusFilter)
+    return (statusFilter === "All" || e.status === statusFilter)
       && (q === "" || e.name.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q));
   });
 
-  const live     = EVENTS_DATA.filter(e => e.status === "Live").length;
-  const upcoming = EVENTS_DATA.filter(e => e.status === "Upcoming" || e.status === "Registration Open").length;
-  const total    = EVENTS_DATA.reduce((a, e) => a + e.entries, 0);
-  const sports   = [...new Set(EVENTS_DATA.map(e => e.sport))].length;
+  const live         = EVENTS_DATA.filter(e => e.status === "Live").length;
+  const totalEntries = EVENTS_DATA.reduce((a, e) => a + e.entries, 0);
+  const sports       = [...new Set(EVENTS_DATA.map(e => e.sport))].length;
 
-  const PENDING_ACTIONS = [
-    { count: 14, label: "Late entry approvals",    sub: "Entries",  color: "#f59e0b" },
-    { count: 3,  label: "Protest decisions",       sub: "Protests", color: "#ef4444" },
-    { count: 22, label: "Result certifications",   sub: "Results",  color: PRIMARY   },
-    { count: 6,  label: "Accreditation overrides", sub: "Accred.",  color: "#7c3aed" },
-  ];
-
-  const LIVE_SESSIONS = [
-    { venue: "Shiv Chhatrapati Complex", sport: "Athletics", session: "Track Finals Day 3", status: "On Time",  color: "#3b82f6" },
-    { venue: "Mahalaxmi Akhada",         sport: "Wrestling", session: "Semi-Finals",        status: "Delayed",  color: "#f59e0b" },
-    { venue: "Balewadi Aquatic Centre",  sport: "Swimming",  session: "Morning Heats",      status: "On Time",  color: "#14b8a6" },
-  ];
+  const statusCounts = {
+    Live:      EVENTS_DATA.filter(e => e.status === "Live").length,
+    Upcoming:  EVENTS_DATA.filter(e => e.status === "Upcoming").length,
+    "Reg Open":EVENTS_DATA.filter(e => e.status === "Registration Open").length,
+    Completed: EVENTS_DATA.filter(e => e.status === "Completed").length,
+  };
 
   const SPORT_DIST = Object.entries(
     EVENTS_DATA.reduce((acc, e) => ({ ...acc, [e.sport]: (acc[e.sport] || 0) + e.entries }), {} as Record<string, number>)
   ).sort((a, b) => b[1] - a[1]);
-  const maxEntries = Math.max(...SPORT_DIST.map(([, v]) => v));
+  const maxE = Math.max(...SPORT_DIST.map(([, v]) => v));
 
-  const statusMap: Record<string,string> = { Live:"green", Upcoming:"blue", "Registration Open":"amber", Completed:"gray", Cancelled:"red" };
+  const LIVE_SESSIONS = [
+    { venue: "Shiv Chhatrapati Complex", sport: "Athletics", session: "Track Finals — Day 3", status: "On Time", color: "#3b82f6" },
+    { venue: "Mahalaxmi Akhada",         sport: "Wrestling", session: "Semi-Finals",          status: "Delayed", color: "#f59e0b" },
+    { venue: "Balewadi Aquatic Centre",  sport: "Swimming",  session: "Morning Heats",        status: "On Time", color: "#14b8a6" },
+  ];
+
+  const totalEvents = EVENTS_DATA.length;
+
+  const KPIs = [
+    { label: "Total Events",     value: String(totalEvents),          sub: `Across ${sports} sports`,   icon: Trophy,     accent: PRIMARY    },
+    { label: "Live Right Now",   value: String(live),                 sub: "Active venues",             icon: Activity,   accent: "#059669"  },
+    { label: "Total Entries",    value: totalEntries.toLocaleString(),sub: "All events combined",       icon: Users,      accent: "#7c3aed"  },
+    { label: "Accreditations",   value: "1,840",                      sub: "Active passes issued",      icon: ShieldCheck,accent: "#0891b2"  },
+  ];
 
   return (
-    <div className="p-6 space-y-5">
-      {/* Page header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-black text-gray-900">Events Dashboard</h1>
-          <p className="text-xs text-gray-400 mt-0.5">Directorate of Sports & Youth Services · Government of Maharashtra</p>
+    <div className="min-h-full relative" style={{ background: "linear-gradient(180deg,#F5F6FB 0%,#EEF1F8 100%)" }}>
+      {/* background blobs */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-24 -left-16 h-64 w-64 rounded-full" style={{ background:"radial-gradient(circle,#363092 0%,transparent 70%)", opacity:0.08 }}/>
+        <div className="absolute top-32 right-0 h-72 w-72 rounded-full" style={{ background:"radial-gradient(circle,#f97316 0%,transparent 70%)", opacity:0.07 }}/>
+      </div>
+
+      <div className="relative p-6 space-y-5">
+
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-[18px] font-semibold text-gray-900">Events Dashboard</h1>
+            <p className="text-xs text-gray-400 mt-0.5">Directorate of Sports & Youth Services · Government of Maharashtra</p>
+          </div>
         </div>
-      </div>
 
-      {/* KPI strip — new flat icon-left design */}
-      <div className="grid grid-cols-4 gap-4">
-        {[
-          { label: "Total Events",        value: String(EVENTS_DATA.length), sub: "Across "+sports+" sports",  icon: Trophy,    accent: PRIMARY,   bg: "#f0f2ff" },
-          { label: "Live Right Now",      value: String(live),               sub: "Active venues",             icon: Activity,  accent: "#059669", bg: "#f0fdf4" },
-          { label: "Upcoming / Reg Open", value: String(upcoming),           sub: "Next 60 days",              icon: Clock,     accent: ACCENT,    bg: "#fff7ed" },
-          { label: "Total Entries",       value: total.toLocaleString(),     sub: "All events combined",       icon: Users,     accent: "#7c3aed", bg: "#faf5ff" },
-        ].map(({ label, value, sub, icon: Icon, accent, bg }) => (
-          <div key={label} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-3.5 flex items-center gap-4">
-            <div className="h-11 w-11 rounded-xl grid place-items-center shrink-0" style={{ background: bg }}>
-              <Icon className="h-5 w-5" style={{ color: accent }}/>
+        {/* KPI row — CM dashboard card style */}
+        <div className="grid grid-cols-4 gap-4">
+          {KPIs.map(({ label, value, sub, icon: Icon, accent }, i) => (
+            <div key={label} className="relative rounded-2xl bg-white/80 backdrop-blur-xl border border-white/60 px-4 py-3 shadow-[0_8px_30px_-12px_rgba(54,48,146,0.2)] overflow-hidden"
+              style={{opacity: loaded?1:0, transform: loaded?"translateY(0)":"translateY(14px)", transition:`opacity 0.45s ease, transform 0.45s ease`, transitionDelay:`${i*70}ms`}}>
+              <div className="absolute -right-5 -top-5 h-20 w-20 rounded-full opacity-10" style={{ background: accent }}/>
+              <div className="flex items-start justify-between">
+                <div className="text-[10px] uppercase tracking-wider font-bold text-gray-500">{label}</div>
+                <div className="h-8 w-8 rounded-xl grid place-items-center text-white shadow-md shrink-0" style={{ background:`linear-gradient(135deg,${accent},${accent}cc)` }}>
+                  <Icon className="h-3.5 w-3.5"/>
+                </div>
+              </div>
+              <div className="mt-2 text-xl font-bold text-gray-900 tracking-tight">{value}</div>
+              <div className="mt-0.5 text-[11px] font-medium" style={{ color: accent }}>{sub}</div>
             </div>
-            <div className="min-w-0">
-              <div className="text-2xl font-black text-gray-900 leading-none">{value}</div>
-              <div className="text-xs font-semibold text-gray-700 mt-0.5">{label}</div>
-              <div className="text-[10px] text-gray-400 mt-0.5">{sub}</div>
+          ))}
+        </div>
+
+        {/* Secondary KPI row */}
+        <div className="grid grid-cols-4 gap-4">
+          {[
+            { l:"Completed This Year",   v:"33",   s:"92% on schedule",   c:"#6b7280", i:CheckCircle2 },
+            { l:"Pending Certifications",v:"22",   s:"Awaiting sign-off", c:"#ef4444", i:AlertCircle  },
+            { l:"Open Protests",         v:"3",    s:"Require decision",  c:"#f59e0b", i:AlertCircle  },
+            { l:"Districts Represented", v:"34",   s:"of 36 districts",   c:"#0891b2", i:MapPin       },
+          ].map(({ l,v,s,c },i)=>(
+            <div key={l} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4"
+              style={{opacity: loaded?1:0, transform: loaded?"translateY(0)":"translateY(12px)", transition:`opacity 0.4s ease, transform 0.4s ease`, transitionDelay:`${280+i*70}ms`}}>
+              <div className="text-2xl font-black" style={{ color:c }}>{v}</div>
+              <div className="text-xs font-semibold text-gray-800 mt-0.5">{l}</div>
+              <div className="text-[10px] text-gray-400 mt-0.5">{s}</div>
             </div>
-            <div className="ml-auto h-1.5 w-1.5 rounded-full shrink-0" style={{ background: accent }}/>
+          ))}
+        </div>
+
+        {/* Row 1 — chart + Event Status (same height via items-stretch) */}
+        <div className="flex gap-5 items-stretch">
+          <div className="flex-1 min-w-0 relative rounded-2xl bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_-12px_rgba(54,48,146,0.18)] p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-gray-900 text-sm">Sport-wise Entry Distribution</h3>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{totalEntries.toLocaleString()} Total Entries</span>
+            </div>
+            <div className="space-y-2.5">
+              {SPORT_DIST.map(([sport, count], si) => (
+                <div key={sport} className="flex items-center gap-3">
+                  <div className="w-20 text-xs font-semibold text-gray-600 text-right shrink-0">{sport}</div>
+                  <div className="flex-1 bg-gray-100 rounded-full h-6 overflow-hidden">
+                    <div className="h-full rounded-full flex items-center pl-3 text-white text-[10px] font-bold"
+                      style={{ width: loaded ? `${(count/maxE)*100}%` : "0%", background: SPORT_COLORS[sport] || PRIMARY, transition:"width 0.8s cubic-bezier(0.4,0,0.2,1)", transitionDelay:`${550+si*60}ms` }}>
+                      {loaded ? count : ""}
+                    </div>
+                  </div>
+                  <div className="w-8 text-[10px] text-gray-400 text-right shrink-0">{Math.round((count/totalEntries)*100)}%</div>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
-      </div>
 
-      {/* Second KPI row */}
-      <div className="grid grid-cols-4 gap-4">
-        {[
-          { l:"Completed This Year",  v:"33",   s:"92% on schedule",  c:"#6b7280", i:CheckCircle2 },
-          { l:"Pending Certifications",v:"22",  s:"Awaiting sign-off", c:"#ef4444", i:AlertCircle  },
-          { l:"Open Protests",        v:"3",    s:"Require decision",  c:"#f59e0b", i:AlertCircle  },
-          { l:"Accreditations Issued",v:"1,840",s:"Active passes",     c:PRIMARY,   i:ShieldCheck  },
-        ].map(({ l,v,s,c,i:Icon })=>(
-          <div key={l} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl grid place-items-center shrink-0" style={{ background:`${c}12` }}>
-              <Icon className="h-4 w-4" style={{ color:c }}/>
+          {/* Event Status Donut */}
+          <div className="w-64 shrink-0 relative rounded-2xl bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_-12px_rgba(54,48,146,0.18)] p-5 flex flex-col">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="font-bold text-gray-900 text-sm">Event Status</h3>
+                <p className="text-[10px] text-gray-400 mt-0.5">{totalEvents} total events</p>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">{live} Live</span>
             </div>
-            <div>
-              <div className="text-xl font-black leading-none" style={{ color:c }}>{v}</div>
-              <div className="text-[11px] font-semibold text-gray-700 mt-0.5">{l}</div>
-              <div className="text-[10px] text-gray-400">{s}</div>
+            <div className="flex items-center justify-center my-2">
+              <DonutChart pct={Math.round((live/totalEvents)*100)} color="#059669" size={108}/>
+            </div>
+            <div className="mt-4 space-y-2.5">
+              {([
+                { label:"Live",      count:statusCounts.Live,        color:"#059669" },
+                { label:"Upcoming",  count:statusCounts.Upcoming,    color:"#3b82f6" },
+                { label:"Reg. Open", count:statusCounts["Reg Open"], color:"#f59e0b" },
+                { label:"Completed", count:statusCounts.Completed,   color:"#9ca3af" },
+              ] as {label:string;count:number;color:string}[]).map(({ label,count,color })=>{
+                const pct = Math.round((count/totalEvents)*100);
+                return (
+                  <div key={label}>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full shrink-0" style={{ background:color }}/>
+                        <span className="text-[11px] text-gray-600">{label}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-bold text-gray-900">{count}</span>
+                        <span className="text-[10px] text-gray-400 w-6 text-right">{pct}%</span>
+                      </div>
+                    </div>
+                    <div className="h-1 rounded-full bg-gray-100 overflow-hidden">
+                      <div className="h-1 rounded-full transition-all duration-500" style={{ width:`${pct}%`, background:color }}/>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        ))}
-      </div>
+        </div>
 
+        {/* Row 2 — events table + right sidebar */}
+        <div className="flex gap-5">
+
+          {/* Events table */}
+          <div className="flex-1 min-w-0">
+            <div className="relative rounded-2xl bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_-12px_rgba(54,48,146,0.18)] overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                <span className="font-bold text-gray-900 text-sm">All Events</span>
+                <div className="flex gap-2">
+                  <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}
+                    className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white outline-none">
+                    {["All","Live","Upcoming","Registration Open","Completed"].map(s=><option key={s}>{s}</option>)}
+                  </select>
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/>
+                    <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search…"
+                      className="h-8 pl-8 pr-3 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1e3a5f] w-36"/>
+                  </div>
+                </div>
+              </div>
+              <div className="grid text-[10px] font-bold text-gray-400 uppercase tracking-wider px-5 py-2.5 border-b border-gray-50 bg-gray-50/60"
+                style={{ gridTemplateColumns:"2.2fr 0.9fr 1fr 0.9fr 1.1fr" }}>
+                {["Event","Sport","Dates","Status","Entries"].map(h=><span key={h}>{h}</span>)}
+              </div>
+              <div className="divide-y divide-gray-50">
+                {filtered.map((e,i)=>(
+                  <div key={i} className="grid items-center px-5 py-3 hover:bg-gray-50/60 transition"
+                    style={{ gridTemplateColumns:"2.2fr 0.9fr 1fr 0.9fr 1.1fr" }}>
+                    <div>
+                      <div className="text-xs font-semibold text-gray-900 leading-snug truncate pr-2">{e.name}</div>
+                      <div className="text-[10px] text-gray-400 mt-0.5 flex items-center gap-1"><MapPin className="h-2.5 w-2.5"/>{e.venue}</div>
+                    </div>
+                    <div><span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background:`${SPORT_COLORS[e.sport]}18`, color:SPORT_COLORS[e.sport] }}>{e.sport}</span></div>
+                    <div className="text-[10px] text-gray-500">{e.dates}</div>
+                    <div><StatusBadge status={e.status}/></div>
+                    <div>
+                      <div className="text-xs font-bold text-gray-800">{e.entries}/{e.capacity}</div>
+                      <div className="mt-1 h-1.5 w-20 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-1.5 rounded-full" style={{ width:`${(e.entries/e.capacity)*100}%`, background:SPORT_COLORS[e.sport]||PRIMARY }}/>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
+      </div>
     </div>
   );
 }
@@ -281,32 +406,47 @@ function ScreenCreateEvent({ onBack }: { onBack: () => void }) {
   );
 
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={onBack} className="h-8 px-3 rounded-xl border border-gray-200 grid place-items-center text-gray-500 hover:border-blue-400 hover:text-blue-600 transition flex items-center gap-1.5 text-xs font-semibold">
-          <ArrowLeft className="h-3.5 w-3.5"/> Back
+    <div className="p-6 space-y-4">
+      {/* Page header card */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
+        <button onClick={onBack}
+          className="h-9 w-9 rounded-xl border border-gray-200 grid place-items-center text-gray-500 hover:border-[#363092] hover:text-[#363092] transition shrink-0">
+          <ArrowLeft className="h-4 w-4"/>
         </button>
-        <div>
-          <h1 className="text-xl font-black text-gray-900">Create New Event</h1>
-          <p className="text-xs text-gray-400">{WIZARD_STEPS[step]} — Step {step+1} of {n}</p>
+        <div className="h-9 w-9 rounded-xl grid place-items-center text-white shrink-0 shadow-sm"
+          style={{ background:"linear-gradient(135deg,#363092,#1e2a7a)" }}>
+          <Plus className="h-4 w-4"/>
+        </div>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-[18px] font-semibold text-gray-900 leading-tight">Create New Event</h1>
+        </div>
+        <div className="text-[11px] font-bold px-3 py-1.5 rounded-full border shrink-0"
+          style={{ color:PRIMARY, borderColor:`${PRIMARY}30`, background:`${PRIMARY}0a` }}>
+          Step {step+1} of {n}
         </div>
       </div>
 
       {/* Stepper */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-5 px-8 py-5">
-        <div className="relative flex items-start">
-          <div className="absolute top-[17px] h-0.5 bg-gray-200" style={{left:`${edgePct}%`,width:`${trackWidth}%`}}/>
-          <div className="absolute top-[17px] h-0.5 transition-all duration-500" style={{background:PRIMARY,left:`${edgePct}%`,width:`${filledWidth}%`}}/>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-10 py-6">
+        <div className="flex items-start">
           {WIZARD_STEPS.map((s, i) => {
-            const done = i < step, cur = i === step;
+            const done = i < step, cur = i === step, isLast = i === n - 1;
             return (
-              <div key={s} className="relative z-10 flex flex-col items-center flex-1">
-                <div className={`h-9 w-9 rounded-full grid place-items-center text-xs font-bold border-2 transition-all ${done?"text-white border-transparent":cur?"bg-white":"bg-white border-gray-200 text-gray-400"}`}
-                  style={done?{background:PRIMARY,borderColor:PRIMARY}:cur?{borderColor:PRIMARY,color:PRIMARY}:{}}>
-                  {done ? <Check className="h-4 w-4"/> : i+1}
+              <div key={s} className={`flex items-start ${!isLast ? "flex-1" : ""}`}>
+                <div className="flex flex-col items-center gap-2 shrink-0">
+                  <div className={`h-9 w-9 rounded-full grid place-items-center text-sm font-bold border-2 transition-all duration-300 ${done?"text-white":cur?"bg-white":"bg-white border-gray-200 text-gray-400"}`}
+                    style={done?{background:PRIMARY,borderColor:PRIMARY}:cur?{borderColor:PRIMARY,color:PRIMARY}:{}}>
+                    {done ? <Check className="h-4 w-4"/> : i+1}
+                  </div>
+                  <span className={`text-[10px] font-semibold text-center leading-tight max-w-[72px] ${done?"text-gray-500":cur?"":"text-gray-400"}`}
+                    style={cur?{color:PRIMARY,fontWeight:700}:{}}>
+                    {s}
+                  </span>
                 </div>
-                <span className={`mt-2 text-[10px] font-semibold text-center leading-tight px-1 ${cur?"font-bold":done?"text-gray-700":"text-gray-400"}`}
-                  style={cur?{color:PRIMARY}:{}}>{s}</span>
+                {!isLast && (
+                  <div className="flex-1 h-0.5 mt-[18px] mx-3 rounded-full transition-all duration-500"
+                    style={{ background: done ? PRIMARY : "#e5e7eb" }}/>
+                )}
               </div>
             );
           })}
@@ -574,142 +714,224 @@ const MONTH_DAYS = (() => {
   return days;
 })();
 
+const MONTH_NAMES  = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const MONTH_SHORT  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
 function ScreenCalendar() {
-  const [view, setView] = useState<"month"|"agenda">("month");
-  const [selected, setSelected] = useState<{name:string;sport:string}|null>(null);
-  const startDow = 2;
-  const blanks = Array(startDow).fill(null);
+  const now = new Date();
+  const [viewYear,  setViewYear]  = useState(now.getFullYear());
+  const [viewMonth, setViewMonth] = useState(now.getMonth());
+  const [view, setView]           = useState<"month"|"agenda">("month");
+  const [selected, setSelected]   = useState<{name:string;sport:string}|null>(null);
+
+  const TODAY_DAY   = now.getDate();
+  const TODAY_MONTH = now.getMonth();
+  const TODAY_YEAR  = now.getFullYear();
+  const isCurrentMonth = viewYear === TODAY_YEAR && viewMonth === TODAY_MONTH;
+
+  const firstDow = new Date(viewYear, viewMonth, 1).getDay();
+  const blanks   = Array(firstDow).fill(null);
+  const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+  const goToPrev = () => viewMonth === 0 ? (setViewMonth(11), setViewYear(y=>y-1)) : setViewMonth(m=>m-1);
+  const goToNext = () => viewMonth === 11 ? (setViewMonth(0), setViewYear(y=>y+1)) : setViewMonth(m=>m+1);
+  const goToToday = () => { setViewYear(TODAY_YEAR); setViewMonth(TODAY_MONTH); };
+
+  const monthEventMap: Record<number,{name:string;sport:string}[]> = Object.fromEntries(MONTH_DAYS.map(d=>[d.day, d.events]));
+  const upcomingEvents = MONTH_DAYS.filter(d=>d.events.length>0);
+  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
 
   return (
-    <div className="p-6 flex gap-5">
-      <div className="flex-1 min-w-0 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <button className="h-8 w-8 rounded-xl border border-gray-200 grid place-items-center hover:border-blue-400 transition"><ChevronLeft className="h-4 w-4"/></button>
-            <h2 className="font-black text-gray-900 text-lg">July 2027</h2>
-            <button className="h-8 w-8 rounded-xl border border-gray-200 grid place-items-center hover:border-blue-400 transition"><ChevronRight className="h-4 w-4"/></button>
-            <button className="h-8 px-3 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:border-blue-400 transition">Today</button>
+    <div className="p-6 space-y-0 flex flex-col gap-5">
+      {/* Header */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-3.5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button onClick={goToPrev} className="h-8 w-8 rounded-xl border border-gray-200 grid place-items-center text-gray-500 hover:border-[#363092] hover:text-[#363092] transition"><ChevronLeft className="h-4 w-4"/></button>
+          <div>
+            <span className="font-bold text-gray-900 text-base">{MONTH_NAMES[viewMonth]}</span>
+            <span className="text-gray-400 text-base ml-1.5">{viewYear}</span>
           </div>
+          <button onClick={goToNext} className="h-8 w-8 rounded-xl border border-gray-200 grid place-items-center text-gray-500 hover:border-[#363092] hover:text-[#363092] transition"><ChevronRight className="h-4 w-4"/></button>
+          <button onClick={goToToday} className="h-8 px-3 rounded-xl text-xs font-semibold text-white transition" style={{background:"linear-gradient(135deg,#363092,#1e2a7a)"}}>Today</button>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+            {Object.entries(SPORT_COLORS).slice(0,4).map(([sport, color])=>(
+              <span key={sport} className="flex items-center gap-1"><span className="h-2 w-2 rounded-full inline-block" style={{background:color}}/>{sport}</span>
+            ))}
+          </div>
+          <div className="h-5 w-px bg-gray-200"/>
           <div className="flex gap-0.5 bg-gray-100 rounded-xl p-1">
-            {["month","agenda"].map(v=>(
-              <button key={v} onClick={()=>setView(v as "month"|"agenda")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition ${view===v?"bg-white text-gray-900 shadow-sm":"text-gray-500 hover:text-gray-700"}`}>{v}</button>
+            {(["month","agenda"] as const).map(v=>(
+              <button key={v} onClick={()=>setView(v)}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold capitalize transition ${view===v?"bg-white text-gray-900 shadow-sm":"text-gray-500 hover:text-gray-700"}`}>{v}</button>
             ))}
           </div>
         </div>
+      </div>
 
-        {view==="month"?(
-          <>
-            <div className="grid grid-cols-7 border-b border-gray-100">
-              {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>(
-                <div key={d} className="text-center text-[11px] font-bold text-gray-400 uppercase py-2">{d}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7">
-              {blanks.map((_,i)=><div key={`b${i}`} className="min-h-[90px] border-b border-r border-gray-50 bg-gray-50/50"/>)}
-              {MONTH_DAYS.map(({day,events})=>(
-                <div key={day} className="min-h-[90px] border-b border-r border-gray-100 p-1.5 hover:bg-gray-50/50 transition">
-                  <div className="text-xs font-bold text-gray-500 mb-1">{day}</div>
-                  <div className="space-y-0.5">
-                    {events.slice(0,2).map((e,i)=>(
-                      <button key={i} onClick={()=>setSelected(e)}
-                        className="w-full text-left px-1.5 py-0.5 rounded-lg text-[9px] font-semibold truncate transition hover:opacity-80"
-                        style={{background:`${SPORT_COLORS[e.sport]}20`,color:SPORT_COLORS[e.sport]}}>
-                        {e.name}
-                      </button>
+      {/* Main area */}
+      <div className="flex gap-5 items-start">
+        {/* Calendar / Agenda */}
+        <div className="flex-1 min-w-0 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          {view==="month" ? (
+            <>
+              {/* Day headers */}
+              <div className="grid grid-cols-7 border-b border-gray-100 bg-gray-50/60">
+                {DAYS.map((d,i)=>(
+                  <div key={d} className={`text-center text-[11px] font-bold uppercase py-3 ${i===0||i===6?"text-gray-300":"text-gray-400"}`}>{d}</div>
+                ))}
+              </div>
+              {/* Grid */}
+              <div className="grid grid-cols-7">
+                {blanks.map((_,i)=>(
+                  <div key={`b${i}`} className="min-h-[104px] border-b border-r border-gray-50 bg-gray-50/30"/>
+                ))}
+                {Array.from({length: daysInMonth}, (_,idx)=>{
+                  const day = idx + 1;
+                  const col = (firstDow + idx) % 7;
+                  const isToday = isCurrentMonth && day === TODAY_DAY;
+                  const isWeekend = col === 0 || col === 6;
+                  const events = monthEventMap[day] ?? [];
+                  return (
+                    <div key={day}
+                      className={`min-h-[104px] border-b border-r border-gray-100 p-2 group transition-colors duration-150 ${isWeekend?"bg-gray-50/40":"hover:bg-indigo-50/30"}`}>
+                      <div className="flex justify-end mb-1.5">
+                        <span className={`h-6 w-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-colors
+                          ${isToday?"text-white":"text-gray-500 group-hover:text-gray-800"}`}
+                          style={isToday?{background:"linear-gradient(135deg,#363092,#1e2a7a)"}:{}}>
+                          {day}
+                        </span>
+                      </div>
+                      <div className="space-y-0.5">
+                        {events.slice(0,2).map((e,i)=>(
+                          <button key={i} onClick={()=>setSelected(e)}
+                            className="w-full text-left pl-2 pr-1 py-0.5 rounded-md text-[9px] font-semibold truncate transition-all hover:opacity-90 hover:scale-[1.01] border-l-2"
+                            style={{borderColor:SPORT_COLORS[e.sport], background:`${SPORT_COLORS[e.sport]}12`, color:SPORT_COLORS[e.sport]}}>
+                            {e.name}
+                          </button>
+                        ))}
+                        {events.length>2&&(
+                          <span className="text-[9px] text-gray-400 pl-2">+{events.length-2} more</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            /* Agenda view */
+            <div className="divide-y divide-gray-50">
+              {upcomingEvents.map(({day,events})=>(
+                <div key={day} className="flex gap-0 hover:bg-gray-50/50 transition-colors">
+                  {/* Date column */}
+                  <div className="w-20 shrink-0 px-4 py-5 border-r border-gray-100 flex flex-col items-center justify-start pt-4">
+                    <div className="text-2xl font-black text-gray-900 leading-none">{day}</div>
+                    <div className="text-[10px] text-gray-400 mt-0.5 uppercase tracking-wider">{MONTH_SHORT[viewMonth]} '{String(viewYear).slice(2)}</div>
+                    {isCurrentMonth && day===TODAY_DAY&&<span className="mt-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white" style={{background:"#363092"}}>Today</span>}
+                  </div>
+                  {/* Events */}
+                  <div className="flex-1 px-4 py-3 space-y-2">
+                    {events.map((e,i)=>(
+                      <div key={i} onClick={()=>setSelected(e)}
+                        className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all cursor-pointer group"
+                        style={{borderLeft:`3px solid ${SPORT_COLORS[e.sport]}`}}>
+                        <div className="h-8 w-8 rounded-lg grid place-items-center shrink-0 text-[10px] font-black"
+                          style={{background:`${SPORT_COLORS[e.sport]}15`,color:SPORT_COLORS[e.sport]}}>
+                          {e.sport.slice(0,2).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold text-gray-800 group-hover:text-[#363092] transition-colors">{e.name}</div>
+                          <div className="text-[10px] text-gray-400 mt-0.5 flex items-center gap-2">
+                            <span style={{color:SPORT_COLORS[e.sport]}}>{e.sport}</span>
+                            <span>· Shiv Chhatrapati Sports Complex, Pune</span>
+                          </div>
+                        </div>
+                        <StatusBadge status="Live"/>
+                      </div>
                     ))}
-                    {events.length>2&&<div className="text-[9px] text-gray-400 pl-1">+{events.length-2} more</div>}
                   </div>
                 </div>
               ))}
             </div>
-          </>
-        ):(
-          <div className="divide-y divide-gray-100">
-            {MONTH_DAYS.filter(d=>d.events.length>0).map(({day,events})=>(
-              <div key={day} className="px-5 py-4 flex gap-5 items-start">
-                <div className="w-16 shrink-0 text-center">
-                  <div className="text-2xl font-black text-gray-900">{day}</div>
-                  <div className="text-xs text-gray-400">Jul 2027</div>
+          )}
+        </div>
+
+        {/* Sidebar */}
+        <div className="w-64 shrink-0 space-y-4">
+          {/* Event detail panel or upcoming summary */}
+          {selected ? (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                <span className="font-bold text-gray-900 text-sm">Event Details</span>
+                <button onClick={()=>setSelected(null)} className="h-6 w-6 rounded-lg bg-gray-100 grid place-items-center text-gray-500 hover:bg-gray-200 transition"><X className="h-3.5 w-3.5"/></button>
+              </div>
+              <div className="p-4">
+                <div className="h-10 w-10 rounded-xl mb-3 grid place-items-center text-sm font-black"
+                  style={{background:`${SPORT_COLORS[selected.sport]}18`,color:SPORT_COLORS[selected.sport]}}>
+                  {selected.sport.slice(0,2).toUpperCase()}
                 </div>
-                <div className="flex-1 space-y-2">
-                  {events.map((e,i)=>(
-                    <div key={i} className="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 hover:border-blue-300 transition cursor-pointer" onClick={()=>setSelected(e)}>
-                      <div className="h-2.5 w-2.5 rounded-full shrink-0" style={{background:SPORT_COLORS[e.sport]}}/>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-gray-800">{e.name}</div>
-                        <div className="text-xs text-gray-400 flex items-center gap-2 mt-0.5">
-                          <span style={{color:SPORT_COLORS[e.sport]}}>{e.sport}</span>
-                          <span>· Shiv Chhatrapati Complex, Pune</span>
-                        </div>
-                      </div>
-                      <StatusBadge status="Live"/>
+                <h3 className="font-bold text-gray-900 text-sm leading-snug">{selected.name}</h3>
+                <div className="mt-1.5"><StatusBadge status="Live"/></div>
+                <div className="mt-3 space-y-2 text-xs">
+                  {[["Sport",selected.sport],["Dates",`18 ${MONTH_SHORT[viewMonth]} → 22 ${MONTH_SHORT[viewMonth]} ${viewYear}`],["Venue","Shiv Chhatrapati Complex"],["Entries","842 / 1000"]].map(([l,v])=>(
+                    <div key={l} className="flex justify-between pb-1.5 border-b border-gray-50 last:border-0">
+                      <span className="text-gray-400">{l}</span>
+                      <span className="font-semibold text-gray-700">{v}</span>
                     </div>
                   ))}
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {selected?(
-        <div className="w-72 shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <span className="font-bold text-gray-800 text-sm">Event Details</span>
-            <button onClick={()=>setSelected(null)} className="text-gray-400 hover:text-gray-700"><X className="h-4 w-4"/></button>
-          </div>
-          <div className="p-5">
-            <div className="h-10 w-10 rounded-2xl mb-3 grid place-items-center font-bold text-sm" style={{background:`${SPORT_COLORS[selected.sport]}15`,color:SPORT_COLORS[selected.sport]}}>
-              {selected.sport.slice(0,2)}
-            </div>
-            <h3 className="font-black text-gray-900 text-base leading-snug">{selected.name}</h3>
-            <div className="mt-2"><StatusBadge status="Live"/></div>
-            <div className="mt-4 space-y-2.5 text-xs text-gray-600">
-              {[["Sport",selected.sport],["Dates","18 Jul → 22 Jul 2027"],["Venue","Shiv Chhatrapati Complex, Pune"],["Host","Maharashtra Athletics Assoc."],["Entries","842 / 1000"]].map(([l,v])=>(
-                <div key={l} className="flex justify-between border-b border-gray-50 pb-2">
-                  <span className="text-gray-400">{l}</span><span className="font-semibold">{v}</span>
+                <div className="mt-3 space-y-1.5">
+                  {["View Full Details","Edit Event","Manage Entries"].map(btn=>(
+                    <button key={btn} className="w-full h-8 rounded-xl border border-gray-200 text-[11px] font-semibold text-gray-600 hover:border-[#363092] hover:text-[#363092] transition">{btn}</button>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
-            <div className="mt-4 space-y-2">
-              {["View Full Details","Edit Event","Manage Entries"].map(btn=>(
-                <button key={btn} className="w-full h-9 rounded-xl border border-gray-200 text-xs font-semibold text-gray-700 hover:border-blue-400 hover:text-blue-600 transition">{btn}</button>
+          ) : (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                <Calendar className="h-3.5 w-3.5 text-[#363092]"/>
+                <span className="font-bold text-gray-900 text-sm">Upcoming Events</span>
+                <span className="ml-auto text-[10px] font-bold text-[#363092] bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">{upcomingEvents.reduce((a,d)=>a+d.events.length,0)}</span>
+              </div>
+              <div className="divide-y divide-gray-50">
+                {upcomingEvents.slice(0,5).map(({day,events})=>(
+                  <div key={day} className="px-4 py-3 flex items-start gap-3 hover:bg-gray-50 transition-colors cursor-pointer" onClick={()=>setSelected(events[0])}>
+                    <div className="h-9 w-9 rounded-xl shrink-0 grid place-items-center font-bold text-xs"
+                      style={{background:`${SPORT_COLORS[events[0].sport]}12`,color:SPORT_COLORS[events[0].sport]}}>
+                      {day}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-semibold text-gray-800 truncate">{events[0].name}</div>
+                      <div className="text-[10px] text-gray-400 mt-0.5">{events[0].sport} · {MONTH_SHORT[viewMonth]} {viewYear}</div>
+                      {events.length>1&&<div className="text-[10px] text-gray-400">+{events.length-1} more</div>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Sport filter */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+              <Filter className="h-3.5 w-3.5 text-gray-400"/>
+              <span className="font-bold text-gray-900 text-sm">Sports Filter</span>
+            </div>
+            <div className="p-4 space-y-2">
+              {Object.entries(SPORT_COLORS).slice(0,6).map(([sport,color])=>(
+                <label key={sport} className="flex items-center gap-2.5 cursor-pointer group">
+                  <input type="checkbox" defaultChecked className="h-3.5 w-3.5 rounded accent-[#363092]"/>
+                  <span className="h-2.5 w-2.5 rounded-full shrink-0 transition-transform group-hover:scale-125" style={{background:color}}/>
+                  <span className="text-xs text-gray-600 group-hover:text-gray-900 transition-colors">{sport}</span>
+                </label>
               ))}
             </div>
           </div>
         </div>
-      ):(
-        <div className="w-52 shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-gray-100 font-bold text-sm text-gray-800 flex items-center gap-2">
-            <Filter className="h-3.5 w-3.5 text-gray-400"/> Filters
-          </div>
-          <div className="p-4 space-y-5">
-            <div>
-              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Sport</div>
-              <div className="space-y-1.5">
-                {Object.keys(SPORT_COLORS).slice(0,6).map(s=>(
-                  <label key={s} className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="h-3.5 w-3.5"/>
-                    <span className="h-2 w-2 rounded-full shrink-0" style={{background:SPORT_COLORS[s]}}/>
-                    {s}
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div>
-              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Status</div>
-              <div className="space-y-1.5">
-                {["Active","Upcoming","Completed"].map(s=>(
-                  <label key={s} className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="h-3.5 w-3.5"/>{s}
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -740,7 +962,7 @@ function ScreenParticipation() {
     <div className="p-6 space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-black text-gray-900">Entry Management</h1>
+          <h1 className="text-[18px] font-semibold text-gray-900">Entry Management</h1>
           <p className="text-xs text-gray-400 mt-0.5">Maharashtra State Athletics Championship 2027</p>
         </div>
         <div className="flex gap-2">
@@ -773,53 +995,283 @@ function ScreenParticipation() {
         ))}
       </div>
 
-      {tab==="assoc"?(
-        <TableWrap heads={["Association","District","Submitted","Confirmed","Pending","Rejected","Withdrawn","Updated","Actions"]}>
-          {ASSOCS.map((a,i)=>(
-            <tr key={i} className="hover:bg-gray-50 transition">
-              <td className="px-5 py-3.5 font-semibold text-gray-800 text-xs">{a.name}</td>
-              <td className="px-5 py-3.5 text-xs text-gray-500">{a.district}</td>
-              <td className="px-5 py-3.5 text-xs font-bold text-gray-800">{a.submitted}</td>
-              <td className="px-5 py-3.5 text-xs font-bold text-emerald-600">{a.confirmed}</td>
-              <td className="px-5 py-3.5 text-xs font-bold text-amber-600">{a.pending}</td>
-              <td className="px-5 py-3.5 text-xs font-bold text-red-500">{a.rejected}</td>
-              <td className="px-5 py-3.5 text-xs font-bold text-gray-400">{a.withdrawn}</td>
-              <td className="px-5 py-3.5 text-xs text-gray-400">{a.updated}</td>
-              <td className="px-5 py-3.5">
-                <button className="text-[10px] font-bold border rounded-lg px-2 py-1 transition" style={{color:PRIMARY,borderColor:`${PRIMARY}30`}}>View Entries</button>
-              </td>
-            </tr>
-          ))}
-        </TableWrap>
-      ):(
-        <>
-          <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/>
-            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by name or registration ID…"
-              className="w-full h-9 pl-9 pr-3 rounded-xl border border-gray-200 text-xs outline-none focus:border-blue-400"/>
+      {/* Table card */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-3 px-5 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-2 text-xs text-gray-600">
+            Show
+            <select className="h-8 w-16 px-2 rounded-lg border border-gray-200 text-xs bg-white outline-none focus:border-[#363092]">
+              {[5,10,25].map(n=><option key={n}>{n}</option>)}
+            </select>
           </div>
-          <TableWrap heads={["Athlete","Reg ID","Association","Sport","Category","Entry Status","Medical","Accred.","Action"]}>
-            {ATHLETES.filter(a=>!search||a.name.toLowerCase().includes(search.toLowerCase())||a.id.toLowerCase().includes(search.toLowerCase())).map((a,i)=>(
-              <tr key={i} className="hover:bg-gray-50 transition">
-                <td className="px-5 py-3.5 font-semibold text-gray-800 text-xs">{a.name}</td>
-                <td className="px-5 py-3.5 font-mono text-gray-500 text-[10px]">{a.id}</td>
-                <td className="px-5 py-3.5 text-xs text-gray-500 truncate max-w-xs">{a.assoc}</td>
-                <td className="px-5 py-3.5"><span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{background:`${SPORT_COLORS[a.sport]}15`,color:SPORT_COLORS[a.sport]}}>{a.sport}</span></td>
-                <td className="px-5 py-3.5 text-xs text-gray-500">{a.cat}</td>
-                <td className="px-5 py-3.5"><StatusBadge status={a.entry}/></td>
-                <td className="px-5 py-3.5"><span className={`text-[10px] font-bold ${a.medical==="Cleared"?"text-emerald-600":"text-amber-600"}`}>{a.medical}</span></td>
-                <td className="px-5 py-3.5"><span className={`text-[10px] font-bold ${a.accred==="Issued"?"text-emerald-600":a.accred==="Blocked"?"text-red-500":"text-amber-600"}`}>{a.accred}</span></td>
-                <td className="px-5 py-3.5">
-                  <div className="flex gap-1">
-                    <button className="text-[10px] font-bold text-emerald-700 border border-emerald-200 rounded-lg px-2 py-0.5 hover:bg-emerald-50 transition">Approve</button>
-                    <button className="text-[10px] font-bold text-red-600 border border-red-200 rounded-lg px-2 py-0.5 hover:bg-red-50 transition">Reject</button>
-                  </div>
-                </td>
-              </tr>
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search…"
+              className="h-8 w-44 pl-8 pr-3 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#363092]"/>
+          </div>
+          <button className="ml-auto h-9 px-4 rounded-xl text-white text-xs font-bold flex items-center gap-2 hover:opacity-90 transition shadow-sm"
+            style={{background:"linear-gradient(135deg,#363092,#1e2a7a)"}}>
+            <Download className="h-3.5 w-3.5"/> Export
+          </button>
+        </div>
+
+        {tab==="assoc" ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50/80">
+                  <th className="px-5 py-3 w-10"><input type="checkbox" className="h-4 w-4 rounded accent-[#363092]"/></th>
+                  {["S.L","Association","District","Submitted","Confirmed","Pending","Rejected","Actions"].map(h=>(
+                    <th key={h} className="text-left text-[11px] font-bold text-gray-500 px-4 py-3 whitespace-nowrap">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {ASSOCS.map((a,i)=>(
+                  <tr key={i} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-5 py-3.5"><input type="checkbox" className="h-4 w-4 rounded accent-[#363092]"/></td>
+                    <td className="px-4 py-3.5 text-xs font-semibold text-gray-500">{String(i+1).padStart(2,"0")}</td>
+                    <td className="px-4 py-3.5">
+                      <div className="text-xs font-semibold text-gray-900">{a.name}</div>
+                      <div className="text-[10px] text-gray-400 mt-0.5">Updated {a.updated}</div>
+                    </td>
+                    <td className="px-4 py-3.5 text-xs text-gray-500">{a.district}</td>
+                    <td className="px-4 py-3.5 text-xs font-bold text-gray-800">{a.submitted}</td>
+                    <td className="px-4 py-3.5"><span className="px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-400 text-emerald-600">{a.confirmed}</span></td>
+                    <td className="px-4 py-3.5"><span className="px-2.5 py-1 rounded-full text-[11px] font-bold border border-amber-400 text-amber-600">{a.pending}</span></td>
+                    <td className="px-4 py-3.5"><span className="px-2.5 py-1 rounded-full text-[11px] font-bold border border-red-400 text-red-500">{a.rejected}</span></td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2">
+                        <button title="View" className="h-7 w-7 rounded-full bg-emerald-50 text-emerald-600 grid place-items-center hover:bg-emerald-100 transition"><Eye className="h-3.5 w-3.5"/></button>
+                        <button title="Edit" className="h-7 w-7 rounded-full bg-blue-50 text-blue-500 grid place-items-center hover:bg-blue-100 transition"><Edit3 className="h-3.5 w-3.5"/></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50/80">
+                  <th className="px-5 py-3 w-10"><input type="checkbox" className="h-4 w-4 rounded accent-[#363092]"/></th>
+                  {["S.L","Athlete","Reg ID","Sport","Entry Status","Medical","Accred.","Actions"].map(h=>(
+                    <th key={h} className="text-left text-[11px] font-bold text-gray-500 px-4 py-3 whitespace-nowrap">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {ATHLETES.filter(a=>!search||a.name.toLowerCase().includes(search.toLowerCase())||a.id.toLowerCase().includes(search.toLowerCase())).map((a,i)=>(
+                  <tr key={i} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-5 py-3.5"><input type="checkbox" className="h-4 w-4 rounded accent-[#363092]"/></td>
+                    <td className="px-4 py-3.5 text-xs font-semibold text-gray-500">{String(i+1).padStart(2,"0")}</td>
+                    <td className="px-4 py-3.5">
+                      <div className="text-xs font-semibold text-gray-900">{a.name}</div>
+                      <div className="text-[10px] text-gray-400 mt-0.5">{a.assoc}</div>
+                    </td>
+                    <td className="px-4 py-3.5 font-mono text-gray-500 text-[10px]">{a.id}</td>
+                    <td className="px-4 py-3.5"><span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{background:`${SPORT_COLORS[a.sport]}15`,color:SPORT_COLORS[a.sport]}}>{a.sport}</span></td>
+                    <td className="px-4 py-3.5"><span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${a.entry==="Confirmed"?"border-emerald-400 text-emerald-600":a.entry==="Ineligible"?"border-red-400 text-red-500":a.entry==="Withdrawn"?"border-gray-300 text-gray-500":"border-amber-400 text-amber-600"}`}>{a.entry}</span></td>
+                    <td className="px-4 py-3.5"><span className={`text-[10px] font-bold ${a.medical==="Cleared"?"text-emerald-600":"text-amber-600"}`}>{a.medical}</span></td>
+                    <td className="px-4 py-3.5"><span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${a.accred==="Issued"?"border-emerald-400 text-emerald-600":a.accred==="Blocked"?"border-red-400 text-red-500":a.accred==="Revoked"?"border-gray-300 text-gray-500":"border-amber-400 text-amber-600"}`}>{a.accred}</span></td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2">
+                        <button title="Approve" className="h-7 w-7 rounded-full bg-emerald-50 text-emerald-600 grid place-items-center hover:bg-emerald-100 transition"><Check className="h-3.5 w-3.5"/></button>
+                        <button title="Reject" className="h-7 w-7 rounded-full bg-red-50 text-red-500 grid place-items-center hover:bg-red-100 transition"><X className="h-3.5 w-3.5"/></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+          <span className="text-xs text-gray-500">Showing {tab==="assoc"?ASSOCS.length:ATHLETES.length} entries</span>
+          <div className="flex items-center gap-1">
+            {["‹‹","‹","1","2","›","››"].map(p=>(
+              <button key={p} className={`h-7 min-w-7 px-2 rounded text-xs font-bold transition ${p==="1"?"text-white":"text-gray-500 hover:bg-gray-100"}`}
+                style={p==="1"?{background:"#363092"}:{}}>{p}</button>
             ))}
-          </TableWrap>
-        </>
-      )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   SCREEN 5 — ACCREDITATION
+═══════════════════════════════════════ */
+function ScreenAccreditation() {
+  const [tab, setTab]       = useState<"athlete"|"official"|"media"|"coach">("athlete");
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+
+  const PASSES = [
+    { name:"Ajay Shelar",      id:"ACC-ATH-001", category:"Athlete",  event:"Athletics Championship",  status:"Issued",   zone:"Field of Play", valid:"31 Dec 2027", photo:true  },
+    { name:"Priya Nimkar",     id:"ACC-ATH-002", category:"Athlete",  event:"Athletics Championship",  status:"Pending",  zone:"Field of Play", valid:"—",           photo:false },
+    { name:"Rahul Khedkar",    id:"ACC-WRS-003", category:"Athlete",  event:"Wrestling Championship",  status:"Issued",   zone:"Field of Play", valid:"31 Dec 2027", photo:true  },
+    { name:"Sneha Patankar",   id:"ACC-SWM-004", category:"Athlete",  event:"Swimming Championship",   status:"Blocked",  zone:"—",             valid:"—",           photo:false },
+    { name:"Rohan Deshmukh",   id:"ACC-KBD-005", category:"Athlete",  event:"Kabaddi Championship",    status:"Revoked",  zone:"—",             valid:"—",           photo:true  },
+    { name:"Dr. Suresh Patil", id:"ACC-OFF-001", category:"Official", event:"Athletics Championship",  status:"Issued",   zone:"Technical Area", valid:"31 Dec 2027", photo:true  },
+    { name:"Anita Kulkarni",   id:"ACC-OFF-002", category:"Official", event:"Wrestling Championship",  status:"Pending",  zone:"Technical Area", valid:"—",           photo:false },
+    { name:"Raj Mehta",        id:"ACC-MED-001", category:"Media",    event:"Multi-Sport Games",       status:"Issued",   zone:"Media Tribune",  valid:"31 Dec 2027", photo:true  },
+    { name:"Neha Joshi",       id:"ACC-MED-002", category:"Media",    event:"Multi-Sport Games",       status:"Pending",  zone:"Media Tribune",  valid:"—",           photo:false },
+    { name:"Coach Vikram",     id:"ACC-COA-001", category:"Coach",    event:"Athletics Championship",  status:"Issued",   zone:"Bench Area",     valid:"31 Dec 2027", photo:true  },
+  ];
+
+  const tabCat: Record<string,string> = { athlete:"Athlete", official:"Official", media:"Media", coach:"Coach" };
+  const filtered = PASSES
+    .filter(p => p.category === tabCat[tab])
+    .filter(p => statusFilter === "All" || p.status === statusFilter)
+    .filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.id.toLowerCase().includes(search.toLowerCase()));
+
+  const counts = { total: PASSES.length, issued: PASSES.filter(p=>p.status==="Issued").length, pending: PASSES.filter(p=>p.status==="Pending").length, blocked: PASSES.filter(p=>p.status==="Blocked"||p.status==="Revoked").length };
+
+  const statusStyle = (s: string) => {
+    if (s === "Issued")  return "border-emerald-200 text-emerald-700 bg-emerald-50";
+    if (s === "Pending") return "border-amber-200 text-amber-700 bg-amber-50";
+    if (s === "Blocked") return "border-red-200 text-red-600 bg-red-50";
+    if (s === "Revoked") return "border-gray-300 text-gray-500 bg-gray-50";
+    return "border-gray-200 text-gray-500 bg-gray-50";
+  };
+
+  const TABS = [
+    { id:"athlete",  label:"Athletes"  },
+    { id:"official", label:"Officials" },
+    { id:"media",    label:"Media"     },
+    { id:"coach",    label:"Coaches"   },
+  ] as const;
+
+  return (
+    <div className="p-6 space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[18px] font-semibold text-gray-900">Accreditation</h1>
+          <p className="text-xs text-gray-400 mt-0.5">Manage passes for athletes, officials, media & coaches</p>
+        </div>
+        <div className="flex gap-2">
+          <button className="h-9 px-4 rounded-xl border border-gray-200 text-xs font-bold text-gray-600 flex items-center gap-1.5 hover:border-blue-400 transition"><Download className="h-3.5 w-3.5"/> Export</button>
+          <button className="h-9 px-4 rounded-xl text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition shadow-sm" style={{ background:"linear-gradient(135deg,#363092,#1e2a7a)" }}><ShieldCheck className="h-3.5 w-3.5"/> Issue Pass</button>
+        </div>
+      </div>
+
+      {/* KPI strip */}
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          { l:"Total Passes",    v:String(counts.total),   s:"All categories",     c:"#363092" },
+          { l:"Issued",          v:String(counts.issued),  s:"Active accreditations", c:"#059669" },
+          { l:"Pending Review",  v:String(counts.pending), s:"Awaiting approval",  c:"#f59e0b" },
+          { l:"Blocked/Revoked", v:String(counts.blocked), s:"Access denied",      c:"#ef4444" },
+        ].map(({ l,v,s,c })=>(
+          <div key={l} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
+            <div className="text-2xl font-black" style={{ color:c }}>{v}</div>
+            <div className="text-xs font-semibold text-gray-800 mt-0.5">{l}</div>
+            <div className="text-[10px] text-gray-400 mt-0.5">{s}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Table card */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-3 px-5 py-4 border-b border-gray-100">
+          {/* Tabs */}
+          <div className="flex gap-1">
+            {TABS.map(t=>(
+              <button key={t.id} onClick={()=>setTab(t.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${tab===t.id?"text-white shadow-sm":"text-gray-500 hover:text-gray-700 hover:bg-gray-50"}`}
+                style={tab===t.id?{background:"linear-gradient(135deg,#363092,#1e2a7a)"}:{}}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+          {/* Filters */}
+          <div className="flex items-center gap-2 ml-auto">
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              Show <select className="h-8 w-16 px-2 rounded-lg border border-gray-200 text-xs bg-white outline-none">{[5,10,25].map(n=><option key={n}>{n}</option>)}</select>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/>
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search name or ID…"
+                className="h-8 pl-8 pr-3 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#363092] w-44"/>
+            </div>
+            <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}
+              className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white outline-none">
+              {["All","Issued","Pending","Blocked","Revoked"].map(s=><option key={s}>{s}</option>)}
+            </select>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50/80">
+                <th className="px-5 py-3 w-10"><input type="checkbox" className="h-4 w-4 rounded accent-[#363092]"/></th>
+                {["S.L","Pass ID","Name","Event","Zone","Status","Valid Until","Actions"].map(h=>(
+                  <th key={h} className="text-left text-[11px] font-bold text-gray-500 px-4 py-3 whitespace-nowrap">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {filtered.length === 0 ? (
+                <tr><td colSpan={9} className="px-5 py-10 text-center text-sm text-gray-400">No records found</td></tr>
+              ) : filtered.map((p,i)=>(
+                <tr key={p.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-5 py-3.5"><input type="checkbox" className="h-4 w-4 rounded accent-[#363092]"/></td>
+                  <td className="px-4 py-3.5 text-xs font-semibold text-gray-500">{String(i+1).padStart(2,"0")}</td>
+                  <td className="px-4 py-3.5 font-mono text-[10px] text-gray-500">{p.id}</td>
+                  <td className="px-4 py-3.5">
+                    <div className="flex items-center gap-2">
+                      <div className="h-7 w-7 rounded-full grid place-items-center text-white text-[9px] font-black shrink-0"
+                        style={{background:"linear-gradient(135deg,#363092,#1e2a7a)"}}>
+                        {p.name.split(" ").map(n=>n[0]).join("").slice(0,2)}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-xs font-semibold text-gray-900 truncate">{p.name}</div>
+                        <div className={`text-[9px] font-bold ${p.photo?"text-emerald-600":"text-amber-600"}`}>{p.photo?"Photo ✓":"No Photo"}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3.5 text-xs text-gray-500 max-w-[160px] truncate">{p.event}</td>
+                  <td className="px-4 py-3.5 text-xs text-gray-500">{p.zone}</td>
+                  <td className="px-4 py-3.5">
+                    <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${statusStyle(p.status)}`}>{p.status}</span>
+                  </td>
+                  <td className="px-4 py-3.5 text-xs text-gray-500">{p.valid}</td>
+                  <td className="px-4 py-3.5">
+                    <div className="flex items-center gap-2">
+                      {p.status === "Issued" && <button title="Print" className="h-7 w-7 rounded-full bg-blue-50 text-blue-500 grid place-items-center hover:bg-blue-100 transition"><Eye className="h-3.5 w-3.5"/></button>}
+                      {p.status === "Pending" && <button title="Approve" className="h-7 w-7 rounded-full bg-emerald-50 text-emerald-600 grid place-items-center hover:bg-emerald-100 transition"><Check className="h-3.5 w-3.5"/></button>}
+                      {p.status === "Issued" && <button title="Revoke" className="h-7 w-7 rounded-full bg-red-50 text-red-500 grid place-items-center hover:bg-red-100 transition"><X className="h-3.5 w-3.5"/></button>}
+                      {(p.status === "Blocked" || p.status === "Revoked") && <button title="Edit" className="h-7 w-7 rounded-full bg-gray-50 text-gray-500 grid place-items-center hover:bg-gray-100 transition"><Edit3 className="h-3.5 w-3.5"/></button>}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+          <span className="text-xs text-gray-500">Showing {filtered.length} of {PASSES.filter(p=>p.category===tabCat[tab]).length} entries</span>
+          <div className="flex items-center gap-1">
+            {["‹‹","‹","1","2","›","››"].map(p=>(
+              <button key={p} className={`h-7 min-w-7 px-2 rounded text-xs font-bold transition ${p==="1"?"text-white":"text-gray-500 hover:bg-gray-100"}`}
+                style={p==="1"?{background:"#363092"}:{}}>{p}</button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -846,7 +1298,7 @@ function ScreenResults() {
     <div className="p-6 space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-black text-gray-900">Results Centre</h1>
+          <h1 className="text-[18px] font-semibold text-gray-900">Results Centre</h1>
           <p className="text-xs text-gray-400 mt-0.5">Maharashtra State Athletics Championship 2027</p>
         </div>
         <div className="flex gap-2">
@@ -861,30 +1313,54 @@ function ScreenResults() {
         ))}
       </div>
 
-      <TableWrap heads={["Sport","Category","Round","Result Summary","Entered By","Protest Window","Status","Actions"]}>
-        {filtered.map((r,i)=>(
-          <tr key={i} className="hover:bg-gray-50 transition">
-            <td className="px-5 py-4"><span className="font-bold px-2 py-0.5 rounded-full text-[10px]" style={{background:`${SPORT_COLORS[r.sport]}15`,color:SPORT_COLORS[r.sport]}}>{r.sport}</span></td>
-            <td className="px-5 py-4 font-semibold text-gray-800 text-[11px]">{r.cat}</td>
-            <td className="px-5 py-4 text-xs text-gray-500">{r.round}</td>
-            <td className="px-5 py-4 text-xs font-semibold text-gray-700">{r.summary}</td>
-            <td className="px-5 py-4 text-xs text-gray-400">{r.by}</td>
-            <td className="px-5 py-4">
-              <span className={`text-[10px] font-bold ${r.window.includes("min")?"text-amber-600":r.window==="Expired"?"text-red-500":"text-gray-400"}`}>{r.window}</span>
-            </td>
-            <td className="px-5 py-4"><StatusBadge status={r.status}/></td>
-            <td className="px-5 py-4">
-              <div className="flex gap-1.5">
-                <button className="text-[10px] font-bold border rounded-lg px-2 py-0.5 transition" style={{color:PRIMARY,borderColor:`${PRIMARY}30`}}>Review</button>
-                {r.status==="Pending Certification"&&<button className="text-[10px] font-bold text-emerald-700 border border-emerald-200 rounded-lg px-2 py-0.5 hover:bg-emerald-50 transition">Certify</button>}
-              </div>
-            </td>
-          </tr>
-        ))}
-        {filtered.length===0&&(
-          <tr><td colSpan={8} className="px-5 py-10 text-center text-sm text-gray-400">No results in this category.</td></tr>
-        )}
-      </TableWrap>
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="flex flex-wrap items-center gap-3 px-5 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-2 text-xs text-gray-600">Show <select className="h-8 w-16 px-2 rounded-lg border border-gray-200 text-xs bg-white outline-none">{[5,10,25].map(n=><option key={n}>{n}</option>)}</select></div>
+          <div className="relative"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/><input placeholder="Search…" className="h-8 w-44 pl-8 pr-3 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#363092]"/></div>
+          <button className="ml-auto h-9 px-4 rounded-xl text-white text-xs font-bold flex items-center gap-2 hover:opacity-90 transition shadow-sm" style={{background:"linear-gradient(135deg,#363092,#1e2a7a)"}}><Download className="h-3.5 w-3.5"/> Export</button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50/80">
+                <th className="px-5 py-3 w-10"><input type="checkbox" className="h-4 w-4 rounded accent-[#363092]"/></th>
+                {["S.L","Sport","Category","Round","Result Summary","Protest Window","Status","Actions"].map(h=>(
+                  <th key={h} className="text-left text-[11px] font-bold text-gray-500 px-4 py-3 whitespace-nowrap">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {filtered.map((r,i)=>(
+                <tr key={i} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-5 py-3.5"><input type="checkbox" className="h-4 w-4 rounded accent-[#363092]"/></td>
+                  <td className="px-4 py-3.5 text-xs font-semibold text-gray-500">{String(i+1).padStart(2,"0")}</td>
+                  <td className="px-4 py-3.5"><span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{background:`${SPORT_COLORS[r.sport]}15`,color:SPORT_COLORS[r.sport]}}>{r.sport}</span></td>
+                  <td className="px-4 py-3.5 text-xs font-semibold text-gray-800">{r.cat}</td>
+                  <td className="px-4 py-3.5 text-xs text-gray-500">{r.round}</td>
+                  <td className="px-4 py-3.5 text-xs font-semibold text-gray-700">{r.summary}</td>
+                  <td className="px-4 py-3.5"><span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${r.window.includes("min")?"border-amber-400 text-amber-600":r.window==="Expired"?"border-red-400 text-red-500":"border-gray-300 text-gray-400"}`}>{r.window}</span></td>
+                  <td className="px-4 py-3.5"><span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${r.status==="Certified"?"border-emerald-400 text-emerald-600":r.status==="Under Protest"?"border-red-400 text-red-500":"border-amber-400 text-amber-600"}`}>{r.status}</span></td>
+                  <td className="px-4 py-3.5">
+                    <div className="flex items-center gap-2">
+                      <button title="Review" className="h-7 w-7 rounded-full bg-blue-50 text-blue-500 grid place-items-center hover:bg-blue-100 transition"><Eye className="h-3.5 w-3.5"/></button>
+                      {r.status==="Pending Certification"&&<button title="Certify" className="h-7 w-7 rounded-full bg-emerald-50 text-emerald-600 grid place-items-center hover:bg-emerald-100 transition"><Check className="h-3.5 w-3.5"/></button>}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filtered.length===0&&<tr><td colSpan={9} className="px-5 py-10 text-center text-sm text-gray-400">No results in this category.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+        <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+          <span className="text-xs text-gray-500">Showing {filtered.length} entries</span>
+          <div className="flex items-center gap-1">
+            {["‹‹","‹","1","›","››"].map(p=>(
+              <button key={p} className={`h-7 min-w-7 px-2 rounded text-xs font-bold transition ${p==="1"?"text-white":"text-gray-500 hover:bg-gray-100"}`} style={p==="1"?{background:"#363092"}:{}}>{p}</button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -979,25 +1455,60 @@ function ScreenReports() {
           </div>
         </div>
 
-        <TableWrap heads={["Sport","Total Entries","Confirmed","Pending","Districts Rep.","Completion %"]}>
-          {BAR_DATA.map((d,i)=>(
-            <tr key={i} className="hover:bg-gray-50 transition">
-              <td className="px-5 py-3.5"><span className="font-bold px-2 py-0.5 rounded-full text-[10px]" style={{background:`${SPORT_COLORS[d.label]}15`,color:SPORT_COLORS[d.label]}}>{d.label}</span></td>
-              <td className="px-5 py-3.5 text-xs font-black text-gray-800">{d.val}</td>
-              <td className="px-5 py-3.5 text-xs font-semibold text-emerald-600">{Math.round(d.val*0.92)}</td>
-              <td className="px-5 py-3.5 text-xs font-semibold text-amber-600">{Math.round(d.val*0.08)}</td>
-              <td className="px-5 py-3.5 text-xs text-gray-600">{20+i*2}</td>
-              <td className="px-5 py-3.5">
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-gray-100 rounded-full h-1.5">
-                    <div className="h-1.5 rounded-full" style={{width:"92%",background:SPORT_COLORS[d.label]}}/>
-                  </div>
-                  <span className="text-xs text-gray-600 font-semibold">92%</span>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </TableWrap>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="flex flex-wrap items-center gap-3 px-5 py-4 border-b border-gray-100">
+            <div className="flex items-center gap-2 text-xs text-gray-600">Show <select className="h-8 w-16 px-2 rounded-lg border border-gray-200 text-xs bg-white outline-none">{[5,10,25].map(n=><option key={n}>{n}</option>)}</select></div>
+            <div className="relative"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/><input placeholder="Search…" className="h-8 w-44 pl-8 pr-3 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#363092]"/></div>
+            <button className="ml-auto h-9 px-4 rounded-xl text-white text-xs font-bold flex items-center gap-2 hover:opacity-90 transition shadow-sm" style={{background:"linear-gradient(135deg,#363092,#1e2a7a)"}}><Download className="h-3.5 w-3.5"/> Export</button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50/80">
+                  <th className="px-5 py-3 w-10"><input type="checkbox" className="h-4 w-4 rounded accent-[#363092]"/></th>
+                  {["S.L","Sport","Total Entries","Confirmed","Pending","Districts","Completion","Actions"].map(h=>(
+                    <th key={h} className="text-left text-[11px] font-bold text-gray-500 px-4 py-3 whitespace-nowrap">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {BAR_DATA.map((d,i)=>(
+                  <tr key={i} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-5 py-3.5"><input type="checkbox" className="h-4 w-4 rounded accent-[#363092]"/></td>
+                    <td className="px-4 py-3.5 text-xs font-semibold text-gray-500">{String(i+1).padStart(2,"0")}</td>
+                    <td className="px-4 py-3.5"><span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{background:`${SPORT_COLORS[d.label]}15`,color:SPORT_COLORS[d.label]}}>{d.label}</span></td>
+                    <td className="px-4 py-3.5 text-xs font-bold text-gray-800">{d.val}</td>
+                    <td className="px-4 py-3.5"><span className="px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-400 text-emerald-600">{Math.round(d.val*0.92)}</span></td>
+                    <td className="px-4 py-3.5"><span className="px-2.5 py-1 rounded-full text-[11px] font-bold border border-amber-400 text-amber-600">{Math.round(d.val*0.08)}</span></td>
+                    <td className="px-4 py-3.5 text-xs text-gray-600">{20+i*2}</td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2 w-32">
+                        <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                          <div className="h-1.5 rounded-full transition-all duration-700" style={{width:"92%",background:SPORT_COLORS[d.label]}}/>
+                        </div>
+                        <span className="text-[11px] font-bold text-gray-600 shrink-0">92%</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2">
+                        <button title="View" className="h-7 w-7 rounded-full bg-blue-50 text-blue-500 grid place-items-center hover:bg-blue-100 transition"><Eye className="h-3.5 w-3.5"/></button>
+                        <button title="Download" className="h-7 w-7 rounded-full bg-gray-50 text-gray-500 grid place-items-center hover:bg-gray-100 transition"><Download className="h-3.5 w-3.5"/></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+            <span className="text-xs text-gray-500">Showing {BAR_DATA.length} of {BAR_DATA.length} entries</span>
+            <div className="flex items-center gap-1">
+              {["‹‹","‹","1","›","››"].map(p=>(
+                <button key={p} className={`h-7 min-w-7 px-2 rounded text-xs font-bold transition ${p==="1"?"text-white":"text-gray-500 hover:bg-gray-100"}`} style={p==="1"?{background:"#363092"}:{}}>{p}</button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -1006,28 +1517,178 @@ function ScreenReports() {
 /* ═══════════════════════════════════════
    SCREEN 7 — SETTINGS
 ═══════════════════════════════════════ */
-function ScreenSettings() {
+function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div className="p-6 max-w-3xl space-y-5">
-      <h1 className="text-xl font-black text-gray-900">Settings</h1>
-      {[
-        {title:"General Configuration",         fields:[["Portal Name","GMS — Maharashtra Sports"],["Default Language","English"],["Timezone","IST (UTC+5:30)"],["Auto Logout (min)","30"]]},
-        {title:"Notification Preferences",       fields:[["Email Alerts","Enabled"],["SMS Alerts","Enabled"],["WhatsApp Alerts","Enabled"],["Push Notifications","Disabled"]]},
-        {title:"Result Certification Settings",  fields:[["Protest Window (minutes)","30"],["Auto-certify after window","Yes"],["Require dual scorer sign-off","Yes"]]},
-      ].map(({title,fields})=>(
-        <div key={title} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="font-bold text-gray-800 text-sm mb-4 pb-3 border-b border-gray-100">{title}</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {fields.map(([label,value])=>(
-              <div key={label}>
-                <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">{label}</div>
-                <input defaultValue={value} className="w-full h-10 px-3 rounded-xl border border-gray-200 focus:border-blue-400 outline-none text-sm transition"/>
+    <button onClick={() => onChange(!on)}
+      className={`relative h-6 w-11 rounded-full transition-colors duration-200 shrink-0 ${on ? "" : "bg-gray-200"}`}
+      style={on ? { background: "linear-gradient(135deg,#363092,#1e2a7a)" } : {}}>
+      <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${on ? "translate-x-5" : ""}`}/>
+    </button>
+  );
+}
+
+function ScreenSettings() {
+  const [notifs, setNotifs] = useState({ email: true, sms: true, whatsapp: true, push: false });
+  const [cert, setCert]     = useState({ autoCertify: true, dualScorer: true });
+
+  return (
+    <div className="p-6 space-y-6 max-w-3xl">
+
+      {/* Page header */}
+      <div className="flex items-start gap-4">
+        <div className="h-11 w-11 rounded-2xl grid place-items-center text-white shadow-md shrink-0"
+          style={{ background: "linear-gradient(135deg,#363092,#1e2a7a)" }}>
+          <Settings className="h-5 w-5"/>
+        </div>
+        <div>
+          <h1 className="text-[18px] font-semibold text-gray-900 leading-tight">Portal Settings</h1>
+          <p className="text-xs text-gray-400 mt-0.5">Manage your GMS configuration, notifications, and certification rules.</p>
+        </div>
+      </div>
+
+      {/* Section 1 — General */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
+          <div className="h-8 w-8 rounded-xl grid place-items-center" style={{ background: "#363092" + "12" }}>
+            <LayoutDashboard className="h-4 w-4" style={{ color: "#363092" }}/>
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900 text-sm">General Configuration</h3>
+            <p className="text-[11px] text-gray-400 mt-0.5">Basic identity and session settings for the portal.</p>
+          </div>
+        </div>
+        <div className="px-6 py-5 space-y-5">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Portal Name</label>
+            <input defaultValue="GMS — Maharashtra Sports" className="w-full h-11 px-4 rounded-xl border border-gray-200 focus:border-[#363092] outline-none text-sm transition"/>
+            <p className="text-[11px] text-gray-400 mt-1.5">Displayed in headers, reports, and official documents.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-5">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Default Language</label>
+              <select className="w-full h-11 px-4 rounded-xl border border-gray-200 focus:border-[#363092] outline-none text-sm bg-white transition">
+                <option>English</option><option>Marathi</option><option>Hindi</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Timezone</label>
+              <select className="w-full h-11 px-4 rounded-xl border border-gray-200 focus:border-[#363092] outline-none text-sm bg-white transition">
+                <option>IST (UTC+5:30)</option>
+              </select>
+            </div>
+          </div>
+          <div className="max-w-xs">
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Auto Logout (minutes)</label>
+            <input type="number" defaultValue={30} className="w-full h-11 px-4 rounded-xl border border-gray-200 focus:border-[#363092] outline-none text-sm transition"/>
+            <p className="text-[11px] text-gray-400 mt-1.5">Minutes of inactivity before automatic sign-out.</p>
+          </div>
+        </div>
+        <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex justify-end">
+          <button className="h-9 px-6 rounded-xl text-white text-xs font-bold hover:opacity-90 transition shadow-sm"
+            style={{ background: "linear-gradient(135deg,#363092,#1e2a7a)" }}>Save Changes</button>
+        </div>
+      </div>
+
+      {/* Section 2 — Notifications */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
+          <div className="h-8 w-8 rounded-xl grid place-items-center" style={{ background: "#0891b2" + "12" }}>
+            <Bell className="h-4 w-4 text-cyan-600"/>
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900 text-sm">Notification Preferences</h3>
+            <p className="text-[11px] text-gray-400 mt-0.5">Choose how the portal delivers alerts and updates.</p>
+          </div>
+        </div>
+        <div className="divide-y divide-gray-50">
+          {([
+            { key:"email",    icon:Send,     label:"Email Alerts",        desc:"Send event updates and entry confirmations via email." },
+            { key:"sms",      icon:Zap,      label:"SMS Alerts",          desc:"Deliver time-sensitive alerts to registered phone numbers." },
+            { key:"whatsapp", icon:Activity, label:"WhatsApp Alerts",     desc:"Send messages to athlete and official WhatsApp numbers." },
+            { key:"push",     icon:Bell,     label:"Push Notifications",  desc:"Browser push notifications for admin dashboard users." },
+          ] as { key: keyof typeof notifs; icon: typeof Bell; label: string; desc: string }[]).map(({ key, icon: Icon, label, desc }) => (
+            <div key={key} className="flex items-center gap-4 px-6 py-4">
+              <div className="h-9 w-9 rounded-xl grid place-items-center shrink-0 bg-gray-50">
+                <Icon className="h-4 w-4 text-gray-500"/>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-semibold text-gray-800">{label}</div>
+                <div className="text-[11px] text-gray-400 mt-0.5">{desc}</div>
+              </div>
+              <Toggle on={notifs[key]} onChange={v => setNotifs(n => ({ ...n, [key]: v }))}/>
+            </div>
+          ))}
+        </div>
+        <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex justify-end">
+          <button className="h-9 px-6 rounded-xl text-white text-xs font-bold hover:opacity-90 transition shadow-sm"
+            style={{ background: "linear-gradient(135deg,#363092,#1e2a7a)" }}>Save Changes</button>
+        </div>
+      </div>
+
+      {/* Section 3 — Result Certification */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
+          <div className="h-8 w-8 rounded-xl grid place-items-center" style={{ background: "#059669" + "12" }}>
+            <ShieldCheck className="h-4 w-4 text-emerald-600"/>
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900 text-sm">Result Certification</h3>
+            <p className="text-[11px] text-gray-400 mt-0.5">Configure protest windows and dual sign-off requirements.</p>
+          </div>
+        </div>
+        <div className="px-6 py-5 space-y-5">
+          <div className="max-w-xs">
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Protest Window (minutes)</label>
+            <input type="number" defaultValue={30} className="w-full h-11 px-4 rounded-xl border border-gray-200 focus:border-[#363092] outline-none text-sm transition"/>
+            <p className="text-[11px] text-gray-400 mt-1.5">Time window after result entry during which protests can be filed.</p>
+          </div>
+          <div className="space-y-0 divide-y divide-gray-50 rounded-xl border border-gray-100 overflow-hidden">
+            {([
+              { key:"autoCertify", label:"Auto-certify after window", desc:"Automatically mark results as certified once the protest window expires." },
+              { key:"dualScorer",  label:"Require dual scorer sign-off", desc:"Two officials must independently validate each result before entry." },
+            ] as { key: keyof typeof cert; label: string; desc: string }[]).map(({ key, label, desc }) => (
+              <div key={key} className="flex items-center gap-4 px-4 py-4">
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-gray-800">{label}</div>
+                  <div className="text-[11px] text-gray-400 mt-0.5">{desc}</div>
+                </div>
+                <Toggle on={cert[key]} onChange={v => setCert(c => ({ ...c, [key]: v }))}/>
               </div>
             ))}
           </div>
-          <button className="mt-4 h-9 px-5 rounded-xl text-white text-xs font-bold hover:opacity-90 transition" style={{background:PRIMARY}}>Save Changes</button>
         </div>
-      ))}
+        <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex justify-end">
+          <button className="h-9 px-6 rounded-xl text-white text-xs font-bold hover:opacity-90 transition shadow-sm"
+            style={{ background: "linear-gradient(135deg,#363092,#1e2a7a)" }}>Save Changes</button>
+        </div>
+      </div>
+
+      {/* Section 4 — Danger zone */}
+      <div className="bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-5 border-b border-red-100 flex items-center gap-3">
+          <div className="h-8 w-8 rounded-xl grid place-items-center bg-red-50">
+            <AlertCircle className="h-4 w-4 text-red-500"/>
+          </div>
+          <div>
+            <h3 className="font-bold text-red-600 text-sm">Danger Zone</h3>
+            <p className="text-[11px] text-gray-400 mt-0.5">These actions are irreversible. Proceed with caution.</p>
+          </div>
+        </div>
+        <div className="px-6 py-5 space-y-3">
+          {[
+            { label:"Archive All Events",   desc:"Move all completed events to archived state. Entries and results are preserved." },
+            { label:"Reset Portal Data",    desc:"Delete all draft events and clear temporary data. This cannot be undone." },
+          ].map(({ label, desc }) => (
+            <div key={label} className="flex items-center justify-between gap-4 p-4 rounded-xl border border-red-100 bg-red-50/30">
+              <div>
+                <div className="text-sm font-semibold text-gray-800">{label}</div>
+                <div className="text-[11px] text-gray-500 mt-0.5">{desc}</div>
+              </div>
+              <button className="h-9 px-4 rounded-xl border border-red-300 text-red-600 text-xs font-bold hover:bg-red-50 transition shrink-0">{label.split(" ")[0]}</button>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -1036,153 +1697,177 @@ function ScreenSettings() {
    GMS PORTAL SHELL
 ═══════════════════════════════════════ */
 /* ═══════════════════════════════════════
-   SCREEN — EVENTS (with Create Event button)
+   SCREEN — EVENTS
 ═══════════════════════════════════════ */
 function ScreenEvents({ onCreateEvent }: { onCreateEvent: () => void }) {
-  const [sportFilter, setSportFilter] = useState("All");
+  const [search, setSearch]             = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [search, setSearch] = useState("");
+  const [perPage, setPerPage]           = useState(10);
+  const [page, setPage]                 = useState(1);
+  const [checked, setChecked]           = useState<number[]>([]);
+
   const filtered = EVENTS_DATA.filter(e =>
-    (sportFilter === "All" || e.sport === sportFilter) &&
     (statusFilter === "All" || e.status === statusFilter) &&
-    (search === "" || e.name.toLowerCase().includes(search.toLowerCase()))
+    (search === "" || e.name.toLowerCase().includes(search.toLowerCase()) || e.sport.toLowerCase().includes(search.toLowerCase()))
   );
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+  const paged      = filtered.slice((page - 1) * perPage, page * perPage);
+  const allChecked = paged.length > 0 && paged.every((_, i) => checked.includes((page - 1) * perPage + i));
+
+  const toggleAll  = () => setChecked(allChecked ? [] : paged.map((_, i) => (page - 1) * perPage + i));
+  const toggleOne  = (idx: number) => setChecked(c => c.includes(idx) ? c.filter(x => x !== idx) : [...c, idx]);
+
+  const statusStyle: Record<string, string> = {
+    "Live":              "border border-emerald-500 text-emerald-600",
+    "Upcoming":          "border border-blue-500 text-blue-600",
+    "Registration Open": "border border-amber-500 text-amber-600",
+    "Completed":         "border border-gray-400 text-gray-500",
+    "Cancelled":         "border border-red-400 text-red-500",
+  };
 
   return (
-    <div className="p-6 space-y-5">
-      {/* Header */}
+    <div className="p-6 space-y-4">
+      {/* Page header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-bold text-gray-900">Events</h1>
-          <p className="text-xs text-gray-400 mt-0.5">Directorate of Sports & Youth Services · Maharashtra</p>
+        <h1 className="text-[18px] font-semibold text-gray-900">Events</h1>
+        <div className="text-xs text-gray-400">
+          Dashboard
+          <span className="mx-1.5 text-gray-300">&rsaquo;</span>
+          <span className="text-gray-600 font-semibold">Events</span>
         </div>
-        <button onClick={onCreateEvent}
-          className="h-10 px-5 rounded-xl text-white text-sm font-bold flex items-center gap-2 hover:opacity-90 transition shadow-md"
-          style={{ background: `linear-gradient(135deg,${PRIMARY},#1e2a7a)` }}>
-          <Plus className="h-4 w-4"/> Create Event
-        </button>
       </div>
 
-      {/* Table card */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      {/* Card */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
         {/* Toolbar */}
-        <div className="flex flex-wrap items-center gap-3 px-5 py-3.5 border-b border-gray-100">
+        <div className="flex flex-wrap items-center gap-3 px-5 py-4 border-b border-gray-100">
+          {/* Show N */}
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span>Show</span>
+            <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}
+              className="h-8 w-16 px-2 rounded-lg border border-gray-200 text-xs bg-white outline-none focus:border-[#363092]">
+              {[5,10,25,50].map(n => <option key={n}>{n}</option>)}
+            </select>
+          </div>
+
+          {/* Search */}
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search events…"
-              className="h-8 w-56 pl-8 pr-3 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#363092] focus:ring-1 focus:ring-[#363092]/20"/>
+            <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search"
+              className="h-8 w-44 pl-8 pr-3 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#363092]"/>
           </div>
-          <select value={sportFilter} onChange={e => setSportFilter(e.target.value)}
-            className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white outline-none focus:border-[#363092]">
-            <option value="All">All Sports</option>
-            {Object.keys(SPORT_COLORS).map(s => <option key={s}>{s}</option>)}
-          </select>
-          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+
+          {/* Status filter */}
+          <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
             className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white outline-none focus:border-[#363092]">
             <option value="All">All Status</option>
             {["Live","Upcoming","Registration Open","Completed","Cancelled"].map(s => <option key={s}>{s}</option>)}
           </select>
-          <div className="ml-auto flex items-center gap-2">
-            <span className="text-xs text-gray-400">{filtered.length} of {EVENTS_DATA.length} events</span>
-            <button className="h-8 px-3 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:border-[#363092] transition flex items-center gap-1.5">
-              <Download className="h-3.5 w-3.5"/> Export
-            </button>
-          </div>
+
+          {/* Create button */}
+          <button onClick={onCreateEvent}
+            className="ml-auto h-9 px-4 rounded-xl text-white text-xs font-bold flex items-center gap-2 hover:opacity-90 transition shadow-sm"
+            style={{ background:"linear-gradient(135deg,#363092,#1e2a7a)" }}>
+            <Plus className="h-3.5 w-3.5"/> Create Event
+          </button>
         </div>
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-5 py-3 w-[35%]">Event</th>
-                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 py-3">Sport</th>
-                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 py-3">Dates</th>
-                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 py-3">Venue</th>
-                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 py-3">Status</th>
-                <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 py-3">Capacity</th>
-                <th className="text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest px-5 py-3">Actions</th>
+              <tr className="border-b border-gray-100 bg-gray-50/80">
+                <th className="px-5 py-3 w-10">
+                  <input type="checkbox" checked={allChecked} onChange={toggleAll}
+                    className="h-4 w-4 rounded accent-[#363092] cursor-pointer"/>
+                </th>
+                {["S.L","Create Date","Event Name","Description","Status","Action"].map(h => (
+                  <th key={h} className="text-left text-[11px] font-bold text-gray-500 px-4 py-3 whitespace-nowrap">{h}</th>
+                ))}
               </tr>
             </thead>
-            <tbody>
-              {filtered.map((e, i) => {
-                const pct = Math.round((e.entries / e.capacity) * 100);
-                const color = SPORT_COLORS[e.sport];
+            <tbody className="divide-y divide-gray-100">
+              {paged.map((e, i) => {
+                const absIdx = (page - 1) * perPage + i;
+                const isChecked = checked.includes(absIdx);
                 return (
-                  <tr key={i} className="border-b border-gray-50 hover:bg-[#f8f9ff] transition-colors group">
-                    {/* Event name */}
+                  <tr key={i} className={`hover:bg-gray-50 transition-colors ${isChecked ? "bg-[#363092]/4" : ""}`}>
+                    {/* Checkbox */}
                     <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-lg grid place-items-center shrink-0 text-white text-[10px] font-black" style={{ background: `${color}20` }}>
-                          <span style={{ color }}>{e.sport.slice(0,2).toUpperCase()}</span>
-                        </div>
-                        <div>
-                          <div className="text-sm font-bold text-gray-900 leading-snug">{e.name}</div>
-                          <div className="text-[10px] text-gray-400 mt-0.5">ID: GMS-EVT-{2027}-{String(i+1).padStart(3,"0")}</div>
-                        </div>
-                      </div>
+                      <input type="checkbox" checked={isChecked} onChange={() => toggleOne(absIdx)}
+                        className="h-4 w-4 rounded accent-[#363092] cursor-pointer"/>
                     </td>
-                    {/* Sport */}
+                    {/* S.L */}
+                    <td className="px-4 py-3.5 text-sm font-semibold text-gray-600 whitespace-nowrap">
+                      {String(absIdx + 1).padStart(2, "0")}
+                    </td>
+                    {/* Date */}
+                    <td className="px-4 py-3.5 text-sm text-gray-600 whitespace-nowrap">
+                      {e.dates.split("→")[0].trim()}
+                    </td>
+                    {/* Event Name */}
                     <td className="px-4 py-3.5">
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-md"
-                        style={{ background:`${color}15`, color }}>
-                        {e.sport}
-                      </span>
+                      <div className="font-semibold text-gray-900 text-sm leading-snug max-w-[220px] truncate">{e.name}</div>
+                      <div className="text-[10px] text-gray-400 mt-0.5">GMS-EVT-2027-{String(absIdx + 1).padStart(3,"0")}</div>
                     </td>
-                    {/* Dates */}
-                    <td className="px-4 py-3.5 whitespace-nowrap">
-                      <div className="text-xs font-semibold text-gray-800">{e.dates}</div>
-                    </td>
-                    {/* Venue */}
-                    <td className="px-4 py-3.5">
-                      <div className="text-xs text-gray-500 flex items-center gap-1 max-w-[140px] truncate">
-                        <MapPin className="h-3 w-3 text-gray-300 shrink-0"/>{e.venue}
-                      </div>
+                    {/* Description */}
+                    <td className="px-4 py-3.5 text-sm text-gray-500 max-w-[240px]">
+                      <div className="truncate">{e.sport} · {e.venue}</div>
+                      <div className="text-[10px] text-gray-400 mt-0.5">{e.entries}/{e.capacity} entries · {e.district}</div>
                     </td>
                     {/* Status */}
-                    <td className="px-4 py-3.5"><StatusBadge status={e.status}/></td>
-                    {/* Capacity fill */}
                     <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-2 min-w-[110px]">
-                        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div className="h-full rounded-full" style={{ width:`${pct}%`, background: color }}/>
-                        </div>
-                        <span className="text-[11px] font-bold text-gray-600 w-10 text-right">{e.entries}<span className="text-gray-300 font-normal">/{e.capacity}</span></span>
-                      </div>
-                      <div className="text-[10px] text-gray-400 mt-0.5 pl-0">{pct}% filled</div>
+                      <span className={`px-3 py-1 rounded-full text-[11px] font-bold ${statusStyle[e.status] || "border border-gray-300 text-gray-500"}`}>
+                        {e.status === "Live" && <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse mr-1 -mb-px"/>}
+                        {e.status}
+                      </span>
                     </td>
                     {/* Actions */}
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button title="View" className="h-7 px-2.5 rounded-lg text-[11px] font-semibold text-gray-500 hover:text-[#363092] hover:bg-[#363092]/8 border border-gray-200 hover:border-[#363092]/30 transition flex items-center gap-1">
-                          <Eye className="h-3.5 w-3.5"/> View
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2">
+                        <button title="Edit" className="h-7 w-7 rounded-full bg-emerald-50 text-emerald-600 grid place-items-center hover:bg-emerald-100 transition">
+                          <Edit3 className="h-3.5 w-3.5"/>
                         </button>
-                        <button title="Edit" className="h-7 px-2.5 rounded-lg text-[11px] font-semibold text-gray-500 hover:text-amber-600 hover:bg-amber-50 border border-gray-200 hover:border-amber-200 transition flex items-center gap-1">
-                          <Edit3 className="h-3.5 w-3.5"/> Edit
-                        </button>
-                        <button title="Results" className="h-7 px-2.5 rounded-lg text-[11px] font-semibold text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-200 transition flex items-center gap-1">
-                          <Award className="h-3.5 w-3.5"/> Results
+                        <button title="Delete" className="h-7 w-7 rounded-full bg-red-50 text-red-500 grid place-items-center hover:bg-red-100 transition">
+                          <X className="h-3.5 w-3.5"/>
                         </button>
                       </div>
                     </td>
                   </tr>
                 );
               })}
+              {paged.length === 0 && (
+                <tr><td colSpan={7} className="px-5 py-10 text-center text-sm text-gray-400">No events found.</td></tr>
+              )}
             </tbody>
           </table>
         </div>
 
-        {/* Footer */}
-        <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-          <span className="text-[11px] text-gray-400">Showing {filtered.length} of {EVENTS_DATA.length} events</span>
+        {/* Footer: count + pagination */}
+        <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+          <span className="text-xs text-gray-500">
+            Showing {filtered.length === 0 ? 0 : (page - 1) * perPage + 1} to {Math.min(page * perPage, filtered.length)} of {filtered.length} entries
+          </span>
           <div className="flex items-center gap-1">
-            {["Live","Upcoming","Registration Open","Completed"].map(s => (
-              <button key={s} onClick={() => setStatusFilter(statusFilter === s ? "All" : s)}
-                className={`h-6 px-2.5 rounded-md text-[10px] font-semibold border transition ${statusFilter === s ? "border-[#363092] text-[#363092] bg-[#363092]/5" : "border-gray-200 text-gray-500 hover:border-gray-300"}`}>
-                {s}
+            {/* First / Prev */}
+            <button onClick={() => setPage(1)} disabled={page === 1}
+              className="h-7 w-7 rounded text-xs font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 flex items-center justify-center transition">‹‹</button>
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+              className="h-7 w-7 rounded text-xs font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 flex items-center justify-center transition">‹</button>
+            {/* Page numbers */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+              <button key={n} onClick={() => setPage(n)}
+                className={`h-7 w-7 rounded text-xs font-bold transition ${page === n ? "text-white" : "text-gray-500 hover:bg-gray-100"}`}
+                style={page === n ? { background:"#363092" } : {}}>
+                {n}
               </button>
             ))}
+            {/* Next / Last */}
+            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+              className="h-7 w-7 rounded text-xs font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 flex items-center justify-center transition">›</button>
+            <button onClick={() => setPage(totalPages)} disabled={page === totalPages}
+              className="h-7 w-7 rounded text-xs font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 flex items-center justify-center transition">››</button>
           </div>
         </div>
       </div>
@@ -1216,7 +1901,8 @@ export function GMSPortal({ onBack }: { onBack: () => void }) {
       case "dashboard":     return <ScreenDashboard onCreateEvent={() => setCreateMode(true)}/>;
       case "events":        return <ScreenEvents onCreateEvent={() => setCreateMode(true)}/>;
       case "schedule":      return <ScreenCalendar/>;
-      case "participation": return <ScreenParticipation/>;
+      case "participation":  return <ScreenParticipation/>;
+      case "accreditation": return <ScreenAccreditation/>;
       case "results":       return <ScreenResults/>;
       case "reports":       return <ScreenReports/>;
       case "settings":      return <ScreenSettings/>;
@@ -1225,19 +1911,15 @@ export function GMSPortal({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: "#f5f6fa" }}>
+    <div className="min-h-screen flex" style={{ background: "#f5f6fa", fontFamily: "'Inter', sans-serif" }}>
       {/* Sidebar — white like HMS */}
       <aside className={`${collapsed?"w-16":"w-[220px]"} shrink-0 flex flex-col transition-all duration-300 sticky top-0 h-screen z-30 bg-white border-r border-gray-100 shadow-sm`}>
         {/* Logo strip */}
         <div className="flex items-center gap-2.5 px-3 py-4 border-b border-gray-100 min-h-[64px]">
-          <div className="h-9 w-9 rounded-xl grid place-items-center shrink-0 text-white font-black text-xs shrink-0"
-            style={{ background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})` }}>
-            GMS
-          </div>
+          <img src={mhSeal} alt="Maharashtra Seal" className="h-10 w-10 object-contain shrink-0" />
           {!collapsed && (
             <div className="min-w-0">
-              <div className="font-black text-gray-900 text-sm leading-none">GMS Portal</div>
-              <div className="text-[10px] text-gray-400 mt-0.5">Games Management System</div>
+              <div className="font-black text-gray-900 text-[11px] leading-tight">Game Management System</div>
             </div>
           )}
           <button onClick={() => setCollapsed(c => !c)} className="ml-auto text-gray-300 hover:text-gray-600 transition shrink-0">
@@ -1251,7 +1933,7 @@ export function GMSPortal({ onBack }: { onBack: () => void }) {
               onClick={() => { setNav(item.id); setCreateMode(false); }}
               title={collapsed ? item.label : undefined}
               className={`w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-sm font-medium transition-all ${nav===item.id&&!createMode?"text-white shadow-sm":"text-gray-500 hover:text-gray-800 hover:bg-gray-50"}`}
-              style={nav===item.id&&!createMode?{background:`linear-gradient(135deg, ${PRIMARY}, #2d5986)`}:{}}>
+              style={nav===item.id&&!createMode?{background:"linear-gradient(135deg,#363092,#1e2a7a)"}:{}}>
               <item.icon className="h-4 w-4 shrink-0"/>
               {!collapsed && <span className="flex-1 text-left text-xs truncate">{item.label}</span>}
               {!collapsed && item.badge > 0 && (
@@ -1261,21 +1943,10 @@ export function GMSPortal({ onBack }: { onBack: () => void }) {
           ))}
         </nav>
 
-        {/* Connectivity badge */}
-        {!collapsed && (
-          <div className="mx-2 mb-2 p-3 rounded-xl border border-gray-100 bg-gray-50">
-            <div className="flex items-center gap-2">
-              {online ? <Wifi className="h-3.5 w-3.5 text-emerald-500"/> : <WifiOff className="h-3.5 w-3.5 text-amber-500"/>}
-              <span className={`text-[10px] font-bold ${online?"text-emerald-700":"text-amber-700"}`}>{online?"Live Sync Active":"Offline Mode"}</span>
-            </div>
-          </div>
-        )}
-
         <div className="p-2 border-t border-gray-100">
           <button onClick={onBack} title={collapsed?"Back to Admin":undefined}
-            className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-xs font-semibold text-white transition hover:opacity-90 active:scale-95"
-            style={{ background: "linear-gradient(135deg,#363092,#1e2a7a)" }}>
-            <LogOut className="h-4 w-4 shrink-0"/>
+            className="w-full flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl text-xs font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition group">
+            <ArrowLeft className="h-4 w-4 shrink-0 group-hover:-translate-x-0.5 transition-transform"/>
             {!collapsed && <span>Back to Admin</span>}
           </button>
         </div>
@@ -1285,19 +1956,12 @@ export function GMSPortal({ onBack }: { onBack: () => void }) {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
         <header className="h-14 bg-white border-b border-gray-100 flex items-center px-5 gap-4 sticky top-0 z-20 shadow-sm">
-          <img src={mhSeal} alt="MH Seal" className="h-8 w-auto object-contain shrink-0"/>
-          <div className="h-5 w-px bg-gray-200"/>
           {(nav !== "dashboard" || createMode) && (
             <button onClick={() => { setNav("dashboard"); setCreateMode(false); }}
               className="flex items-center gap-1.5 h-8 px-3 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:border-blue-400 hover:text-blue-600 transition shrink-0">
               <ArrowLeft className="h-3.5 w-3.5"/> Back
             </button>
           )}
-          <div className="text-sm text-gray-500">
-            <span className="font-black text-gray-900 cursor-pointer hover:text-blue-600 transition" onClick={() => { setNav("dashboard"); setCreateMode(false); }}>GMS Portal</span>
-            <ChevronRight className="inline h-3.5 w-3.5 mx-1 text-gray-300"/>
-            <span className="font-semibold">{createMode ? "Create Event" : activeLabel}</span>
-          </div>
           <div className="ml-auto flex items-center gap-3">
             <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
               {["EN","HI","MR"].map(l=>(

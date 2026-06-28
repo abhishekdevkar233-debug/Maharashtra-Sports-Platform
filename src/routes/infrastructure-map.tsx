@@ -12,22 +12,7 @@ function Page() {
   return (
     <>
       <PageHero eyebrow="Infrastructure" title="Interactive Infrastructure Map" subtitle="Explore 486 sports facilities across all 36 districts of Maharashtra — filter by facility type, region and more." />
-      {/* Stats bar */}
       <SectionWrap>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          {[
-            ["690", "Total Venues"],
-            ["63", "Swimming Pools"],
-            ["150", "Indoor Sports Halls"],
-            ["310", "Training Centres"],
-          ].map(([v, l]) => (
-            <div key={l} className="rounded-xl border border-gray-200 p-5 text-center bg-white">
-              <div className="text-3xl font-bold text-[#363092]">{v}</div>
-              <div className="text-xs text-gray-500 mt-1 uppercase tracking-wider">{l}</div>
-            </div>
-          ))}
-        </div>
-
         {/* Full interactive map */}
         <SectionTitle
           title="State-wide Overview"

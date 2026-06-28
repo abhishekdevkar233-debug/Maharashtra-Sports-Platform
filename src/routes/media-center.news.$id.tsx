@@ -120,22 +120,35 @@ function NewsDetails() {
   return (
     <div className="min-h-screen bg-gray-50">
 
-      {/* Breadcrumb */}
-      <div style={{ background: "#363092" }}>
-        <div className="container-page py-3 flex items-center gap-1.5 text-xs text-white/70">
-          <Link to="/" className="hover:text-white">Home</Link>
-          <ChevronRight className="h-3 w-3" />
-          <Link to="/media-center" className="hover:text-white">Media Center</Link>
-          <ChevronRight className="h-3 w-3" />
-          <span className="text-white">News</span>
-        </div>
-      </div>
+      {/* Hero — same structure as stadium detail */}
+      <div className="relative h-[420px] overflow-hidden">
+        <img src={article.img} alt={article.title} className="w-full h-full object-cover" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 35%), linear-gradient(to top, rgba(10,10,40,0.88) 0%, rgba(10,10,40,0.3) 60%, transparent 100%)" }} />
 
-      {/* Hero image */}
-      <div className="w-full" style={{ background: "#1a1464", maxHeight: 480 }}>
-        <img src={article.img} alt={article.title}
-          className="w-full object-cover"
-          style={{ maxHeight: 480, objectPosition: "center" }} />
+        {/* Back button — top left */}
+        <div className="absolute top-5 left-0 right-0 px-6" style={{ maxWidth: 1200, marginInline: "auto" }}>
+          <Link to="/media-center"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 backdrop-blur text-white text-sm font-semibold hover:bg-black/70 transition">
+            <ArrowLeft className="h-4 w-4" /> Back to Media Center
+          </Link>
+        </div>
+
+        {/* Tags + title + meta — bottom left */}
+        <div className="absolute bottom-0 left-0 right-0 px-6 pb-8" style={{ maxWidth: 1200, marginInline: "auto" }}>
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#FF6B35] text-white text-[11px] font-bold">{article.cat}</span>
+            {article.tags.slice(0, 3).map(t => (
+              <span key={t} className="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur text-white text-[11px] font-semibold">{t}</span>
+            ))}
+          </div>
+          <h1 className="text-3xl md:text-4xl font-black text-white leading-tight max-w-3xl">{article.title}</h1>
+          <div className="flex flex-wrap items-center gap-4 mt-2 text-white/80 text-sm">
+            <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" />{article.date}</span>
+            <span className="flex items-center gap-1.5"><User className="h-4 w-4" />DSYS Newsroom</span>
+            <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" />{article.readTime}</span>
+            <span className="flex items-center gap-1.5"><Eye className="h-4 w-4" />{article.views} views</span>
+          </div>
+        </div>
       </div>
 
       <div className="container-page py-10">
@@ -143,31 +156,6 @@ function NewsDetails() {
 
           {/* ── Article ── */}
           <article className="lg:col-span-8">
-
-            {/* Back */}
-            <Link to="/media-center" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#363092] mb-6 transition">
-              <ArrowLeft className="h-4 w-4" /> Back to Media Center
-            </Link>
-
-            {/* Category badge */}
-            <div className="mb-3">
-              <span className="inline-block px-3 py-1 rounded-full text-xs font-bold text-white" style={{ background: "#363092" }}>
-                {article.cat}
-              </span>
-            </div>
-
-            {/* Title */}
-            <h1 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight mb-4">
-              {article.title}
-            </h1>
-
-            {/* Meta row */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 pb-5 border-b border-gray-200 mb-6">
-              <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4 text-gray-400" />{article.date}</span>
-              <span className="flex items-center gap-1.5"><User className="h-4 w-4 text-gray-400" />DSYS Newsroom</span>
-              <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-gray-400" />{article.readTime}</span>
-              <span className="flex items-center gap-1.5"><Eye className="h-4 w-4 text-gray-400" />{article.views} views</span>
-            </div>
 
             {/* Excerpt lead */}
             <p className="text-lg font-medium text-gray-700 leading-relaxed mb-6 border-l-4 border-[#363092] pl-4 bg-[#363092]/5 py-3 rounded-r-xl">

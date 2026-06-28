@@ -11,6 +11,21 @@ import newsKheloMedals from "@/assets/news/khelo-india-medals.png";
 import newsKhoKho from "@/assets/news/kho-kho.png";
 import newsSportsComplex from "@/assets/news/sports-complex.jpg";
 import newsScholarships from "@/assets/news/scholarships.png";
+import banner01 from "@/assets/banner-01.png";
+import banner02 from "@/assets/banner-02.png";
+import banner03 from "@/assets/banner-03.png";
+import sportsCollage from "@/assets/sports-collage.png";
+import vShivChhatrapati from "@/assets/venues/shiv-chhatrapati.jpg";
+import vDyPatil from "@/assets/venues/dy-patil.jpg";
+import vWankhede from "@/assets/venues/wankhede.jpg";
+import vVidarbha from "@/assets/venues/vidarbha.jpg";
+import vMahalaxmi from "@/assets/venues/mahalaxmi.avif";
+import vPuneFootball from "@/assets/venues/pune-football.jpg";
+import mhdPhoto1 from "@/assets/gallery/mahadeva/photo-1.jpg";
+import mhdPhoto2 from "@/assets/gallery/mahadeva/photo-2.png";
+import mhdPhoto3 from "@/assets/gallery/mahadeva/photo-3.png";
+import mhdPhoto4 from "@/assets/gallery/mahadeva/photo-4.jpg";
+import mhdPhoto5 from "@/assets/gallery/mahadeva/photo-5.jpg";
 
 export const Route = createFileRoute("/media-center/photo-gallery/$id")({
   head: () => ({ meta: [{ title: "Photo Album — DSYS Maharashtra" }] }),
@@ -31,42 +46,67 @@ const ALBUMS: Record<string, {
     desc: "A historic performance as Maharashtra athletes sweep the medal table at Khelo India Youth Games 2026, with gold in athletics, swimming, wrestling and kabaddi.",
     cover: newsKheloMedals,
     photos: [
-      { src: newsKheloMedals,   caption: "Maharashtra contingent marching at the opening ceremony",     tag: "Ceremony"  },
-      { src: galKheloIndia,     caption: "Athletes celebrating gold medals on the podium",               tag: "Ceremony"  },
-      { src: galAsianGames,     caption: "Track and field finals — 100m sprint",                        tag: "Athletics" },
-      { src: galWrestling,      caption: "Wrestling finals — Maharashtra wins gold",                     tag: "Wrestling" },
-      { src: galBadminton,      caption: "Badminton team in action during semi-finals",                  tag: "Badminton" },
-      { src: galCricket,        caption: "Cricket squad after defeating Uttar Pradesh",                  tag: "Cricket"   },
-      { src: newsKhoKho,        caption: "Kho-Kho team sprint drill during warm-up",                    tag: "Kho-Kho"   },
-      { src: newsSportsComplex, caption: "Venue overview — Chandigarh Sports Complex",                  tag: "Venue"     },
-      { src: newsScholarships,  caption: "Award ceremony — scholarship recipients felicitated",          tag: "Ceremony"  },
+      { src: newsKheloMedals,   caption: "Maharashtra contingent at the grand opening ceremony of Khelo India Youth Games 2026",  tag: "Ceremony"  },
+      { src: galKheloIndia,     caption: "Gold medalists on the podium — Maharashtra dominates the standings",                    tag: "Ceremony"  },
+      { src: galWrestling,      caption: "Wrestling finals — Maharashtra athlete clinches gold in 65kg freestyle",                 tag: "Wrestling" },
+      { src: galBadminton,      caption: "Maharashtra shuttlers advance to the semi-finals in doubles category",                  tag: "Badminton" },
+      { src: galAsianGames,     caption: "Track and field — 100m sprint heats at Chandigarh Athletics Stadium",                   tag: "Athletics" },
+      { src: galCricket,        caption: "Maharashtra cricket squad after defeating Uttar Pradesh in the quarter-final",          tag: "Cricket"   },
+      { src: newsKhoKho,        caption: "Kho-Kho team warm-up drills ahead of the championship round",                          tag: "Kho-Kho"   },
+      { src: sportsCollage,     caption: "A collage of Maharashtra's finest sporting moments of the games",                       tag: "Highlights"},
+      { src: newsSportsComplex, caption: "Chandigarh Sports Complex — the host venue for Khelo India Youth Games 2026",          tag: "Venue"     },
+      { src: vShivChhatrapati,  caption: "Shree Shiv Chhatrapati Sports Complex — Maharashtra's premier training base",          tag: "Venue"     },
+      { src: banner01,          caption: "Maharashtra Sports Department felicitating Khelo India champions",                      tag: "Ceremony"  },
+      { src: newsScholarships,  caption: "Scholarship award ceremony — outstanding athletes recognised by the Directorate",       tag: "Awards"    },
     ],
   },
   "asian-games-2023": {
     title: "Asian Games 2023 — Team Maharashtra",
     date: "14 Oct 2023", venue: "Hangzhou, China",
-    desc: "Coverage of Maharashtra athletes competing at the 19th Asian Games in Hangzhou.",
+    desc: "Coverage of Maharashtra athletes competing at the 19th Asian Games in Hangzhou, China.",
     cover: galAsianGames,
     photos: [
-      { src: galAsianGames, caption: "Team Maharashtra at the Asian Games opening parade", tag: "Ceremony" },
-      { src: galCricket,    caption: "Cricket team practice session before quarterfinals",  tag: "Cricket"  },
-      { src: galWrestling,  caption: "Wrestling bout — Maharashtra athlete wins bronze",    tag: "Wrestling"},
-      { src: galBadminton,  caption: "Badminton doubles pair in action",                   tag: "Badminton"},
-      { src: galKheloIndia, caption: "Athletics — Maharashtra 4×400m relay team",          tag: "Athletics"},
-      { src: newsKheloMedals, caption: "Medal presentation ceremony",                      tag: "Ceremony" },
+      { src: galAsianGames,     caption: "Team Maharashtra marching proudly at the 19th Asian Games opening parade in Hangzhou", tag: "Ceremony" },
+      { src: galWrestling,      caption: "Maharashtra wrestler in action — clinching a bronze medal in the 74kg category",       tag: "Wrestling"},
+      { src: galBadminton,      caption: "Badminton doubles duo representing Maharashtra at the Asian Games 2023",               tag: "Badminton"},
+      { src: galCricket,        caption: "Maharashtra cricketers in pre-match practice session before the quarterfinals",        tag: "Cricket"  },
+      { src: galKheloIndia,     caption: "Maharashtra 4×400m relay team at the Asian Games athletics stadium",                  tag: "Athletics"},
+      { src: vDyPatil,          caption: "DY Patil Stadium — venue for pre-departure training camp of Team Maharashtra",        tag: "Venue"    },
+      { src: vWankhede,         caption: "Wankhede Stadium felicitation ceremony for returning Asian Games athletes",           tag: "Ceremony" },
+      { src: banner02,          caption: "Maharashtra Government honours Asian Games medallists at state function",              tag: "Awards"   },
+      { src: newsKheloMedals,   caption: "Medal tally presentation — Maharashtra's best-ever Asian Games performance",          tag: "Ceremony" },
+      { src: sportsCollage,     caption: "Highlights montage — Maharashtra at the 19th Asian Games",                            tag: "Highlights"},
     ],
   },
   "cricket-team": {
-    title: "Maharashtra Cricket Team — Victory Celebration",
+    title: "Maharashtra Cricket Team — Ranji Trophy Victory 2026",
     date: "20 May 2026", venue: "Pune, Maharashtra",
-    desc: "Celebration after Maharashtra cricket team's landmark victory at the Ranji Trophy.",
+    desc: "Celebrating Maharashtra's landmark Ranji Trophy victory and the team's triumphant homecoming in Pune.",
     cover: galCricket,
     photos: [
-      { src: galCricket,       caption: "Team photo with the Ranji Trophy",              tag: "Ceremony"  },
-      { src: newsKheloMedals,  caption: "Captain addressing fans after the win",          tag: "Ceremony"  },
-      { src: galAsianGames,    caption: "Victory parade through Pune city",               tag: "Ceremony"  },
-      { src: galKheloIndia,    caption: "Training session before the final match",        tag: "Training"  },
-      { src: galBadminton,     caption: "Press conference at MCA stadium",                tag: "Press"     },
+      { src: galCricket,        caption: "Maharashtra cricket team poses with the Ranji Trophy at MCA Stadium, Pune",           tag: "Ceremony" },
+      { src: vWankhede,         caption: "Wankhede Stadium — venue of the Ranji Trophy final between Maharashtra and Delhi",    tag: "Venue"    },
+      { src: vPuneFootball,     caption: "Pune Football Arena hosts the victory celebration for returning cricket heroes",      tag: "Venue"    },
+      { src: galKheloIndia,     caption: "Captain addressing thousands of fans at the Balewadi homecoming rally",               tag: "Ceremony" },
+      { src: galAsianGames,     caption: "Victory parade through FC Road, Pune — fans line the streets for the champions",     tag: "Ceremony" },
+      { src: vVidarbha,         caption: "Vidarbha Cricket Association Stadium — quarter-final venue for Maharashtra",          tag: "Venue"    },
+      { src: galBadminton,      caption: "Press conference at MCA — captain and coach speak to the media post-victory",        tag: "Press"    },
+      { src: banner03,          caption: "Chief Minister congratulates Maharashtra cricket squad at Mantralaya",                tag: "Awards"   },
+      { src: vMahalaxmi,        caption: "Mahalaxmi Race Course — gala awards night for Maharashtra cricket team",             tag: "Awards"   },
+      { src: newsScholarships,  caption: "DSYS Directorate presents merit scholarships to the Ranji Trophy-winning squad",     tag: "Awards"   },
+    ],
+  },
+  "project-maha-deva": {
+    title: "Project Maha-Deva Launch — Mumbai, December 2025",
+    date: "14 Dec 2025", venue: "Mumbai, Maharashtra",
+    desc: "Highlights from the official launch of Project Maha-Deva — Maharashtra's flagship football development initiative featuring Lionel Messi, Tiger Shroff, and Chief Minister Devendra Fadnavis.",
+    cover: mhdPhoto3,
+    photos: [
+      { src: mhdPhoto1, caption: "Lionel Messi plays football with a young Maha-Deva jersey-clad athlete at the launch event", tag: "Launch" },
+      { src: mhdPhoto2, caption: "Tiger Shroff presents a ₹1 Crore cheque to CM Devendra Fadnavis for Project Maha-Deva", tag: "Ceremony" },
+      { src: mhdPhoto3, caption: "Official poster — Launch of Project Maha-Deva, Mumbai | 14-12-2025", tag: "Launch" },
+      { src: mhdPhoto4, caption: "Ground inspection at the Project Maha-Deva football training facility", tag: "Facilities" },
+      { src: mhdPhoto5, caption: "Dignitaries and stakeholders gather for the cheque handover ceremony at the stadium", tag: "Ceremony" },
     ],
   },
 };
@@ -90,13 +130,6 @@ function Lightbox({ photos, index, onClose, onPrev, onNext }: {
     return () => window.removeEventListener("keydown", handler);
   }, [onClose, onPrev, onNext]);
 
-  const [thumbStart, setThumbStart] = useState(0);
-  const VISIBLE = 6;
-
-  useEffect(() => {
-    if (index < thumbStart) setThumbStart(index);
-    else if (index >= thumbStart + VISIBLE) setThumbStart(index - VISIBLE + 1);
-  }, [index]);
 
   return (
     <div className="fixed inset-0 z-[2000] flex flex-col bg-black/95" onClick={onClose}>
@@ -146,31 +179,6 @@ function Lightbox({ photos, index, onClose, onPrev, onNext }: {
         <p className="text-white/80 text-sm">{photo.caption}</p>
       </div>
 
-      {/* Thumbnail strip */}
-      <div className="px-6 pb-5 shrink-0" onClick={e => e.stopPropagation()}>
-        <div className="flex gap-2 justify-center">
-          {photos.slice(thumbStart, thumbStart + VISIBLE).map((p, i) => {
-            const realIdx = thumbStart + i;
-            return (
-              <button key={realIdx} onClick={() => {
-                const el = document.querySelector(`[data-lb-idx="${realIdx}"]`) as HTMLElement;
-                if (el) el.click();
-              }}
-                data-lb-idx={realIdx}
-                onClick2={() => {}}
-                className={`h-14 w-20 rounded-lg overflow-hidden border-2 transition shrink-0 ${realIdx === index ? "border-white scale-105" : "border-white/20 opacity-60 hover:opacity-90"}`}
-                onClick={() => {
-                  // navigate to this index via parent
-                  const diff = realIdx - index;
-                  if (diff > 0) for (let x = 0; x < diff; x++) onNext();
-                  else if (diff < 0) for (let x = 0; x < -diff; x++) onPrev();
-                }}>
-                <img src={p.src} alt="" className="h-full w-full object-cover" />
-              </button>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }
@@ -182,7 +190,7 @@ function AlbumDetails() {
   const { photos } = album;
 
   const [open, setOpen] = useState<number | null>(null);
-  const [view, setView] = useState<"grid" | "masonry">("masonry");
+  const [view, setView] = useState<"grid" | "masonry">("grid");
 
   const close  = useCallback(() => setOpen(null), []);
   const prev   = useCallback(() => setOpen(i => (i != null && i > 0 ? i - 1 : i)), []);
@@ -191,25 +199,26 @@ function AlbumDetails() {
   return (
     <div className="min-h-screen bg-gray-50">
 
-      {/* Breadcrumb header */}
-      <div style={{ background: PRIMARY }}>
-        <div className="container-page py-3 flex items-center gap-1.5 text-xs text-white/70">
-          <Link to="/" className="hover:text-white">Home</Link>
-          <Chevron className="h-3 w-3" />
-          <Link to="/media-center" className="hover:text-white">Media Center</Link>
-          <Chevron className="h-3 w-3" />
-          <span className="text-white">Photo Gallery</span>
-        </div>
-      </div>
-
-      {/* Hero cover */}
-      <div className="relative h-72 md:h-96 overflow-hidden">
+      {/* Hero — same structure as stadium detail */}
+      <div className="relative h-[420px] overflow-hidden">
         <img src={album.cover} alt={album.title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 40%, rgba(0,0,0,0.2) 100%)" }} />
-        <div className="absolute bottom-0 left-0 right-0 container-page pb-8">
-          <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold text-white mb-3" style={{ background: PRIMARY }}>Photo Album</span>
-          <h1 className="text-2xl md:text-3xl font-black text-white leading-tight max-w-3xl">{album.title}</h1>
-          <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-white/80">
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 35%), linear-gradient(to top, rgba(10,10,40,0.88) 0%, rgba(10,10,40,0.3) 60%, transparent 100%)" }} />
+
+        {/* Back button — top left */}
+        <div className="absolute top-5 left-0 right-0 px-6" style={{ maxWidth: 1200, marginInline: "auto" }}>
+          <Link to="/media-center"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 backdrop-blur text-white text-sm font-semibold hover:bg-black/70 transition">
+            <ChevronLeft className="h-4 w-4" /> Back to Media Center
+          </Link>
+        </div>
+
+        {/* Tags + title + meta — bottom left */}
+        <div className="absolute bottom-0 left-0 right-0 px-6 pb-8" style={{ maxWidth: 1200, marginInline: "auto" }}>
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#FF6B35] text-white text-[11px] font-bold">Photo Album</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-black text-white leading-tight max-w-3xl">{album.title}</h1>
+          <div className="flex flex-wrap items-center gap-4 mt-2 text-white/80 text-sm">
             <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" />{album.date}</span>
             <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" />{album.venue}</span>
             <span className="flex items-center gap-1.5"><Camera className="h-4 w-4" />{photos.length} photos</span>
