@@ -4,10 +4,9 @@ import {
   Eye, EyeOff, ArrowRight, Lock, Mail, RefreshCw,
   ShieldCheck, Users, Trophy, Building2, BookOpen,
   Database, BarChart3, GraduationCap, User, Bell,
-  Settings, LogOut, ChevronRight, LayoutDashboard, Plus,
+  Settings, LogOut, ChevronRight, LayoutDashboard, Plus, Palette,
 } from "lucide-react";
-import mhSeal from "@/assets/mh-seal.png";
-import digitalIndia from "@/assets/digital-india.png";
+import { VisualEditor } from "@/components/editor/VisualEditor";
 import { Header } from "@/components/layout/Header";
 import { GMSPortal } from "@/components/gms/GMSPortal";
 import { HMSPortal } from "@/components/gms/HMSPortal";
@@ -16,6 +15,7 @@ import { SSCMPortal } from "@/components/gms/SSCMPortal";
 import { CRDMPortal } from "@/components/gms/CRDMPortal";
 import { LMSPortal } from "@/components/gms/LMSPortal";
 import { AIMAPPortal } from "@/components/gms/AIMAPPortal";
+import { AthleteDashboard } from "@/components/gms/AthletePortal";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [
@@ -104,6 +104,7 @@ const ADMIN_MODULES = [
 /* ── Admin Dashboard ─────────────────────────────────────────────── */
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [activeModule, setActiveModule] = useState<string | null>(null);
+  const [editorOpen, setEditorOpen] = useState(false);
 
   if (activeModule === "GMS") return <GMSPortal onBack={() => setActiveModule(null)} />;
   if (activeModule === "HMS") return <HMSPortal onBack={() => setActiveModule(null)} />;
@@ -114,22 +115,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   if (activeModule === "AI MAP") return <AIMAPPortal onBack={() => setActiveModule(null)} />;
 
   return (
+    <>
+    <VisualEditor open={editorOpen} onClose={() => setEditorOpen(false)} />
     <div className="min-h-screen flex flex-col" style={{ background: "#f4f5fb" }}>
 
       {/* Top navbar */}
       <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
-        {/* Gov logos strip */}
-        <div className="flex items-center justify-between px-6 py-2 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <img src={mhSeal} alt="Maharashtra State Seal" className="h-10 w-auto object-contain" />
-            <div>
-              <div className="text-xs font-bold text-gray-800 leading-tight">Government of Maharashtra</div>
-              <div className="text-[10px] text-gray-500">Directorate of Sports & Youth Services</div>
-            </div>
-          </div>
-          <img src={digitalIndia} alt="Digital India" className="h-10 w-auto object-contain" />
-        </div>
-
         {/* Main nav row */}
         <div className="h-14 flex items-center px-6 gap-4">
         <div className="flex items-center gap-2.5 mr-auto">
@@ -145,6 +136,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         <button className="relative h-9 w-9 rounded-xl border border-gray-200 grid place-items-center text-gray-500 hover:border-[#363092] hover:text-[#363092] transition">
           <Bell className="h-4 w-4" />
           <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
+        </button>
+        <button
+          onClick={() => setEditorOpen(o => !o)}
+          title="Visual Editor"
+          className={`h-9 w-9 rounded-xl border grid place-items-center transition ${editorOpen ? "border-[#363092] bg-[#363092] text-white" : "border-gray-200 text-gray-500 hover:border-[#363092] hover:text-[#363092]"}`}>
+          <Palette className="h-4 w-4" />
         </button>
         <button className="h-9 w-9 rounded-xl border border-gray-200 grid place-items-center text-gray-500 hover:border-[#363092] hover:text-[#363092] transition">
           <Settings className="h-4 w-4" />
@@ -227,6 +224,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
       </main>
     </div>
+    </>
   );
 }
 
@@ -239,8 +237,12 @@ function Page() {
 
   const activeRole = ROLES.find(r => r.id === role)!;
 
-  if (loggedIn && role === "admin") {
-    return <AdminDashboard onLogout={() => setLoggedIn(false)} />;
+  if (loggedIn && role === "admin")   return <AdminDashboard   onLogout={() => setLoggedIn(false)} />;
+  if (loggedIn && role === "athlete") return <AthleteDashboard onLogout={() => setLoggedIn(false)} />;
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoggedIn(true);
   }
 
   return (
@@ -299,7 +301,7 @@ function Page() {
                 </div>
               )}
 
-              <form className="space-y-4" onSubmit={e => { e.preventDefault(); setLoggedIn(true); }}>
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
                     {role === "admin" ? "Admin ID or Email" : "Email or Mobile"}

@@ -4,7 +4,7 @@
     {
       "name": "maharashtra-sports",
       "runtimeExecutable": "C:\\node.exe",
-      "runtimeArgs": ["C:\\node_modules\\npm\\bin\\npm-cli.js", "run", "dev"],
+      "runtimeArgs": ["C:\\npm", "run", "dev"],
       "port": 8080
     }
   ]
