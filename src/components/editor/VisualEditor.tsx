@@ -266,14 +266,6 @@ export function VisualEditor({ open, onClose }: VisualEditorProps) {
           outline-offset: 2px !important;
           box-shadow: 0 0 0 4px rgba(249,115,22,0.12) !important;
         }
-        [data-ve="1"] a:not([data-ve-panel] *),
-        [data-ve="1"] button:not([data-ve-panel] *) {
-          pointer-events: none !important;
-        }
-        [data-ve-panel] a, [data-ve-panel] button, [data-ve-panel] input,
-        [data-ve-panel] select, [data-ve-panel] textarea {
-          pointer-events: auto !important;
-        }
       `}</style>
 
       {/* ── Side panel ── */}
@@ -282,7 +274,6 @@ export function VisualEditor({ open, onClose }: VisualEditorProps) {
         ref={panelRef}
         className="fixed top-0 right-0 bottom-0 z-[10000] bg-white border-l border-gray-200 shadow-2xl flex flex-col"
         style={{ width: 300, fontFamily: "system-ui, sans-serif", fontSize: 12 }}
-        onClickCapture={e => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center gap-2 px-3 py-2.5 shrink-0" style={{ background: "#363092" }}>
