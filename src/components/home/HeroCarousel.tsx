@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, Users, Medal } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users, Medal, Eye, EyeOff } from "lucide-react";
 import b2 from "@/assets/banner-02.png";
 import b3 from "@/assets/banner-03.png";
 
@@ -20,6 +20,7 @@ const SLIDES = [
 
 export function HeroCarousel() {
   const [i, setI] = useState(0);
+  const [showText, setShowText] = useState(true);
   const navigate = useNavigate();
   useEffect(() => {
     const t = setInterval(() => setI(p => (p + 1) % SLIDES.length), 5000);
@@ -43,8 +44,16 @@ export function HeroCarousel() {
         </div>
       ))}
 
+      {/* Toggle button */}
+      <button
+        onClick={() => setShowText(v => !v)}
+        title={showText ? "Hide text" : "Show text"}
+        className="absolute top-4 right-16 md:right-20 z-20 h-9 w-9 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur grid place-items-center text-white transition">
+        {showText ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+
       <div className="relative h-full container-page flex items-center">
-        <div className="max-w-xl text-white">
+        <div className={`max-w-xl text-white transition-all duration-500 ${showText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}>
           <div className="text-xs uppercase tracking-[0.2em] text-[#FF6B35] font-semibold mb-3">{SLIDES[i].eyebrow}</div>
           <h1 className="text-4xl md:text-6xl font-bold leading-[1.05]">
             {SLIDES[i].title}<br />
