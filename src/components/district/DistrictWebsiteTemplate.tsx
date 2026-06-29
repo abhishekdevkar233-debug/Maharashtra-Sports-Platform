@@ -1,4 +1,37 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+
+/* ── scroll reveal hook ─────────────────────── */
+function useReveal(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVisible(true); obs.disconnect(); }
+    }, { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, visible };
+}
+
+function Reveal({ children, delay = 0, direction = "up" }: {
+  children: React.ReactNode; delay?: number; direction?: "up"|"down"|"left"|"right"|"none";
+}) {
+  const { ref, visible } = useReveal();
+  const translate = direction === "up" ? "translateY(40px)" : direction === "down" ? "translateY(-40px)"
+    : direction === "left" ? "translateX(40px)" : direction === "right" ? "translateX(-40px)" : "none";
+  return (
+    <div ref={ref} style={{
+      transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`,
+      opacity: visible ? 1 : 0,
+      transform: visible ? "none" : translate,
+    }}>
+      {children}
+    </div>
+  );
+}
 import {
   Home, Info, Building2, GraduationCap, Users, Trophy,
   Image, FileText, LogIn, UserPlus, ChevronRight, MapPin,
@@ -334,8 +367,8 @@ function DistrictFooter() {
 function HeroSection() {
   const [slide, setSlide] = useState(0);
   const SLIDES = [
-    { eyebrow: "District Sports Office — Pune", title: "Empowering Athletes", accent: "Across Every Taluka", sub: "Grassroots sports development, scholarships and world-class facilities for every athlete in the district." },
-    { eyebrow: "Registrations Open", title: "District Championships", accent: "2026 Season", sub: "Register now for kabaddi, athletics, volleyball and more. Represent your district at the state level." },
+    { title: "Empowering Athletes", accent: "Across Every Taluka", sub: "Grassroots sports development, scholarships and world-class facilities for every athlete in the district." },
+    { title: "District Championships", accent: "2026 Season", sub: "Register now for kabaddi, athletics, volleyball and more. Represent your district at the state level." },
   ];
   useEffect(() => {
     const t = setInterval(() => setSlide(p => (p + 1) % SLIDES.length), 5000);
@@ -348,30 +381,6 @@ function HeroSection() {
       {/* Decorative circles */}
       <div className="absolute -top-20 -right-20 h-80 w-80 rounded-full opacity-10" style={{ background: OR }} />
       <div className="absolute -bottom-10 -left-10 h-60 w-60 rounded-full opacity-5 bg-white" />
-      <div className="max-w-6xl mx-auto px-6 relative z-10 w-full">
-        <div className="max-w-2xl text-white">
-          <div className="text-xs font-black uppercase tracking-[0.2em] mb-3" style={{ color: OR }}>{s.eyebrow}</div>
-          <h1 className="text-4xl md:text-5xl font-black leading-tight mb-2 transition-all duration-500">
-            {s.title}<br /><span style={{ color: OR }}>{s.accent}</span>
-          </h1>
-          <p className="text-white/70 text-base mt-4 max-w-lg leading-relaxed">{s.sub}</p>
-          <div className="flex flex-wrap gap-3 mt-7">
-            <button className="px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg hover:opacity-90 transition flex items-center gap-2" style={{ background: OR }}>
-              <Trophy className="h-4 w-4" /> View Tournaments
-            </button>
-            <button className="px-6 py-3 rounded-xl font-bold text-sm text-white border border-white/30 hover:bg-white/10 transition flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" /> Apply for Schemes
-            </button>
-          </div>
-          <div className="flex gap-2 mt-8">
-            {SLIDES.map((_, i) => (
-              <button key={i} onClick={() => setSlide(i)}
-                className="h-2 rounded-full transition-all duration-300"
-                style={{ width: slide === i ? 28 : 8, background: slide === i ? OR : "rgba(255,255,255,0.3)" }} />
-            ))}
-          </div>
-        </div>
-      </div>
       {/* Ticker */}
       <div className="absolute bottom-0 left-0 right-0 h-9 flex items-stretch bg-black/40 backdrop-blur-sm">
         <div className="shrink-0 flex items-center gap-2 px-4 font-black text-[11px] uppercase tracking-widest text-white" style={{ background: OR }}>
@@ -461,25 +470,6 @@ function Navbar({ onClose }: { onClose: () => void }) {
   );
 }
 
-/* ═══════════════════════════════════════════
-   STATS STRIP
-══════════════════════════════════════════ */
-function StatsStrip() {
-  return (
-    <div style={{ background: OR }}>
-      <div className="max-w-6xl mx-auto px-6 py-3">
-        <div className="grid grid-cols-4 divide-x divide-white/30">
-          {[["1,240","Registered Athletes"],["18","Sports Venues"],["36","Active Schemes"],["8","Championships"]].map(([v,l]) => (
-            <div key={l} className="px-4 text-center">
-              <div className="text-xl font-black text-white">{v}</div>
-              <div className="text-[10px] text-white/70 uppercase tracking-wider mt-0.5">{l}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /* ═══════════════════════════════════════════
    MAIN EXPORT
@@ -489,14 +479,14 @@ export function DistrictWebsiteTemplate({ onClose }: { onClose: () => void }) {
     <div id="district-site-scroll" className="fixed inset-0 z-50 bg-white overflow-y-auto">
       <Navbar onClose={onClose} />
       <HeroSection />
-      <StatsStrip />
-      <LiveUpdates />
-      <Leadership />
-      <NewsAnnouncements />
-      <PhotoVideoGallery />
-      <OtherWebsites />
+      <Reveal><LiveUpdates /></Reveal>
+      <Reveal direction="right"><Leadership /></Reveal>
+      <Reveal><NewsAnnouncements /></Reveal>
+      <Reveal direction="left"><PhotoVideoGallery /></Reveal>
+      <Reveal><OtherWebsites /></Reveal>
 
       {/* Notices section */}
+      <Reveal>
       <section className="py-14 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-center justify-between mb-8">
@@ -510,7 +500,8 @@ export function DistrictWebsiteTemplate({ onClose }: { onClose: () => void }) {
           </div>
           <div className="space-y-3">
             {NOTICES.map((n, i) => (
-              <div key={i} className="flex items-center gap-4 p-4 rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition cursor-pointer group bg-white">
+              <Reveal key={i} delay={i * 80}>
+              <div className="flex items-center gap-4 p-4 rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition cursor-pointer group bg-white">
                 <div className="h-9 w-9 rounded-xl grid place-items-center shrink-0" style={{ background: `${P}10` }}>
                   <FileText className="h-4 w-4" style={{ color: P }} />
                 </div>
@@ -523,12 +514,14 @@ export function DistrictWebsiteTemplate({ onClose }: { onClose: () => void }) {
                   <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-blue-400 transition" />
                 </div>
               </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
+      </Reveal>
 
-      <DistrictFooter />
+      <Reveal direction="none"><DistrictFooter /></Reveal>
     </div>
   );
 }
