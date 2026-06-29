@@ -3,7 +3,7 @@ services:
     name: maharashtra-sports
     env: node
     buildCommand: npm install && npm run build
-    startCommand: node dist/server/server.js
+    startCommand: node server-node.mjs
     envVars:
       - key: NODE_ENV
         value: production
