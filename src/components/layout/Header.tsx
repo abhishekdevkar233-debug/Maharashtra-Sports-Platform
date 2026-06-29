@@ -88,9 +88,6 @@ const NAV: Array<{
         { title: "Elite Athletes", items: [
           { label: "Elite Athletes", desc: "Top-performing state athletes across sports", to: "/elite-athletes", icon: Award },
         ]},
-        { title: "My Portal", items: [
-          { label: "Athlete Portal", desc: "Your personal dashboard — events, scholarships & performance", to: "/athlete-portal", icon: LayoutGrid },
-        ]},
       ],
       featured: { tag: "SPOTLIGHT", title: "P.T. Karnik — Bronze Medallist, Paris Olympics 2024", cta: "View Profile", stat: "16 Olympians · 11 Medals", variant: "indigo" },
     },

@@ -39,8 +39,10 @@ export function HeroCarousel() {
             className={`absolute inset-0 h-full w-full object-cover ${idx === i ? "animate-[kenburns_8s_ease-in-out_infinite_alternate]" : ""}`}
             style={{ objectPosition: s.focal }}
           />
-          {/* gradient overlay behind text */}
-          <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(13,27,75,0.85) 0%, rgba(13,27,75,0.55) 40%, rgba(13,27,75,0.1) 70%, transparent 100%)" }} />
+          {/* gradient overlay — only visible when text is shown */}
+          <div className="absolute inset-0 transition-opacity duration-500"
+            style={{ background: "linear-gradient(90deg, rgba(13,27,75,0.85) 0%, rgba(13,27,75,0.55) 40%, rgba(13,27,75,0.1) 70%, transparent 100%)",
+                     opacity: showText ? 1 : 0 }} />
         </div>
       ))}
 

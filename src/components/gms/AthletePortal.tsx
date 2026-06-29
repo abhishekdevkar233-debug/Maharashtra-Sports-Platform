@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { AthleteAppMockup } from "@/components/gms/AthleteAppMockup";
 import {
   Trophy, Wallet, Brain, Home, GraduationCap, MessageSquare,
   ArrowLeft, Bell, LogOut, LayoutDashboard, ChevronRight,
   Award, Calendar, MapPin, CheckCircle, Clock, AlertCircle,
   Download, BookOpen, Send, TrendingUp, Zap,
-  Play, Lock, Star, FileText, Video, ChevronDown, ChevronUp, BarChart2,
+  Play, Lock, Star, FileText, Video, ChevronDown, ChevronUp, BarChart2, Smartphone,
 } from "lucide-react";
 const ACCENT = "#f97316";
 
@@ -56,6 +57,14 @@ const ATHLETE_MODULES = [
     desc: "Submit complaints, track resolution status & communicate with officials",
     color: "#0891b2",
     bg: "#e0f7fa",
+  },
+  {
+    icon: Smartphone,
+    label: "Athlete App",
+    short: "App",
+    desc: "Download the Maharashtra Sports mobile app for live updates, scores & notifications",
+    color: "#f97316",
+    bg: "#fff7ed",
   },
 ];
 
@@ -1198,6 +1207,7 @@ export function AthleteDashboard({ onLogout }: { onLogout: () => void }) {
   if (activeModule === "Hostel")       return <ScreenHostel       onBack={() => setActiveModule(null)} onLogout={onLogout} />;
   if (activeModule === "Training")     return <ScreenTraining     onBack={() => setActiveModule(null)} onLogout={onLogout} />;
   if (activeModule === "Grievances")   return <ScreenGrievances   onBack={() => setActiveModule(null)} onLogout={onLogout} />;
+  if (activeModule === "App")          return <AthleteAppMockup   onBack={() => setActiveModule(null)} />;
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#f4f5fb" }}>

@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, SectionWrap } from "@/components/layout/PageShell";
 import { useState } from "react";
-import { Search, Globe, MapPin, X, ExternalLink } from "lucide-react";
+import { Search, Globe, MapPin, X, ExternalLink, Layout } from "lucide-react";
+import { DistrictWebsiteTemplate } from "@/components/district/DistrictWebsiteTemplate";
 
 export const Route = createFileRoute("/district-websites/")({
   head: () => ({ meta: [{ title: "District Websites — DSYS Maharashtra" }] }),
@@ -118,6 +119,7 @@ function DistrictCard({ name, colors, division }: {
 function DistrictWebsites() {
   const [query, setQuery] = useState("");
   const [activeDivision, setActiveDivision] = useState("All");
+  const [showTemplate, setShowTemplate] = useState(false);
   const divisions = ["All", ...Object.keys(DIVISIONS)];
 
   const filtered = ALL_DISTRICTS.filter(d => {
@@ -131,6 +133,8 @@ function DistrictWebsites() {
 
   return (
     <>
+      {showTemplate && <DistrictWebsiteTemplate onClose={() => setShowTemplate(false)} />}
+
       <PageHero
         eyebrow="Infrastructure"
         title="District Sports Websites"
@@ -151,6 +155,24 @@ function DistrictWebsites() {
       </div>
 
       <SectionWrap>
+        {/* Website Template button */}
+        <div className="mb-6 flex items-center justify-between p-5 rounded-2xl border-2 border-dashed border-[#363092]/30 bg-[#363092]/5">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-xl grid place-items-center shrink-0" style={{ background: "#363092" }}>
+              <Layout className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <div className="text-sm font-black text-gray-900">District Website Template</div>
+              <div className="text-xs text-gray-500 mt-0.5">Preview the standard district sports website design — ready to deploy for any district</div>
+            </div>
+          </div>
+          <button onClick={() => setShowTemplate(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-bold hover:opacity-90 transition shrink-0 shadow-md"
+            style={{ background: "#363092" }}>
+            <Layout className="h-4 w-4" /> View Website Template
+          </button>
+        </div>
+
         <div className="flex flex-col md:flex-row gap-3 mb-8">
           <div className="relative flex-1">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
