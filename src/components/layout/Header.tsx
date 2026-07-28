@@ -133,6 +133,26 @@ const NAV: Array<{
   { label: "Dashboard", to: "/dashboard" },
 ];
 
+// Approved government-standard Marathi terms for top-level nav & header UI.
+// These override Google Translate's machine output, which tends toward
+// literal, non-standard phrasing (e.g. "घर" for Home).
+const MR_LABELS: Record<string, string> = {
+  "Home": "मुख्यपृष्ठ",
+  "About Us": "आमच्याविषयी",
+  "Infrastructure": "पायाभूत सुविधा",
+  "Schemes": "योजना",
+  "Athletes": "खेळाडू",
+  "Tournaments": "स्पर्धा",
+  "Media Center": "माध्यम केंद्र",
+  "Notices": "सूचना",
+  "Dashboard": "डॅशबोर्ड",
+  "Login": "लॉगिन",
+  "Register": "नोंदणी करा",
+  "Search": "शोध",
+  "Sports & Youth Services Department": "क्रीडा व युवक सेवा विभाग",
+  "Government of Maharashtra": "महाराष्ट्र शासन",
+};
+
 function FeaturedCard({ f }: { f: Featured }) {
   const bg =
     f.variant === "orange" ? "linear-gradient(135deg,#FF6B35,#e85a22)" :
@@ -176,25 +196,30 @@ export function Header() {
     const m = document.cookie.match(/googtrans=\/en\/(mr|hi)/);
     return m ? m[1] as "mr" | "hi" : "en";
   })();
+  const isMarathi = activeLang === "mr";
+  const t = (label: string) => (isMarathi ? MR_LABELS[label] ?? label : label);
 
   return (
     <header className="sticky top-0 z-[1000] w-full bg-white shadow-sm">
       {/* Tier 1 - Utility */}
       <div className="h-9 border-b border-gray-200" style={{ background: "#F5F5F5" }}>
         <div className="container-page h-full flex items-center justify-between text-xs">
-          <span className="text-gray-500 truncate">महाराष्ट्र शासन | Government of Maharashtra</span>
+          <span className="notranslate text-gray-500 truncate">महाराष्ट्र शासन | Government of Maharashtra</span>
           <div className="hidden md:flex items-center gap-1 text-gray-700">
-            {([["en","EN"],["hi","हिंदी"],["mr","मराठी"]] as const).map(([code, label]) => (
-              <button key={code} onClick={() => switchLanguage(code)}
-                className="px-2 py-0.5 rounded-full font-semibold transition"
-                style={activeLang === code
-                  ? { background: "#363092", color: "#fff" }
-                  : { color: "#374151" }}>
-                {label}
-              </button>
-            ))}
+            <button
+              onClick={() => switchLanguage(isMarathi ? "en" : "mr")}
+              className="notranslate relative flex items-center rounded-full border border-gray-300 bg-white p-0.5 text-[11px] font-semibold"
+              title="Toggle English / Marathi"
+            >
+              <span
+                className="absolute top-0.5 bottom-0.5 w-9 rounded-full transition-transform duration-200"
+                style={{ background: "#363092", transform: isMarathi ? "translateX(36px)" : "translateX(0)" }}
+              />
+              <span className={`relative z-10 w-9 text-center py-0.5 ${!isMarathi ? "text-white" : "text-gray-700"}`}>EN</span>
+              <span className={`relative z-10 w-9 text-center py-0.5 ${isMarathi ? "text-white" : "text-gray-700"}`}>मराठी</span>
+            </button>
             <span className="mx-1 h-3 w-px bg-gray-300" />
-            <button className="flex items-center gap-1 px-2 py-0.5 rounded-full hover:bg-gray-200"><Search className="h-3 w-3" />Search</button>
+            <button className="notranslate flex items-center gap-1 px-2 py-0.5 rounded-full hover:bg-gray-200"><Search className="h-3 w-3" />{t("Search")}</button>
             <button className="flex items-center gap-1 px-2 py-0.5 rounded-full hover:bg-gray-200"><MapIcon className="h-3 w-3" />Sitemap</button>
             <span className="mx-1 h-3 w-px bg-gray-300" />
             <button className="px-2 py-0.5 rounded-full hover:bg-gray-200 font-bold">A+</button>
@@ -213,7 +238,7 @@ export function Header() {
             <img src={indiaEmblem} alt="Government of India" className="h-14 w-14 md:h-16 md:w-16 object-contain" />
             <div className="h-12 w-px bg-gray-200 hidden sm:block" />
           </div>
-          <div className="flex-1 text-center min-w-0 px-2">
+          <div className="notranslate flex-1 text-center min-w-0 px-2">
             <div className="text-[15px] md:text-[17px] font-semibold leading-tight" style={{ color: "#363092" }}>
               क्रीडा व युवक सेवा विभाग
             </div>
@@ -234,7 +259,7 @@ export function Header() {
       {/* Tier 3 - Nav */}
       <nav className="border-b border-gray-200 bg-white relative" onMouseLeave={() => setOpenIdx(null)}>
         <div className="container-page h-12 flex items-center justify-between gap-4">
-          <ul className="flex items-center justify-center flex-1 overflow-x-hidden">
+          <ul className="notranslate flex items-center justify-center flex-1 overflow-x-hidden">
             {NAV.map((n, i) => (
               <li
                 key={n.label}
@@ -248,11 +273,11 @@ export function Header() {
                     activeProps={{ style: { color: "#363092", borderBottomColor: "#363092" } }}
                     activeOptions={{ exact: n.to === "/" }}
                   >
-                    {n.label}
+                    {t(n.label)}
                   </Link>
                 ) : (
                   <button className="flex items-center gap-1 px-4 h-12 text-sm font-medium text-gray-700 hover:text-[#363092] border-b-[3px] border-transparent hover:border-[#363092] transition-colors whitespace-nowrap">
-                    {n.label} <ChevronDown className="h-3 w-3" />
+                    {t(n.label)} <ChevronDown className="h-3 w-3" />
                   </button>
                 )}
 
@@ -272,17 +297,17 @@ export function Header() {
               </li>
             ))}
           </ul>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="notranslate flex items-center gap-2 shrink-0">
             <Link to="/login"
               className="h-9 px-4 inline-flex items-center justify-center gap-1.5 text-sm font-semibold rounded-lg border border-[#363092] text-[#363092] hover:bg-[#363092] hover:text-white transition-all duration-150">
-              <LogIn className="h-3.5 w-3.5" /> Login
+              <LogIn className="h-3.5 w-3.5" /> {t("Login")}
             </Link>
             <Link to="/register"
               className="h-9 px-4 inline-flex items-center justify-center gap-1.5 text-sm font-semibold rounded-lg text-white transition-all duration-150"
               style={{ background: "#363092" }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "#2a2470")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "#363092")}>
-              <UserPlusIcon className="h-3.5 w-3.5" /> Register
+              <UserPlusIcon className="h-3.5 w-3.5" /> {t("Register")}
             </Link>
           </div>
         </div>

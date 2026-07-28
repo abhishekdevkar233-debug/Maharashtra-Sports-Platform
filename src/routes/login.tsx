@@ -15,7 +15,9 @@ import { SSCMPortal } from "@/components/gms/SSCMPortal";
 import { CRDMPortal } from "@/components/gms/CRDMPortal";
 import { LMSPortal } from "@/components/gms/LMSPortal";
 import { AIMAPPortal } from "@/components/gms/AIMAPPortal";
+import { AIVisionAnalyticsPortal } from "@/components/gms/AIVisionAnalyticsPortal";
 import { AthleteDashboard } from "@/components/gms/AthletePortal";
+import { CoachDashboard } from "@/components/gms/CoachPortal";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [
@@ -28,15 +30,7 @@ export const Route = createFileRoute("/login")({
 const ROLES = [
   { id: "admin",   label: "Admin",   icon: ShieldCheck, color: "#363092" },
   { id: "athlete", label: "Athlete", icon: Trophy,       color: "#FF6B35" },
-  { id: "other",   label: "Other",   icon: Users,        color: "#0ea5e9" },
-];
-
-const OTHER_ROLES = [
-  "District Sports Officer",
-  "State Sports Officer",
-  "Coach / Trainer",
-  "Institute / Academy",
-  "Media Representative",
+  { id: "coach",   label: "Coach",   icon: Users,        color: "#0ea5e9" },
 ];
 
 const ADMIN_MODULES = [
@@ -96,6 +90,14 @@ const ADMIN_MODULES = [
     color: "#7c3aed",
     bg: "#f3f0ff",
   },
+  {
+    icon: Eye,
+    label: "AI Vision Analytics",
+    short: "AI Vision",
+    desc: "AI-powered video tracking, heatmaps & wearable data integration",
+    color: "#0ea5e9",
+    bg: "#e0f2fe",
+  },
 ];
 
 /* ── GMS Portal is in @/components/gms/GMSPortal.tsx ──────────── */
@@ -113,6 +115,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   if (activeModule === "CRDM") return <CRDMPortal onBack={() => setActiveModule(null)} />;
   if (activeModule === "LMS") return <LMSPortal onBack={() => setActiveModule(null)} />;
   if (activeModule === "AI MAP") return <AIMAPPortal onBack={() => setActiveModule(null)} />;
+  if (activeModule === "AI Vision") return <AIVisionAnalyticsPortal onBack={() => setActiveModule(null)} />;
 
   return (
     <>
@@ -232,13 +235,13 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 function Page() {
   const [role, setRole] = useState("admin");
   const [show, setShow] = useState(false);
-  const [otherRole, setOtherRole] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
 
   const activeRole = ROLES.find(r => r.id === role)!;
 
   if (loggedIn && role === "admin")   return <AdminDashboard   onLogout={() => setLoggedIn(false)} />;
   if (loggedIn && role === "athlete") return <AthleteDashboard onLogout={() => setLoggedIn(false)} />;
+  if (loggedIn && role === "coach")   return <CoachDashboard   onLogout={() => setLoggedIn(false)} />;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -275,32 +278,18 @@ function Page() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-gray-900">
-                    {role === "admin" ? "Admin Sign In" : role === "athlete" ? "Athlete Sign In" : "Portal Sign In"}
+                    {role === "admin" ? "Admin Sign In" : role === "athlete" ? "Athlete Sign In" : "Coach Sign In"}
                   </h2>
                   <p className="text-xs text-gray-400">
                     {role === "admin" ? "Access all 7 management modules"
                       : role === "athlete" ? "View your profile, scores & events"
-                      : "Sign in with your official credentials"}
+                      : "Monitor squad readiness, alerts & training plans"}
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="p-8">
-              {role === "other" && (
-                <div className="mb-4">
-                  <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Select Your Role</label>
-                  <div className="mt-1.5 relative">
-                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <select value={otherRole} onChange={e => setOtherRole(e.target.value)}
-                      className="w-full h-11 pl-10 pr-3 rounded-xl border border-gray-200 focus:border-[#363092] focus:ring-2 focus:ring-[#363092]/15 outline-none text-sm bg-white transition appearance-none">
-                      <option value="">Select role…</option>
-                      {OTHER_ROLES.map(r => <option key={r}>{r}</option>)}
-                    </select>
-                  </div>
-                </div>
-              )}
-
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
