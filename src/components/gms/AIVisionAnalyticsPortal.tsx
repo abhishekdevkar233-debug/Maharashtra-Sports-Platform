@@ -55,7 +55,7 @@ const INITIAL_ANALYSES: AnalysisRow[] = [
   { id: "a5", video: "BasketballDrill_PG.mp4", sport: "Basketball", athlete: "Onkar Patil", status: "Completed", date: "24 Jul 2026" },
 ];
 
-const DUMMY_ATHLETES = ["Rohan Deshmukh", "Omkar Patil", "Sneha Jadhav", "Manasi Bhosale", "Aditya Pawar"];
+const DUMMY_ATHLETES = ["Rohan Deshmukh", "Omkar Patil", "Aditya Pawar", "Sanket Jadhav", "Yash Bhosale"];
 const SPORTS = ["Athletics", "Football", "Kabaddi", "Swimming", "Basketball", "Wrestling"];
 const CAMERA_ANGLES = ["Side View", "Front View", "Drone (Top-down)", "Broadcast Wide"];
 
