@@ -4,7 +4,7 @@ import {
   Eye, EyeOff, ArrowRight, Lock, Mail, RefreshCw,
   ShieldCheck, Users, Trophy, Building2, BookOpen,
   Database, BarChart3, GraduationCap, User, Bell,
-  Settings, LogOut, ChevronRight, LayoutDashboard, Plus, Palette,
+  Settings, LogOut, ChevronRight, LayoutDashboard, Plus, Palette, QrCode,
 } from "lucide-react";
 import { VisualEditor } from "@/components/editor/VisualEditor";
 import { Header } from "@/components/layout/Header";
@@ -16,6 +16,7 @@ import { CRDMPortal } from "@/components/gms/CRDMPortal";
 import { LMSPortal } from "@/components/gms/LMSPortal";
 import { AIMAPPortal } from "@/components/gms/AIMAPPortal";
 import { AIVisionAnalyticsPortal } from "@/components/gms/AIVisionAnalyticsPortal";
+import { FacilityBookingPortal } from "@/components/gms/FacilityBookingPortal";
 import { AthleteDashboard } from "@/components/gms/AthletePortal";
 import { CoachDashboard } from "@/components/gms/CoachPortal";
 
@@ -98,6 +99,14 @@ const ADMIN_MODULES = [
     color: "#0ea5e9",
     bg: "#e0f2fe",
   },
+  {
+    icon: QrCode,
+    label: "Smart Facility Booking & Digital Access",
+    short: "Facility Booking",
+    desc: "Book stadiums & training venues with QR-based digital entry passes",
+    color: "#059669",
+    bg: "#e6f7f2",
+  },
 ];
 
 /* ── GMS Portal is in @/components/gms/GMSPortal.tsx ──────────── */
@@ -116,6 +125,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   if (activeModule === "LMS") return <LMSPortal onBack={() => setActiveModule(null)} />;
   if (activeModule === "AI MAP") return <AIMAPPortal onBack={() => setActiveModule(null)} />;
   if (activeModule === "AI Vision") return <AIVisionAnalyticsPortal onBack={() => setActiveModule(null)} />;
+  if (activeModule === "Facility Booking") return <FacilityBookingPortal onBack={() => setActiveModule(null)} />;
 
   return (
     <>

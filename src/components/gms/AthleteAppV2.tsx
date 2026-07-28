@@ -11,6 +11,11 @@ import {
   MH_BLUE, EMERALD, SAFFRON, RED, GRAY_BG,
   type Athlete,
 } from "@/components/gms/CoachPortal";
+import {
+  FACILITIES, generateSlots, SLOT_COLOR, FACILITY_STATUS_COLOR, nextBookingId, generateQrToken,
+  type Facility, type Slot, type Booking, type Purpose,
+} from "@/components/gms/facilityBookingData";
+import { CalendarDays, MapPin, Clock3, QrCode, X as CloseIcon } from "lucide-react";
 
 // The app is scoped to a single signed-in athlete. In a real build this
 // would come from auth; here it's the same record the Coach Portal uses,
@@ -80,7 +85,7 @@ function MultiRing({ rings, size = 132 }: { rings: { pct: number; color: string 
 const HERO_METRICS = ["steps", "calories", "readiness"] as const;
 type HeroMetric = typeof HERO_METRICS[number];
 
-function HomeScreen({ onNavigate }: { onNavigate: (t: Tab) => void }) {
+function HomeScreen({ onNavigate, onOpenBooking }: { onNavigate: (t: Tab) => void; onOpenBooking: () => void }) {
   const rec = getRecommendation(ME.readiness);
   const watch = getWatchData(ME);
   const training = getTrainingRecovery(ME);
@@ -226,6 +231,21 @@ function HomeScreen({ onNavigate }: { onNavigate: (t: Tab) => void }) {
           <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">Next competition</div>
           <div className="text-[12px] font-bold text-gray-900 leading-snug line-clamp-2">{schedule.nextCompetition.name}</div>
         </Card>
+      </div>
+
+      <div className="px-5 mt-4">
+        <button onClick={onOpenBooking} className="w-full text-left active:scale-[0.98] transition-transform">
+          <Card className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl grid place-items-center shrink-0" style={{ background: "#EFF6FF" }}>
+              <QrCode className="h-4.5 w-4.5" style={{ color: MH_BLUE }} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-[13px] font-bold text-gray-900">Book a Facility</div>
+              <div className="text-[11px] text-gray-400">Stadium, pool, ground & more — QR entry pass</div>
+            </div>
+            <ChevronRight className="h-4 w-4 text-gray-300" />
+          </Card>
+        </button>
       </div>
 
       <div className="px-5 mt-5">
@@ -538,10 +558,193 @@ function ProfileScreen({ onLogout }: { onLogout: () => void }) {
   );
 }
 
+/* ── Mobile facility booking flow ────────────────────────────────── */
+
+function MiniQr({ token, size = 120 }: { token: string; size?: number }) {
+  const cells = 12;
+  const cell = size / cells;
+  const bits: boolean[] = [];
+  for (let i = 0; i < cells * cells; i++) {
+    const c = token.charCodeAt(i % token.length) || 0;
+    bits.push(((c * (i + 7)) % 5) < 2);
+  }
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rounded-lg bg-white shrink-0">
+      {Array.from({ length: cells }, (_, r) =>
+        Array.from({ length: cells }, (_, c) => {
+          const isFinder = (r < 3 && c < 3) || (r < 3 && c >= cells - 3) || (r >= cells - 3 && c < 3);
+          const on = isFinder
+            ? (r === 1 && c === 1) || (r === 0 || r === 2 || c === 0 || c === 2) ||
+              (r < 3 && c >= cells - 3 && (r === 0 || r === 2 || c === cells - 3 || c === cells - 1)) ||
+              (r >= cells - 3 && c < 3 && (r === cells - 3 || r === cells - 1 || c === 0 || c === 2))
+            : bits[r * cells + c];
+          return on ? <rect key={`${r}-${c}`} x={c * cell} y={r * cell} width={cell} height={cell} fill="#111827" /> : null;
+        })
+      )}
+    </svg>
+  );
+}
+
+function todayIso() { return new Date().toISOString().slice(0, 10); }
+function next7Days() {
+  const out: string[] = [];
+  const base = new Date();
+  for (let i = 0; i < 7; i++) { const d = new Date(base); d.setDate(base.getDate() + i); out.push(d.toISOString().slice(0, 10)); }
+  return out;
+}
+function fmtDateShort(iso: string) {
+  return new Date(iso).toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short" });
+}
+
+type BookStep = "facilities" | "slots" | "form" | "pass";
+
+function MobileBookingFlow({ athleteName, onClose }: { athleteName: string; onClose: () => void }) {
+  const [step, setStep] = useState<BookStep>("facilities");
+  const [facility, setFacility] = useState<Facility | null>(null);
+  const [date, setDate] = useState(todayIso());
+  const [slot, setSlot] = useState<Slot | null>(null);
+  const [purpose, setPurpose] = useState<Purpose>("Practice");
+  const [participants, setParticipants] = useState(1);
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const dates = next7Days();
+
+  function confirm() {
+    if (!facility || !slot) return;
+    const id = nextBookingId();
+    const b: Booking = {
+      id, facilityId: facility.id, facilityName: facility.name, athleteName, date, slot: slot.time,
+      purpose, bookingType: "Individual", participants, coach: "", status: "Confirmed",
+      qrToken: "", createdAt: new Date().toISOString(),
+    };
+    b.qrToken = generateQrToken(b);
+    setBooking(b);
+    setStep("pass");
+  }
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center" style={{ background: "rgba(17,24,39,0.55)" }}>
+      <div className="w-full max-w-sm h-[85%] bg-white rounded-3xl overflow-hidden flex flex-col">
+        <div className="h-14 shrink-0 flex items-center px-4 border-b border-gray-100">
+          {step !== "facilities" && step !== "pass" && (
+            <button onClick={() => setStep(step === "slots" ? "facilities" : "slots")} className="h-8 w-8 grid place-items-center text-gray-500">
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+          )}
+          <div className="text-[14px] font-bold text-gray-900 mx-auto">Book a Facility</div>
+          <button onClick={onClose} className="h-8 w-8 grid place-items-center text-gray-500"><CloseIcon className="h-4 w-4" /></button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto aav2-noscroll p-4" style={{ scrollbarWidth: "none" }}>
+          {step === "facilities" && (
+            <div className="space-y-3">
+              {FACILITIES.map(f => {
+                const c = FACILITY_STATUS_COLOR[f.status];
+                const disabled = f.status === "Fully Booked" || f.status === "Under Maintenance";
+                return (
+                  <button key={f.id} disabled={disabled} onClick={() => { setFacility(f); setStep("slots"); }}
+                    className="w-full text-left rounded-2xl p-3.5 flex items-center gap-3 disabled:opacity-50" style={{ background: GRAY_BG }}>
+                    <span className="text-2xl shrink-0">{f.emoji}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[13px] font-bold text-gray-900 truncate">{f.name}</div>
+                      <div className="text-[10.5px] text-gray-400 flex items-center gap-1"><MapPin className="h-2.5 w-2.5" /> {f.location}</div>
+                    </div>
+                    <span className="text-[9px] font-bold uppercase px-2 py-1 rounded-full shrink-0" style={{ color: c.text, background: c.bg }}>{f.status}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {step === "slots" && facility && (
+            <div>
+              <div className="text-[13px] font-bold text-gray-900 mb-3">{facility.name}</div>
+              <div className="flex gap-2 overflow-x-auto pb-1 mb-4 aav2-noscroll" style={{ scrollbarWidth: "none" }}>
+                {dates.map(d => (
+                  <button key={d} onClick={() => setDate(d)} className="shrink-0 rounded-xl px-3 py-2 text-center min-w-[64px]"
+                    style={date === d ? { background: MH_BLUE, color: "white" } : { background: GRAY_BG, color: "#374151" }}>
+                    <div className="text-[9px] font-semibold uppercase">{fmtDateShort(d).split(" ")[0]}</div>
+                    <div className="text-[13px] font-bold">{fmtDateShort(d).split(" ")[1]}</div>
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                {generateSlots(facility, date).map(s => {
+                  const c = SLOT_COLOR[s.status];
+                  const disabled = s.status === "Full" || s.status === "Maintenance";
+                  return (
+                    <button key={s.time} disabled={disabled} onClick={() => { setSlot(s); setStep("form"); }}
+                      className="text-left rounded-xl p-3 border disabled:opacity-60" style={{ background: c.bg, borderColor: c.border }}>
+                      <div className="text-[12px] font-bold text-gray-900">{s.time}</div>
+                      <div className="text-[10px] mt-0.5" style={{ color: c.text }}>{disabled ? s.status : `${s.remaining}/${s.total} left`}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {step === "form" && facility && slot && (
+            <div>
+              <div className="text-[13px] font-bold text-gray-900">{facility.name}</div>
+              <div className="text-[11px] text-gray-400 mb-4">{fmtDateShort(date)} &middot; {slot.time}</div>
+              <label className="text-[10px] font-bold uppercase tracking-wide text-gray-400">Purpose</label>
+              <div className="flex rounded-xl bg-gray-100 p-1 mt-1.5 mb-4">
+                {(["Practice", "Training", "Competition"] as Purpose[]).map(p => (
+                  <button key={p} onClick={() => setPurpose(p)} className="flex-1 h-8 rounded-lg text-[11px] font-semibold transition"
+                    style={purpose === p ? { background: "white", color: MH_BLUE, boxShadow: "0 1px 2px rgba(0,0,0,0.08)" } : { color: "#6B7280" }}>
+                    {p}
+                  </button>
+                ))}
+              </div>
+              <label className="text-[10px] font-bold uppercase tracking-wide text-gray-400">Participants</label>
+              <input type="number" min={1} value={participants} onChange={e => setParticipants(Number(e.target.value))}
+                className="w-full h-10 mt-1.5 px-3 rounded-xl border border-gray-200 text-sm outline-none mb-5" />
+              <button onClick={confirm} className="w-full h-11 rounded-xl text-white font-bold text-sm" style={{ background: MH_BLUE }}>
+                Confirm Booking
+              </button>
+            </div>
+          )}
+
+          {step === "pass" && booking && (
+            <div>
+              <div className="flex items-center gap-1.5 text-emerald-600 mb-1">
+                <CheckCircle2 className="h-4 w-4" /> <span className="text-[12px] font-bold">Booking confirmed</span>
+              </div>
+              <p className="text-[11px] text-gray-400 mb-4">This QR Code is mandatory for stadium entry.</p>
+              <div className="rounded-2xl overflow-hidden border border-gray-100">
+                <div className="p-3.5 text-white" style={{ background: `linear-gradient(135deg,${MH_BLUE},#1e2a7a)` }}>
+                  <div className="text-[9px] font-bold uppercase tracking-widest opacity-80">Digital Entry Pass</div>
+                </div>
+                <div className="p-4 flex gap-3">
+                  <MiniQr token={booking.qrToken} />
+                  <div className="min-w-0 flex-1 text-[11px] space-y-1">
+                    <div><span className="text-gray-400">Booking ID</span><div className="font-bold text-gray-900 font-mono">{booking.id}</div></div>
+                    <div><span className="text-gray-400">Athlete</span><div className="font-bold text-gray-900 truncate">{booking.athleteName}</div></div>
+                    <div><span className="text-gray-400">Facility</span><div className="font-semibold text-gray-700 truncate">{booking.facilityName}</div></div>
+                    <div><span className="text-gray-400">Date & Time</span><div className="font-semibold text-gray-700">{fmtDateShort(booking.date)}</div></div>
+                  </div>
+                </div>
+                <div className="px-4 pb-3 flex items-center gap-1.5 text-[10px] text-gray-400"><Clock3 className="h-3 w-3" /> Valid until {booking.slot.split(" – ")[1]}</div>
+              </div>
+              <div className="rounded-xl mt-3 p-3 bg-amber-50">
+                <p className="text-[10.5px] text-amber-800 leading-relaxed">Entry is permitted only through a valid QR Code. Without a valid QR Code, access to the facility will be denied.</p>
+              </div>
+              <button onClick={onClose} className="w-full h-10 rounded-xl mt-4 text-[13px] font-semibold" style={{ background: GRAY_BG, color: MH_BLUE }}>
+                Done
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Phone shell ──────────────────────────────────────────────────── */
 
 export function AthleteAppV2({ onBack }: { onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("home");
+  const [showBooking, setShowBooking] = useState(false);
 
   function renderScreen() {
     switch (tab) {
@@ -549,7 +752,7 @@ export function AthleteAppV2({ onBack }: { onBack: () => void }) {
       case "watch": return <WatchScreen />;
       case "nutrition": return <NutritionScreen />;
       case "profile": return <ProfileScreen onLogout={onBack} />;
-      default: return <HomeScreen onNavigate={setTab} />;
+      default: return <HomeScreen onNavigate={setTab} onOpenBooking={() => setShowBooking(true)} />;
     }
   }
 
@@ -597,6 +800,8 @@ export function AthleteAppV2({ onBack }: { onBack: () => void }) {
         <div className="text-xs font-black text-gray-400 uppercase tracking-widest">Maharashtra Sports — Athlete App V2</div>
         <div className="text-[11px] text-gray-300 mt-1">Live-synced with the Coach Portal &middot; {ME.nameEn}</div>
       </div>
+
+      {showBooking && <MobileBookingFlow athleteName={ME.nameEn} onClose={() => setShowBooking(false)} />}
     </div>
   );
 }
