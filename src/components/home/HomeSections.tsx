@@ -92,12 +92,48 @@ export function LiveUpdates() {
 
 export function Leadership() {
   const team = [
-    { name: "Shri. Devendra Fadnavis", role: "Hon. Chief Minister", img: imgFadnavis },
-    { name: "Shri. Eknath Shinde", role: "Hon. Deputy Chief Minister", img: imgShinde },
-    { name: "Smt. Sunetra Ajit Pawar", role: "Hon. Minister", img: imgPawar },
-    { name: "Shri. Ranjit Singh Deol IAS", role: "Principal Secretary", img: imgDeol },
-    { name: "Shri. Deepak Single IAS", role: "Director, Sports & Youth Services", img: imgSingle },
+    {
+      name: "Shri. Devendra Fadnavis",
+      role: "Honorable Chief Minister Government of Maharashtra",
+      nameMr: "श्री. देवेंद्र फडणवीस",
+      roleMr: "माननीय मुख्यमंत्री",
+      img: imgFadnavis,
+    },
+    {
+      name: "Shri. Eknath Shinde",
+      role: "Honorable Deputy Chief Minister Government of Maharashtra",
+      nameMr: "श्री.एकनाथ शिंदे",
+      roleMr: "माननीय उपमुख्यमंत्री",
+      img: imgShinde,
+    },
+    {
+      name: "Smt. Sunetra Ajit Pawar",
+      role: "Honorable Deputy Chief Minister Government of Maharashtra",
+      nameMr: "श्रीमती सुनेत्रा अजित पवार",
+      roleMr: "माननीय उपमुख्यमंत्री",
+      img: imgPawar,
+    },
+    {
+      name: "Shri. Ranjit Singh Deol (I.A.S)",
+      role: "Hon'ble Principal Secretary, School Education and Sports Department, Maharashtra State",
+      nameMr: "श्री.रनजीतसिंह देओल, (भा.प्र.से.)",
+      roleMr: "मा.प्रधान सचिव, शालेय शिक्षण व क्रीडा विभाग, महाराष्ट्र राज्य",
+      img: imgSingle,
+    },
+    {
+      name: "Shri. Deepak Singla (I.A.S.)",
+      role: "Commissioner, Sports and Youth Services Maharashtra State, Pune",
+      nameMr: "श्री. दीपक सिंगला (भा.प्र.से.)",
+      roleMr: "आयुक्त, क्रीडा व युवक सेवा, महाराष्ट्र राज्य, पुणे",
+      img: imgDeol,
+    },
   ];
+
+  const isMarathi = (() => {
+    if (typeof document === "undefined") return false;
+    return /googtrans=\/en\/mr/.test(document.cookie);
+  })();
+
   return (
     <section className="py-12" style={{ background: "#F9FAFB" }}>
       <div className="container-page">
@@ -105,10 +141,10 @@ export function Leadership() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
           {team.map((p, i) => (
             <Reveal key={p.name} delay={i * 100}>
-              <div className="text-center">
-                <img src={p.img} alt={p.name} className="mx-auto h-32 w-32 rounded-full object-cover object-top bg-gray-200 shadow-md" />
-                <div className="mt-4 font-bold text-gray-900 text-base">{p.name}</div>
-                <div className="text-sm text-gray-500 mt-1">{p.role}</div>
+              <div className="text-center notranslate">
+                <img src={p.img} alt={isMarathi ? p.nameMr : p.name} className="mx-auto h-32 w-32 rounded-full object-cover object-top bg-gray-200 shadow-md" />
+                <div className="mt-4 font-bold text-gray-900 text-base whitespace-nowrap">{isMarathi ? p.nameMr : p.name}</div>
+                <div className="text-sm text-gray-500 mt-1">{isMarathi ? p.roleMr : p.role}</div>
               </div>
             </Reveal>
           ))}
