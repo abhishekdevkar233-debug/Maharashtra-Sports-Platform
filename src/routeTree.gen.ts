@@ -22,6 +22,7 @@ import { Route as OlympiansRouteImport } from './routes/olympians'
 import { Route as NationalGamesRouteImport } from './routes/national-games'
 import { Route as MediaCenterRouteImport } from './routes/media-center'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LmsRouteImport } from './routes/lms'
 import { Route as LiveScoresRouteImport } from './routes/live-scores'
 import { Route as LeadershipTeamRouteImport } from './routes/leadership-team'
 import { Route as InfrastructureMapRouteImport } from './routes/infrastructure-map'
@@ -38,6 +39,7 @@ import { Route as StadiumsArenasIndexRouteImport } from './routes/stadiums-arena
 import { Route as RegisterIndexRouteImport } from './routes/register.index'
 import { Route as OlympiansIndexRouteImport } from './routes/olympians.index'
 import { Route as MediaCenterIndexRouteImport } from './routes/media-center.index'
+import { Route as LmsIndexRouteImport } from './routes/lms.index'
 import { Route as DistrictWebsitesIndexRouteImport } from './routes/district-websites.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as StadiumsArenasIdRouteImport } from './routes/stadiums-arenas.$id'
@@ -57,6 +59,15 @@ import { Route as MediaCenterVideoGalleryRouteImport } from './routes/media-cent
 import { Route as MediaCenterPressReleasesRouteImport } from './routes/media-center.press-releases'
 import { Route as MediaCenterPhotoGalleryRouteImport } from './routes/media-center.photo-gallery'
 import { Route as MediaCenterNewsRouteImport } from './routes/media-center.news'
+import { Route as LmsSubjectsRouteImport } from './routes/lms.subjects'
+import { Route as LmsProfileRouteImport } from './routes/lms.profile'
+import { Route as LmsMyLearningRouteImport } from './routes/lms.my-learning'
+import { Route as LmsExamsRouteImport } from './routes/lms.exams'
+import { Route as LmsDownloadsRouteImport } from './routes/lms.downloads'
+import { Route as LmsCalendarRouteImport } from './routes/lms.calendar'
+import { Route as LmsAssignmentsRouteImport } from './routes/lms.assignments'
+import { Route as LmsAppRouteImport } from './routes/lms.app'
+import { Route as LmsAiMentorRouteImport } from './routes/lms.ai-mentor'
 import { Route as EliteAthletesIdRouteImport } from './routes/elite-athletes.$id'
 import { Route as DistrictWebsitesIdRouteImport } from './routes/district-websites.$id'
 import { Route as DashboardScholarshipRouteImport } from './routes/dashboard.scholarship'
@@ -133,6 +144,11 @@ const MediaCenterRoute = MediaCenterRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LmsRoute = LmsRouteImport.update({
+  id: '/lms',
+  path: '/lms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LiveScoresRoute = LiveScoresRouteImport.update({
@@ -214,6 +230,11 @@ const MediaCenterIndexRoute = MediaCenterIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => MediaCenterRoute,
+} as any)
+const LmsIndexRoute = LmsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LmsRoute,
 } as any)
 const DistrictWebsitesIndexRoute = DistrictWebsitesIndexRouteImport.update({
   id: '/',
@@ -313,6 +334,51 @@ const MediaCenterNewsRoute = MediaCenterNewsRouteImport.update({
   path: '/news',
   getParentRoute: () => MediaCenterRoute,
 } as any)
+const LmsSubjectsRoute = LmsSubjectsRouteImport.update({
+  id: '/subjects',
+  path: '/subjects',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsProfileRoute = LmsProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsMyLearningRoute = LmsMyLearningRouteImport.update({
+  id: '/my-learning',
+  path: '/my-learning',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsExamsRoute = LmsExamsRouteImport.update({
+  id: '/exams',
+  path: '/exams',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsDownloadsRoute = LmsDownloadsRouteImport.update({
+  id: '/downloads',
+  path: '/downloads',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsCalendarRoute = LmsCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsAssignmentsRoute = LmsAssignmentsRouteImport.update({
+  id: '/assignments',
+  path: '/assignments',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsAppRoute = LmsAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsAiMentorRoute = LmsAiMentorRouteImport.update({
+  id: '/ai-mentor',
+  path: '/ai-mentor',
+  getParentRoute: () => LmsRoute,
+} as any)
 const EliteAthletesIdRoute = EliteAthletesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -391,6 +457,7 @@ export interface FileRoutesByFullPath {
   '/infrastructure-map': typeof InfrastructureMapRoute
   '/leadership-team': typeof LeadershipTeamRoute
   '/live-scores': typeof LiveScoresRoute
+  '/lms': typeof LmsRouteWithChildren
   '/login': typeof LoginRoute
   '/media-center': typeof MediaCenterRouteWithChildren
   '/national-games': typeof NationalGamesRoute
@@ -410,6 +477,15 @@ export interface FileRoutesByFullPath {
   '/dashboard/scholarship': typeof DashboardScholarshipRoute
   '/district-websites/$id': typeof DistrictWebsitesIdRoute
   '/elite-athletes/$id': typeof EliteAthletesIdRoute
+  '/lms/ai-mentor': typeof LmsAiMentorRoute
+  '/lms/app': typeof LmsAppRoute
+  '/lms/assignments': typeof LmsAssignmentsRoute
+  '/lms/calendar': typeof LmsCalendarRoute
+  '/lms/downloads': typeof LmsDownloadsRoute
+  '/lms/exams': typeof LmsExamsRoute
+  '/lms/my-learning': typeof LmsMyLearningRoute
+  '/lms/profile': typeof LmsProfileRoute
+  '/lms/subjects': typeof LmsSubjectsRoute
   '/media-center/news': typeof MediaCenterNewsRouteWithChildren
   '/media-center/photo-gallery': typeof MediaCenterPhotoGalleryRouteWithChildren
   '/media-center/press-releases': typeof MediaCenterPressReleasesRouteWithChildren
@@ -429,6 +505,7 @@ export interface FileRoutesByFullPath {
   '/stadiums-arenas/$id': typeof StadiumsArenasIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/district-websites/': typeof DistrictWebsitesIndexRoute
+  '/lms/': typeof LmsIndexRoute
   '/media-center/': typeof MediaCenterIndexRoute
   '/olympians/': typeof OlympiansIndexRoute
   '/register/': typeof RegisterIndexRoute
@@ -466,6 +543,15 @@ export interface FileRoutesByTo {
   '/dashboard/scholarship': typeof DashboardScholarshipRoute
   '/district-websites/$id': typeof DistrictWebsitesIdRoute
   '/elite-athletes/$id': typeof EliteAthletesIdRoute
+  '/lms/ai-mentor': typeof LmsAiMentorRoute
+  '/lms/app': typeof LmsAppRoute
+  '/lms/assignments': typeof LmsAssignmentsRoute
+  '/lms/calendar': typeof LmsCalendarRoute
+  '/lms/downloads': typeof LmsDownloadsRoute
+  '/lms/exams': typeof LmsExamsRoute
+  '/lms/my-learning': typeof LmsMyLearningRoute
+  '/lms/profile': typeof LmsProfileRoute
+  '/lms/subjects': typeof LmsSubjectsRoute
   '/media-center/news': typeof MediaCenterNewsRouteWithChildren
   '/media-center/photo-gallery': typeof MediaCenterPhotoGalleryRouteWithChildren
   '/media-center/press-releases': typeof MediaCenterPressReleasesRouteWithChildren
@@ -484,6 +570,7 @@ export interface FileRoutesByTo {
   '/stadiums-arenas/$id': typeof StadiumsArenasIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/district-websites': typeof DistrictWebsitesIndexRoute
+  '/lms': typeof LmsIndexRoute
   '/media-center': typeof MediaCenterIndexRoute
   '/olympians': typeof OlympiansIndexRoute
   '/register': typeof RegisterIndexRoute
@@ -509,6 +596,7 @@ export interface FileRoutesById {
   '/infrastructure-map': typeof InfrastructureMapRoute
   '/leadership-team': typeof LeadershipTeamRoute
   '/live-scores': typeof LiveScoresRoute
+  '/lms': typeof LmsRouteWithChildren
   '/login': typeof LoginRoute
   '/media-center': typeof MediaCenterRouteWithChildren
   '/national-games': typeof NationalGamesRoute
@@ -528,6 +616,15 @@ export interface FileRoutesById {
   '/dashboard/scholarship': typeof DashboardScholarshipRoute
   '/district-websites/$id': typeof DistrictWebsitesIdRoute
   '/elite-athletes/$id': typeof EliteAthletesIdRoute
+  '/lms/ai-mentor': typeof LmsAiMentorRoute
+  '/lms/app': typeof LmsAppRoute
+  '/lms/assignments': typeof LmsAssignmentsRoute
+  '/lms/calendar': typeof LmsCalendarRoute
+  '/lms/downloads': typeof LmsDownloadsRoute
+  '/lms/exams': typeof LmsExamsRoute
+  '/lms/my-learning': typeof LmsMyLearningRoute
+  '/lms/profile': typeof LmsProfileRoute
+  '/lms/subjects': typeof LmsSubjectsRoute
   '/media-center/news': typeof MediaCenterNewsRouteWithChildren
   '/media-center/photo-gallery': typeof MediaCenterPhotoGalleryRouteWithChildren
   '/media-center/press-releases': typeof MediaCenterPressReleasesRouteWithChildren
@@ -547,6 +644,7 @@ export interface FileRoutesById {
   '/stadiums-arenas/$id': typeof StadiumsArenasIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/district-websites/': typeof DistrictWebsitesIndexRoute
+  '/lms/': typeof LmsIndexRoute
   '/media-center/': typeof MediaCenterIndexRoute
   '/olympians/': typeof OlympiansIndexRoute
   '/register/': typeof RegisterIndexRoute
@@ -573,6 +671,7 @@ export interface FileRouteTypes {
     | '/infrastructure-map'
     | '/leadership-team'
     | '/live-scores'
+    | '/lms'
     | '/login'
     | '/media-center'
     | '/national-games'
@@ -592,6 +691,15 @@ export interface FileRouteTypes {
     | '/dashboard/scholarship'
     | '/district-websites/$id'
     | '/elite-athletes/$id'
+    | '/lms/ai-mentor'
+    | '/lms/app'
+    | '/lms/assignments'
+    | '/lms/calendar'
+    | '/lms/downloads'
+    | '/lms/exams'
+    | '/lms/my-learning'
+    | '/lms/profile'
+    | '/lms/subjects'
     | '/media-center/news'
     | '/media-center/photo-gallery'
     | '/media-center/press-releases'
@@ -611,6 +719,7 @@ export interface FileRouteTypes {
     | '/stadiums-arenas/$id'
     | '/dashboard/'
     | '/district-websites/'
+    | '/lms/'
     | '/media-center/'
     | '/olympians/'
     | '/register/'
@@ -648,6 +757,15 @@ export interface FileRouteTypes {
     | '/dashboard/scholarship'
     | '/district-websites/$id'
     | '/elite-athletes/$id'
+    | '/lms/ai-mentor'
+    | '/lms/app'
+    | '/lms/assignments'
+    | '/lms/calendar'
+    | '/lms/downloads'
+    | '/lms/exams'
+    | '/lms/my-learning'
+    | '/lms/profile'
+    | '/lms/subjects'
     | '/media-center/news'
     | '/media-center/photo-gallery'
     | '/media-center/press-releases'
@@ -666,6 +784,7 @@ export interface FileRouteTypes {
     | '/stadiums-arenas/$id'
     | '/dashboard'
     | '/district-websites'
+    | '/lms'
     | '/media-center'
     | '/olympians'
     | '/register'
@@ -690,6 +809,7 @@ export interface FileRouteTypes {
     | '/infrastructure-map'
     | '/leadership-team'
     | '/live-scores'
+    | '/lms'
     | '/login'
     | '/media-center'
     | '/national-games'
@@ -709,6 +829,15 @@ export interface FileRouteTypes {
     | '/dashboard/scholarship'
     | '/district-websites/$id'
     | '/elite-athletes/$id'
+    | '/lms/ai-mentor'
+    | '/lms/app'
+    | '/lms/assignments'
+    | '/lms/calendar'
+    | '/lms/downloads'
+    | '/lms/exams'
+    | '/lms/my-learning'
+    | '/lms/profile'
+    | '/lms/subjects'
     | '/media-center/news'
     | '/media-center/photo-gallery'
     | '/media-center/press-releases'
@@ -728,6 +857,7 @@ export interface FileRouteTypes {
     | '/stadiums-arenas/$id'
     | '/dashboard/'
     | '/district-websites/'
+    | '/lms/'
     | '/media-center/'
     | '/olympians/'
     | '/register/'
@@ -753,6 +883,7 @@ export interface RootRouteChildren {
   InfrastructureMapRoute: typeof InfrastructureMapRoute
   LeadershipTeamRoute: typeof LeadershipTeamRoute
   LiveScoresRoute: typeof LiveScoresRoute
+  LmsRoute: typeof LmsRouteWithChildren
   LoginRoute: typeof LoginRoute
   MediaCenterRoute: typeof MediaCenterRouteWithChildren
   NationalGamesRoute: typeof NationalGamesRoute
@@ -863,6 +994,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lms': {
+      id: '/lms'
+      path: '/lms'
+      fullPath: '/lms'
+      preLoaderRoute: typeof LmsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/live-scores': {
@@ -976,6 +1114,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/media-center/'
       preLoaderRoute: typeof MediaCenterIndexRouteImport
       parentRoute: typeof MediaCenterRoute
+    }
+    '/lms/': {
+      id: '/lms/'
+      path: '/'
+      fullPath: '/lms/'
+      preLoaderRoute: typeof LmsIndexRouteImport
+      parentRoute: typeof LmsRoute
     }
     '/district-websites/': {
       id: '/district-websites/'
@@ -1110,6 +1255,69 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MediaCenterNewsRouteImport
       parentRoute: typeof MediaCenterRoute
     }
+    '/lms/subjects': {
+      id: '/lms/subjects'
+      path: '/subjects'
+      fullPath: '/lms/subjects'
+      preLoaderRoute: typeof LmsSubjectsRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/profile': {
+      id: '/lms/profile'
+      path: '/profile'
+      fullPath: '/lms/profile'
+      preLoaderRoute: typeof LmsProfileRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/my-learning': {
+      id: '/lms/my-learning'
+      path: '/my-learning'
+      fullPath: '/lms/my-learning'
+      preLoaderRoute: typeof LmsMyLearningRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/exams': {
+      id: '/lms/exams'
+      path: '/exams'
+      fullPath: '/lms/exams'
+      preLoaderRoute: typeof LmsExamsRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/downloads': {
+      id: '/lms/downloads'
+      path: '/downloads'
+      fullPath: '/lms/downloads'
+      preLoaderRoute: typeof LmsDownloadsRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/calendar': {
+      id: '/lms/calendar'
+      path: '/calendar'
+      fullPath: '/lms/calendar'
+      preLoaderRoute: typeof LmsCalendarRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/assignments': {
+      id: '/lms/assignments'
+      path: '/assignments'
+      fullPath: '/lms/assignments'
+      preLoaderRoute: typeof LmsAssignmentsRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/app': {
+      id: '/lms/app'
+      path: '/app'
+      fullPath: '/lms/app'
+      preLoaderRoute: typeof LmsAppRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/ai-mentor': {
+      id: '/lms/ai-mentor'
+      path: '/ai-mentor'
+      fullPath: '/lms/ai-mentor'
+      preLoaderRoute: typeof LmsAiMentorRouteImport
+      parentRoute: typeof LmsRoute
+    }
     '/elite-athletes/$id': {
       id: '/elite-athletes/$id'
       path: '/$id'
@@ -1241,6 +1449,34 @@ const EliteAthletesRouteChildren: EliteAthletesRouteChildren = {
 const EliteAthletesRouteWithChildren = EliteAthletesRoute._addFileChildren(
   EliteAthletesRouteChildren,
 )
+
+interface LmsRouteChildren {
+  LmsAiMentorRoute: typeof LmsAiMentorRoute
+  LmsAppRoute: typeof LmsAppRoute
+  LmsAssignmentsRoute: typeof LmsAssignmentsRoute
+  LmsCalendarRoute: typeof LmsCalendarRoute
+  LmsDownloadsRoute: typeof LmsDownloadsRoute
+  LmsExamsRoute: typeof LmsExamsRoute
+  LmsMyLearningRoute: typeof LmsMyLearningRoute
+  LmsProfileRoute: typeof LmsProfileRoute
+  LmsSubjectsRoute: typeof LmsSubjectsRoute
+  LmsIndexRoute: typeof LmsIndexRoute
+}
+
+const LmsRouteChildren: LmsRouteChildren = {
+  LmsAiMentorRoute: LmsAiMentorRoute,
+  LmsAppRoute: LmsAppRoute,
+  LmsAssignmentsRoute: LmsAssignmentsRoute,
+  LmsCalendarRoute: LmsCalendarRoute,
+  LmsDownloadsRoute: LmsDownloadsRoute,
+  LmsExamsRoute: LmsExamsRoute,
+  LmsMyLearningRoute: LmsMyLearningRoute,
+  LmsProfileRoute: LmsProfileRoute,
+  LmsSubjectsRoute: LmsSubjectsRoute,
+  LmsIndexRoute: LmsIndexRoute,
+}
+
+const LmsRouteWithChildren = LmsRoute._addFileChildren(LmsRouteChildren)
 
 interface MediaCenterNewsRouteChildren {
   MediaCenterNewsIdRoute: typeof MediaCenterNewsIdRoute
@@ -1397,6 +1633,7 @@ const rootRouteChildren: RootRouteChildren = {
   InfrastructureMapRoute: InfrastructureMapRoute,
   LeadershipTeamRoute: LeadershipTeamRoute,
   LiveScoresRoute: LiveScoresRoute,
+  LmsRoute: LmsRouteWithChildren,
   LoginRoute: LoginRoute,
   MediaCenterRoute: MediaCenterRouteWithChildren,
   NationalGamesRoute: NationalGamesRoute,

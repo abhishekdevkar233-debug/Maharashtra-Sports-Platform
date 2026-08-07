@@ -15,6 +15,8 @@ import photo3 from "@/assets/olympians/olympian_3.png";
 import photo4 from "@/assets/olympians/olympian_4.png";
 import photo5 from "@/assets/olympians/olympian_5.png";
 import photo6 from "@/assets/olympians/olympian_6.png";
+import { useMealLog, setCoachFeedback } from "@/lib/mealLog";
+import { MessageSquare } from "lucide-react";
 
 export const ACCENT = "#363092";
 
@@ -1078,6 +1080,71 @@ function CoachGuidancePanel({ athlete }: { athlete: Athlete }) {
   );
 }
 
+function AthleteMealReview({ athleteCode }: { athleteCode: string }) {
+  const meals = useMealLog(athleteCode);
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+
+  function send(id: string) {
+    const text = (drafts[id] ?? "").trim();
+    if (!text) return;
+    setCoachFeedback(id, text);
+    setDrafts(d => ({ ...d, [id]: "" }));
+  }
+
+  return (
+    <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-6">
+      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Athlete Meal Log</div>
+      <p className="text-xs text-gray-500 mb-4">Meal photos and notes submitted by the athlete from the Athlete App.</p>
+
+      {meals.length === 0 ? (
+        <div className="text-sm text-gray-400 py-4">No meals submitted yet.</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {meals.map(m => (
+            <div key={m.id} className="rounded-xl border border-gray-100 overflow-hidden">
+              <div className="h-24 grid place-items-center" style={{ background: m.photoBg }}>
+                <span className="text-3xl">{m.emoji}</span>
+              </div>
+              <div className="p-3.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-sm font-bold text-gray-900">{m.type}</div>
+                  <span className="text-[10px] font-bold text-gray-400">{m.time} &middot; {m.date}</span>
+                </div>
+                {m.note && <p className="text-xs text-gray-500 mt-1 leading-relaxed">{m.note}</p>}
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full mt-2" style={{ color: EMERALD, background: "#ECFDF5" }}>
+                  <CheckCircle2 className="h-3 w-3" /> Shared with Coach
+                </span>
+
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase mb-1.5">
+                    <MessageSquare className="h-3 w-3" /> Coach Feedback
+                  </div>
+                  {m.coachFeedback && <p className="text-xs text-gray-700 leading-relaxed mb-2">{m.coachFeedback}</p>}
+                  <div className="flex gap-1.5">
+                    <input
+                      value={drafts[m.id] ?? ""}
+                      onChange={e => setDrafts(d => ({ ...d, [m.id]: e.target.value }))}
+                      placeholder={m.coachFeedback ? "Update feedback…" : "Leave a recommendation…"}
+                      className="flex-1 rounded-lg border border-gray-200 px-2.5 h-8 text-[11.5px] outline-none focus:border-[#363092]"
+                    />
+                    <button
+                      onClick={() => send(m.id)}
+                      className="h-8 w-8 shrink-0 rounded-lg grid place-items-center text-white"
+                      style={{ background: MH_BLUE }}
+                    >
+                      <Send className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AthleteDetailView({ athlete, onBack }: { athlete: Athlete; onBack: () => void }) {
   const [tab, setTab] = useState<DetailTab>("readiness");
 
@@ -1218,6 +1285,10 @@ function AthleteDetailView({ athlete, onBack }: { athlete: Athlete; onBack: () =
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="mt-5">
+            <AthleteMealReview athleteCode={athlete.code} />
           </div>
 
           <div className="mt-5">

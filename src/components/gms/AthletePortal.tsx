@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { AthleteAppMockup } from "@/components/gms/AthleteAppMockup";
 import { AthleteAppV2 } from "@/components/gms/AthleteAppV2";
 import {
@@ -7,6 +8,7 @@ import {
   Award, Calendar, MapPin, CheckCircle, Clock, AlertCircle,
   Download, BookOpen, Send, TrendingUp, Zap,
   Play, Lock, Star, FileText, Video, ChevronDown, ChevronUp, BarChart2, Smartphone, Sparkles,
+  MessageCircle, Flame, Target, Wifi, PlayCircle, Languages, ListChecks, Users,
 } from "lucide-react";
 const ACCENT = "#f97316";
 
@@ -74,6 +76,14 @@ const ATHLETE_MODULES = [
     desc: "Smart watch sync, AI readiness, training & nutrition — live-connected to your coach",
     color: "#2563EB",
     bg: "#eff6ff",
+  },
+  {
+    icon: BookOpen,
+    label: "Athlete Learning Hub",
+    short: "LearningHub",
+    desc: "AI-powered LMS — never miss a lecture during competitions & training camps",
+    color: "#0d9488",
+    bg: "#f0fdfa",
   },
 ];
 
@@ -1206,9 +1216,304 @@ function ScreenGrievances({ onBack, onLogout }: { onBack: () => void; onLogout: 
   );
 }
 
+/* ── Screen: Athlete Learning Hub ──────────────────────────────── */
+function ScreenLearningHub({ onBack, onLogout }: { onBack: () => void; onLogout: () => void }) {
+  const [aiOpen, setAiOpen] = useState(false);
+  const TEAL = "#0d9488";
+
+  const subjects = [
+    { name: "Mathematics", teacher: "Mrs. Kulkarni",   pct: 72, color: "#363092", bg: "#eeeefa", nextLesson: "Trigonometric Identities" },
+    { name: "Physics",     teacher: "Mr. Deshpande",   pct: 58, color: "#7c3aed", bg: "#f3f0ff", nextLesson: "Laws of Motion — Numericals" },
+    { name: "English",     teacher: "Ms. Fernandes",   pct: 90, color: "#059669", bg: "#e6f7f2", nextLesson: "Essay Writing Techniques" },
+    { name: "Chemistry",   teacher: "Dr. Patil",       pct: 41, color: ACCENT,    bg: "#fff7ed", nextLesson: "Periodic Table Trends" },
+  ];
+
+  const assignments = [
+    { title: "Trigonometry Problem Set 4",       subject: "Mathematics", due: "Tomorrow, 6:00 PM", status: "pending" },
+    { title: "Newton's Laws — Lab Report",        subject: "Physics",     due: "in 3 days",         status: "pending" },
+    { title: "Essay: Sportsmanship & Ethics",     subject: "English",     due: "Submitted",         status: "done" },
+  ];
+
+  const exams = [
+    { title: "Unit Test — Mathematics", date: "12 Aug 2026", readiness: 78 },
+    { title: "Mid-Term — Physics",      date: "20 Aug 2026", readiness: 54 },
+  ];
+
+  const calendar = [
+    { title: "State Athletics Championship", date: "5–8 Aug", type: "Competition" },
+    { title: "Unit Test — Mathematics",       date: "12 Aug",  type: "Exam" },
+    { title: "National Coaching Camp, Pune",  date: "18–28 Aug", type: "Camp" },
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col" style={{ background: "#f4f5fb" }}>
+      <AthleteHeader onBack={onBack} onLogout={onLogout} subtitle="Athlete Learning Hub" />
+      <main className="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full">
+
+        {/* Welcome banner */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl grid place-items-center" style={{ background: "#f0fdfa" }}>
+              <BookOpen className="h-5 w-5" style={{ color: TEAL }} />
+            </div>
+            <div>
+              <h1 className="text-xl font-black text-gray-900">Welcome back, Rahul</h1>
+              <p className="text-sm text-gray-500">Class 11 · Kendriya Vidyalaya, Pune — keep your momentum going</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 rounded-2xl bg-white border border-gray-200 shadow-sm px-4 py-2.5">
+            <Flame className="h-5 w-5 text-orange-500" />
+            <div>
+              <div className="text-sm font-black text-gray-900 leading-none">12-day streak</div>
+              <div className="text-[10px] text-gray-400 mt-0.5">Best: 21 days</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Competition Mode banner */}
+        <div className="rounded-2xl p-5 md:p-6 mb-6 text-white relative overflow-hidden" style={{ background: "linear-gradient(120deg, #363092, #0d9488)" }}>
+          <div className="flex flex-wrap items-start justify-between gap-4 relative z-10">
+            <div>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wider mb-3">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse" /> Competition Mode Active
+              </div>
+              <div className="text-lg font-black">State Athletics Championship 2026</div>
+              <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-white/85">
+                <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Shree Shiv Chhatrapati Complex, Balewadi</span>
+                <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> 5 – 8 Aug 2026</span>
+                <span className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /> Coach Vikram Sawant</span>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="rounded-xl bg-white/10 px-4 py-2.5 text-center min-w-[92px]">
+                <div className="text-lg font-black">6</div>
+                <div className="text-[10px] text-white/80">Lessons Left</div>
+              </div>
+              <div className="rounded-xl bg-white/10 px-4 py-2.5 text-center min-w-[92px]">
+                <div className="text-lg font-black">2h 40m</div>
+                <div className="text-[10px] text-white/80">Est. Study Time</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Today's plan timeline */}
+          <div className="mt-5 pt-4 border-t border-white/20 relative z-10">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-white/80 mb-3">Today's Learning Plan — Auto-adjusted by AI</div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[
+                { time: "Morning",   what: "Competition — Heats Round",     icon: Trophy },
+                { time: "Afternoon", what: "Travel to Balewadi",             icon: MapPin },
+                { time: "Night",     what: "30 min Study — Mathematics",     icon: BookOpen },
+              ].map(s => (
+                <div key={s.time} className="rounded-xl bg-white/10 px-3.5 py-3 flex items-center gap-3">
+                  <s.icon className="h-4 w-4 shrink-0" />
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">{s.time}</div>
+                    <div className="text-xs font-semibold">{s.what}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Progress stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          {[
+            { label: "Learning Progress", value: "68%", color: TEAL,      icon: Target },
+            { label: "Attendance",        value: "84%", color: "#363092", icon: CheckCircle },
+            { label: "Academic Score",    value: "76%", color: "#059669", icon: TrendingUp },
+            { label: "Exam Readiness",    value: "65%", color: ACCENT,    icon: Zap },
+          ].map(s => (
+            <div key={s.label} className="rounded-2xl bg-white border border-gray-200 px-5 py-4 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="text-2xl font-black" style={{ color: s.color }}>{s.value}</div>
+                <s.icon className="h-4 w-4" style={{ color: s.color }} />
+              </div>
+              <div className="text-xs text-gray-500 mt-1 font-medium">{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Catch-up alert */}
+        <div className="rounded-2xl border border-orange-200 bg-orange-50 p-5 mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-xl bg-orange-100 grid place-items-center shrink-0">
+              <AlertCircle className="h-5 w-5 text-orange-600" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-gray-900">You missed 9 lectures during the National Championship</div>
+              <div className="text-xs text-gray-500 mt-0.5">AI has prioritised the most exam-critical chapters into a catch-up plan</div>
+            </div>
+          </div>
+          <button className="h-9 px-4 rounded-lg text-xs font-bold text-white shrink-0" style={{ background: ACCENT }}>
+            Generate AI Catch-up Plan
+          </button>
+        </div>
+
+        {/* Continue learning + Subjects */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <div className="lg:col-span-2 rounded-2xl bg-white border border-gray-200 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Continue Learning</h2>
+              <span className="text-xs text-gray-400">Mathematics</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="h-14 w-14 rounded-xl grid place-items-center shrink-0" style={{ background: "#eeeefa" }}>
+                <PlayCircle className="h-6 w-6" style={{ color: "#363092" }} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-bold text-gray-900 truncate">Trigonometric Identities — Part 2</div>
+                <div className="text-xs text-gray-500 mt-0.5">12 min remaining · Mrs. Kulkarni</div>
+                <div className="h-1.5 rounded-full bg-gray-100 mt-2 overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: "64%", background: "#363092" }} />
+                </div>
+              </div>
+              <button className="h-9 px-4 rounded-lg text-xs font-bold text-white shrink-0" style={{ background: "#363092" }}>Resume</button>
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Offline</h2>
+              <Wifi className="h-4 w-4 text-gray-300" />
+            </div>
+            <div className="text-xs text-gray-500 mb-3">4 lessons downloaded for the trip to Balewadi</div>
+            <button className="w-full h-9 rounded-lg border border-gray-200 text-xs font-bold text-gray-700 flex items-center justify-center gap-1.5 hover:border-teal-400 hover:text-teal-600 transition">
+              <Download className="h-3.5 w-3.5" /> Manage Downloads
+            </button>
+          </div>
+        </div>
+
+        {/* Subjects grid */}
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider">My Subjects</h2>
+          <span className="text-xs text-gray-400">4 subjects enrolled</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {subjects.map(s => (
+            <div key={s.name} className="rounded-2xl bg-white border border-gray-200 shadow-sm p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+              <div className="flex items-center justify-between mb-4">
+                <div className="h-11 w-11 rounded-xl grid place-items-center" style={{ background: s.bg }}>
+                  <BookOpen className="h-5 w-5" style={{ color: s.color }} />
+                </div>
+                <div className="text-sm font-black" style={{ color: s.color }}>{s.pct}%</div>
+              </div>
+              <div className="text-sm font-bold text-gray-900 mb-0.5">{s.name}</div>
+              <div className="text-xs text-gray-400 mb-3">{s.teacher}</div>
+              <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden mb-3">
+                <div className="h-full rounded-full" style={{ width: `${s.pct}%`, background: s.color }} />
+              </div>
+              <div className="text-[11px] text-gray-500">Next: {s.nextLesson}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Assignments + Exams */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-5">
+            <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-4">Pending Assignments</h2>
+            <div className="space-y-3">
+              {assignments.map(a => (
+                <div key={a.title} className="flex items-center gap-3 rounded-xl border border-gray-100 px-3.5 py-3">
+                  <div className={`h-8 w-8 rounded-lg grid place-items-center shrink-0 ${a.status === "done" ? "bg-emerald-50" : "bg-orange-50"}`}>
+                    {a.status === "done" ? <CheckCircle className="h-4 w-4 text-emerald-600" /> : <Clock className="h-4 w-4 text-orange-500" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-bold text-gray-900 truncate">{a.title}</div>
+                    <div className="text-[11px] text-gray-400">{a.subject}</div>
+                  </div>
+                  <div className={`text-[11px] font-semibold shrink-0 ${a.status === "done" ? "text-emerald-600" : "text-orange-500"}`}>{a.due}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-5">
+            <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-4">Upcoming Exams · Readiness</h2>
+            <div className="space-y-3">
+              {exams.map(e => (
+                <div key={e.title} className="rounded-xl border border-gray-100 px-3.5 py-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-bold text-gray-900">{e.title}</div>
+                    <div className="text-[11px] text-gray-400">{e.date}</div>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: `${e.readiness}%`, background: e.readiness >= 70 ? "#059669" : ACCENT }} />
+                  </div>
+                  <div className="text-[11px] text-gray-500 mt-1.5">{e.readiness}% exam readiness</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Competition calendar */}
+        <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-5 mb-6">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-4">Competition Calendar</h2>
+          <div className="space-y-3">
+            {calendar.map(c => (
+              <div key={c.title} className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-lg grid place-items-center shrink-0" style={{ background: "#eeeefa" }}>
+                  <Calendar className="h-4 w-4" style={{ color: "#363092" }} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold text-gray-900">{c.title}</div>
+                  <div className="text-[11px] text-gray-400">{c.type}</div>
+                </div>
+                <div className="text-[11px] font-semibold text-gray-500 shrink-0">{c.date}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+
+      {/* MOA Mitra AI assistant */}
+      <button
+        onClick={() => setAiOpen(o => !o)}
+        className="fixed bottom-6 right-6 h-14 px-5 rounded-full text-white text-sm font-bold shadow-lg flex items-center gap-2 z-50"
+        style={{ background: "linear-gradient(120deg, #363092, #0d9488)" }}
+      >
+        <Sparkles className="h-4 w-4" /> MOA Mitra
+      </button>
+
+      {aiOpen && (
+        <div className="fixed bottom-24 right-6 w-[320px] rounded-2xl bg-white border border-gray-200 shadow-2xl z-50 overflow-hidden">
+          <div className="p-4 text-white" style={{ background: "linear-gradient(120deg, #363092, #0d9488)" }}>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              <div className="text-sm font-bold">MOA Mitra — AI Learning Assistant</div>
+            </div>
+            <div className="text-[11px] text-white/80 mt-1">Ask anything about your lessons, in English or Marathi</div>
+          </div>
+          <div className="p-3 grid grid-cols-2 gap-2">
+            {[
+              { label: "Summarize Chapter", icon: FileText },
+              { label: "Explain Topic",     icon: MessageCircle },
+              { label: "EN ⇄ MR Translate", icon: Languages },
+              { label: "Generate MCQs",     icon: ListChecks },
+              { label: "Today's Study Plan",icon: Calendar },
+              { label: "Motivate Me",       icon: Flame },
+            ].map(a => (
+              <button key={a.label} className="rounded-xl border border-gray-200 px-3 py-2.5 text-[11px] font-semibold text-gray-700 flex items-center gap-1.5 hover:border-teal-400 hover:text-teal-600 transition text-left">
+                <a.icon className="h-3.5 w-3.5 shrink-0" /> {a.label}
+              </button>
+            ))}
+          </div>
+          <div className="p-3 border-t border-gray-100 flex items-center gap-2">
+            <input placeholder="Ask MOA Mitra…" className="flex-1 h-9 rounded-lg border border-gray-200 px-3 text-xs outline-none focus:border-teal-400" />
+            <button className="h-9 w-9 rounded-lg grid place-items-center text-white shrink-0" style={{ background: TEAL }}><Send className="h-4 w-4" /></button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ── Athlete Dashboard Hub ──────────────────────────────────────── */
 export function AthleteDashboard({ onLogout }: { onLogout: () => void }) {
   const [activeModule, setActiveModule] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   if (activeModule === "Events")       return <ScreenEvents       onBack={() => setActiveModule(null)} onLogout={onLogout} />;
   if (activeModule === "Scholarships") return <ScreenScholarships onBack={() => setActiveModule(null)} onLogout={onLogout} />;
@@ -1218,6 +1523,7 @@ export function AthleteDashboard({ onLogout }: { onLogout: () => void }) {
   if (activeModule === "Grievances")   return <ScreenGrievances   onBack={() => setActiveModule(null)} onLogout={onLogout} />;
   if (activeModule === "App")          return <AthleteAppMockup   onBack={() => setActiveModule(null)} />;
   if (activeModule === "AppV2")        return <AthleteAppV2       onBack={() => setActiveModule(null)} />;
+  if (activeModule === "LearningHub")  return <ScreenLearningHub  onBack={() => setActiveModule(null)} onLogout={onLogout} />;
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#f4f5fb" }}>
@@ -1261,7 +1567,7 @@ export function AthleteDashboard({ onLogout }: { onLogout: () => void }) {
           {ATHLETE_MODULES.map((m, i) => (
             <button
               key={i}
-              onClick={() => setActiveModule(m.short)}
+              onClick={() => (m.short === "LearningHub" ? navigate({ to: "/lms" }) : setActiveModule(m.short))}
               className="text-left rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-200 group hover:shadow-md hover:-translate-y-0.5"
             >
               <div className="flex items-start justify-between mb-4">

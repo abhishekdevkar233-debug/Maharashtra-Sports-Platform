@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Eye, EyeOff, ArrowRight, Lock, Mail, RefreshCw,
   ShieldCheck, Users, Trophy, Building2, BookOpen,
@@ -33,6 +33,12 @@ const ROLES = [
   { id: "athlete", label: "Athlete", icon: Trophy,       color: "#FF6B35" },
   { id: "coach",   label: "Coach",   icon: Users,        color: "#0ea5e9" },
 ];
+
+const DEMO_CREDENTIALS: Record<string, { name: string; email: string; password: string }> = {
+  admin:   { name: "Abhishek Devkar", email: "abhishek.devkar@vinsys.com", password: "123456" },
+  athlete: { name: "Rohan Patil",     email: "Rohanpatil8032@gmail.com",   password: "123456" },
+  coach:   { name: "Mahesh Jadhav",   email: "maheshjadhav8032@gmail.com", password: "123456" },
+};
 
 const ADMIN_MODULES = [
   {
@@ -113,7 +119,7 @@ const ADMIN_MODULES = [
 
 
 /* ── Admin Dashboard ─────────────────────────────────────────────── */
-function AdminDashboard({ onLogout }: { onLogout: () => void }) {
+function AdminDashboard({ onLogout, adminName }: { onLogout: () => void; adminName: string }) {
   const [activeModule, setActiveModule] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
 
@@ -162,7 +168,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         <div className="flex items-center gap-2.5 pl-3 border-l border-gray-200">
           <div className="h-9 w-9 rounded-xl grid place-items-center text-white text-xs font-bold" style={{ background: "#363092" }}>AD</div>
           <div className="hidden sm:block">
-            <div className="text-sm font-semibold text-gray-900 leading-none">Admin User</div>
+            <div className="text-sm font-semibold text-gray-900 leading-none">{adminName}</div>
             <div className="text-[10px] text-gray-400 mt-0.5">Super Administrator</div>
           </div>
           <button onClick={onLogout}
@@ -246,16 +252,36 @@ function Page() {
   const [role, setRole] = useState("admin");
   const [show, setShow] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [email, setEmail] = useState(DEMO_CREDENTIALS.admin.email);
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const activeRole = ROLES.find(r => r.id === role)!;
 
-  if (loggedIn && role === "admin")   return <AdminDashboard   onLogout={() => setLoggedIn(false)} />;
+  // Load the selected role's demo email (only) — the password must always be typed manually.
+  useEffect(() => {
+    const cred = DEMO_CREDENTIALS[role];
+    setEmail(cred.email);
+    setPassword("");
+    setError("");
+    setShow(false);
+  }, [role]);
+
+  if (loggedIn && role === "admin")   return <AdminDashboard   onLogout={() => setLoggedIn(false)} adminName={DEMO_CREDENTIALS.admin.name} />;
   if (loggedIn && role === "athlete") return <AthleteDashboard onLogout={() => setLoggedIn(false)} />;
   if (loggedIn && role === "coach")   return <CoachDashboard   onLogout={() => setLoggedIn(false)} />;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoggedIn(true);
+    const cred = DEMO_CREDENTIALS[role];
+    const emailMatches = email.trim().toLowerCase() === cred.email.toLowerCase();
+    const passwordMatches = password === cred.password;
+    if (emailMatches && passwordMatches) {
+      setError("");
+      setLoggedIn(true);
+    } else {
+      setError("Invalid email or password. Please check your credentials and try again.");
+    }
   }
 
   return (
@@ -308,6 +334,8 @@ function Page() {
                   <div className="mt-1 relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input type="text"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
                       placeholder={role === "admin" ? "admin@dsys.mah.gov.in" : "you@example.com or +91 9XXXXXXXXX"}
                       className="w-full h-11 pl-10 pr-3 rounded-xl border border-gray-200 focus:border-[#363092] focus:ring-2 focus:ring-[#363092]/15 outline-none text-sm transition" />
                   </div>
@@ -318,12 +346,20 @@ function Page() {
                   <div className="mt-1 relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input type={show ? "text" : "password"} placeholder="••••••••"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
                       className="w-full h-11 pl-10 pr-10 rounded-xl border border-gray-200 focus:border-[#363092] focus:ring-2 focus:ring-[#363092]/15 outline-none text-sm transition" />
                     <button type="button" onClick={() => setShow(s => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
                       {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
+
+                {error && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs font-semibold text-red-600">
+                    {error}
+                  </div>
+                )}
 
                 <div className="flex items-center justify-between">
                   <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">

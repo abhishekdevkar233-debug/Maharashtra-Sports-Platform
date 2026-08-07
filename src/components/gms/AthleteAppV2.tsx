@@ -4,6 +4,7 @@ import {
   Bell, ChevronRight, Flame, Footprints, HeartPulse, Moon,
   Activity, Battery, CheckCircle2, FileText,
   Globe, LogOut, Sparkles, Send, Droplet, TrendingUp, Wifi,
+  Plus, Camera, Image as ImageIcon, MessageSquare,
 } from "lucide-react";
 import {
   ATHLETES, getWatchData, getTrainingRecovery, getSleepRecovery,
@@ -16,6 +17,7 @@ import {
   type Facility, type Slot, type Booking, type Purpose,
 } from "@/components/gms/facilityBookingData";
 import { CalendarDays, MapPin, Clock3, QrCode, X as CloseIcon } from "lucide-react";
+import { useMealLog, addMeal, MEAL_PHOTO_PRESETS, type MealType } from "@/lib/mealLog";
 
 // The app is scoped to a single signed-in athlete. In a real build this
 // would come from auth; here it's the same record the Coach Portal uses,
@@ -401,8 +403,140 @@ function WatchScreen() {
 
 /* ── Nutrition ────────────────────────────────────────────────────── */
 
+function MealCard({ meal }: { meal: import("@/lib/mealLog").Meal }) {
+  return (
+    <Card className="!p-0 overflow-hidden">
+      <div className="flex items-center justify-center h-28" style={{ background: meal.photoBg }}>
+        <span className="text-4xl">{meal.emoji}</span>
+      </div>
+      <div className="p-3.5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="text-[12.5px] font-bold text-gray-900">{meal.type}</div>
+          <span className="text-[10px] font-bold text-gray-400">{meal.time} &middot; {meal.date}</span>
+        </div>
+        {meal.note && <p className="text-[11.5px] text-gray-500 mt-1 leading-relaxed">{meal.note}</p>}
+        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full mt-2" style={{ color: EMERALD, background: "#ECFDF5" }}>
+          <CheckCircle2 className="h-3 w-3" /> Shared with Coach
+        </span>
+
+        <div className="mt-3 pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase mb-1">
+            <MessageSquare className="h-3 w-3" /> Coach Feedback
+          </div>
+          {meal.coachFeedback ? (
+            <p className="text-[11.5px] text-gray-700 leading-relaxed">{meal.coachFeedback}</p>
+          ) : (
+            <p className="text-[11.5px] text-gray-300 italic">No feedback yet</p>
+          )}
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+const MEAL_TYPES: MealType[] = ["Breakfast", "Lunch", "Dinner", "Snack"];
+
+function AddMealSheet({ onClose }: { onClose: () => void }) {
+  const [preset, setPreset] = useState<typeof MEAL_PHOTO_PRESETS[number] | null>(null);
+  const [type, setType] = useState<MealType | null>(null);
+  const [note, setNote] = useState("");
+  const [time, setTime] = useState("");
+
+  function pickPhoto() {
+    setPreset(MEAL_PHOTO_PRESETS[Math.floor(Math.random() * MEAL_PHOTO_PRESETS.length)]);
+  }
+
+  function save() {
+    if (!preset || !type) return;
+    const now = new Date();
+    addMeal({
+      athleteCode: ME.code,
+      type,
+      note,
+      time: time || now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
+      date: "Today",
+      emoji: preset.emoji,
+      photoBg: preset.bg,
+    });
+    onClose();
+  }
+
+  return (
+    <div className="absolute inset-0 z-30 flex flex-col justify-end">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative bg-white rounded-t-3xl max-h-[88%] overflow-y-auto aav2-noscroll" style={{ scrollbarWidth: "none" }}>
+        <div className="flex items-center justify-between px-5 pt-4 pb-2">
+          <div className="text-gray-900 font-bold text-[16px]">Add Meal</div>
+          <button onClick={onClose} className="h-8 w-8 rounded-full grid place-items-center bg-gray-100 text-gray-500"><CloseIcon className="h-4 w-4" /></button>
+        </div>
+
+        <div className="px-5 pb-6">
+          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-2">Meal Photo</div>
+          {preset ? (
+            <div className="relative h-32 rounded-2xl grid place-items-center mb-2" style={{ background: preset.bg }}>
+              <span className="text-5xl">{preset.emoji}</span>
+              <button onClick={pickPhoto} className="absolute bottom-2 right-2 text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/90 text-gray-700">Retake</button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2.5 mb-2">
+              <button onClick={pickPhoto} className="flex flex-col items-center justify-center gap-1.5 h-24 rounded-2xl border border-dashed border-gray-300 text-gray-500">
+                <Camera className="h-5 w-5" /> <span className="text-[11px] font-semibold">Camera</span>
+              </button>
+              <button onClick={pickPhoto} className="flex flex-col items-center justify-center gap-1.5 h-24 rounded-2xl border border-dashed border-gray-300 text-gray-500">
+                <ImageIcon className="h-5 w-5" /> <span className="text-[11px] font-semibold">Gallery</span>
+              </button>
+            </div>
+          )}
+
+          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-2 mt-4">Meal Type</div>
+          <div className="grid grid-cols-4 gap-2">
+            {MEAL_TYPES.map(t => (
+              <button
+                key={t}
+                onClick={() => setType(t)}
+                className="h-9 rounded-xl text-[11px] font-bold transition"
+                style={type === t ? { background: MH_BLUE, color: "white" } : { background: "#F3F4F6", color: "#6B7280" }}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+
+          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-2 mt-4">Note (optional)</div>
+          <textarea
+            value={note}
+            onChange={e => setNote(e.target.value)}
+            placeholder="What did you eat?"
+            rows={2}
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-[12.5px] text-gray-700 outline-none resize-none focus:border-blue-400"
+          />
+
+          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-2 mt-4">Meal Time (optional)</div>
+          <input
+            type="time"
+            value={time}
+            onChange={e => setTime(e.target.value)}
+            className="w-full rounded-xl border border-gray-200 px-3 h-10 text-[12.5px] text-gray-700 outline-none focus:border-blue-400"
+          />
+
+          <button
+            onClick={save}
+            disabled={!preset || !type}
+            className="w-full h-12 rounded-xl font-bold text-sm text-white mt-5 disabled:opacity-40 transition"
+            style={{ background: MH_BLUE }}
+          >
+            Save Meal
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function NutritionScreen() {
   const [logged, setLogged] = useState<string[]>([]);
+  const [showAdd, setShowAdd] = useState(false);
+  const myMeals = useMealLog(ME.code);
   const tip = generateAiFoodTip(ME);
 
   return (
@@ -466,12 +600,36 @@ function NutritionScreen() {
       </div>
 
       <div className="px-5 mt-4">
+        <div className="flex items-center justify-between mb-2">
+          <SectionLabel>My Meal Log</SectionLabel>
+          <button
+            onClick={() => setShowAdd(true)}
+            className="flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-full"
+            style={{ color: "white", background: MH_BLUE }}
+          >
+            <Plus className="h-3 w-3" /> Add Meal
+          </button>
+        </div>
+        {myMeals.length === 0 ? (
+          <Card className="text-center py-6">
+            <p className="text-[12px] text-gray-400">No meals logged yet. Snap a photo to get started.</p>
+          </Card>
+        ) : (
+          <div className="space-y-2.5">
+            {myMeals.map(m => <MealCard key={m.id} meal={m} />)}
+          </div>
+        )}
+      </div>
+
+      <div className="px-5 mt-4">
         <SectionLabel>Coach's nutrition tip</SectionLabel>
         <Card className="flex gap-2.5">
           <Send className="h-4 w-4 shrink-0 mt-0.5" style={{ color: MH_BLUE }} />
           <p className="text-[12px] text-gray-600 whitespace-pre-line leading-relaxed">{tip}</p>
         </Card>
       </div>
+
+      {showAdd && <AddMealSheet onClose={() => setShowAdd(false)} />}
     </div>
   );
 }

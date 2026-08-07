@@ -101,14 +101,16 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { pathname } = useLocation();
   const isAuthPage = pathname === "/login" || pathname.startsWith("/register");
+  const isLmsPage = pathname.startsWith("/lms");
+  const hideChrome = isAuthPage || isLmsPage;
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen flex flex-col bg-white">
-        {!isAuthPage && <Header />}
+        {!hideChrome && <Header />}
         <main className="flex-1"><Outlet /></main>
-        {!isAuthPage && <Footer />}
-        <AIChatbot />
+        {!hideChrome && <Footer />}
+        {!isLmsPage && <AIChatbot />}
       </div>
     </QueryClientProvider>
   );
